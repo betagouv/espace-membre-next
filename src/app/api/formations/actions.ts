@@ -27,6 +27,8 @@ import {
   formationProposalSchemaType,
   formationScheduleSchema,
   formationScheduleSchemaType,
+  formationSessionUpdateSchema,
+  formationSessionUpdateSchemaType,
   getImageFile,
   formationUpdateSchema,
   formationUpdateSchemaType,
@@ -535,6 +537,85 @@ export const scheduleFormationSessions = withErrorHandling(
   },
 );
 
+/**
+ * Modification d'une date précise.
+ *
+ * L'horaire, la durée, la capacité et le lien de visioconférence appartiennent
+ * à une date : les changer ne touche pas aux autres. Le droit se vérifie sur la
+ * formation parente, seule porteuse de l'animateur·ice.
+ */
+export const updateFormationSession = withErrorHandling(
+  async (data: formationSessionUpdateSchemaType) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    const parsed = formationSessionUpdateSchema.parse(data);
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+    const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+    const sessionRowId = Number(parsed.sessionId);
+    const [sessionRow] = (
+      await getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID)
+    ).filter((row) => row.id === sessionRowId);
+    if (!sessionRow) {
+      throw new BusinessError("SessionInconnue", "Cette date n'existe pas.");
+    }
+
+    const formatRowId = Number(
+      sessionRow.fields[GRIST_SESSIONS_COLUMNS.format] ?? 0,
+    );
+    const formation = formatRowId
+      ? await fetchGristFormationById(String(formatRowId), {
+          statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+        })
+      : undefined;
+    if (!formation) {
+      throw new BusinessError(
+        "FormationInconnue",
+        "Cette formation n'existe pas.",
+      );
+    }
+    if (!(await canManageFormation(session.user, formation))) {
+      throw new AuthorizationError(
+        "Seule l'équipe d'animation ou la personne qui anime peut modifier cette date.",
+      );
+    }
+
+    const dureeHeures =
+      FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+
+    await updateGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID, [
+      {
+        id: sessionRowId,
+        fields: {
+          [GRIST_SESSIONS_COLUMNS.debut]: parisDateToEpochSeconds(
+            parsed.dateDebut,
+          ),
+          [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
+          [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite,
+          [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
+        },
+      },
+    ]);
+
+    // La capacité vient de changer : les inscriptions déjà prises doivent être
+    // reclassées, sans quoi la liste d'attente resterait figée.
+    await syncSessionWaitingList(sessionRowId, parsed.capacite);
+
+    revalidatePath(`/formations/${formatRowId}`);
+    revalidatePath("/formations");
+    return { ok: true };
+  },
+);
+
 export const updateFormation = withErrorHandling(
   async (data: formationUpdateSchemaType) => {
     const session = await getServerSession(authOptions);
@@ -597,32 +678,9 @@ export const updateFormation = withErrorHandling(
       ],
     );
 
-    // La capacité vit à deux endroits : celle du format sert de modèle aux
-    // futures sessions, celle de la session gouverne les inscriptions. Ne
-    // modifier que la première n'aurait aucun effet visible.
-    if (formation.sessionId) {
-      await updateGristRecords(
-        config.GRIST_FORMATIONS_DOC_ID,
-        config.GRIST_FORMATIONS_SESSIONS_TABLE_ID,
-        [
-          {
-            id: Number(formation.sessionId),
-            fields: {
-              [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
-              [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]:
-                parsed.lienVisioAdmin ?? "",
-            },
-          },
-        ],
-      );
-
-      // Changer la capacité ne suffit pas : les inscriptions déjà prises
-      // gardent le drapeau posé le jour de l'inscription. On les reclasse.
-      await syncSessionWaitingList(
-        Number(formation.sessionId),
-        parsed.capacite,
-      );
-    }
+    // La capacité et le lien saisis ici servent de modèle aux dates à venir.
+    // Les dates déjà programmées gardent les leurs : chacune se modifie à part,
+    // sinon toucher au modèle bousculerait des inscriptions en cours.
 
     revalidatePath(`/formations/${parsed.formationId}`);
     revalidatePath("/formations");

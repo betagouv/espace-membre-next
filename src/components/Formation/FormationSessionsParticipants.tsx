@@ -4,10 +4,12 @@ import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
 
+import { FormationSessionEditForm } from "@/components/Formation/FormationSessionEditForm";
 import { GristParticipant } from "@/lib/formationsGrist";
 
 export type ParticipantAvecFiche = GristParticipant & { profileUrl?: string };
@@ -16,6 +18,8 @@ export type SessionAvecParticipants = {
   id: string;
   start?: Date;
   maxSeats?: number;
+  dureeHeures?: number;
+  lienVisioAdmin?: string;
 };
 
 /**
@@ -36,6 +40,7 @@ export const FormationSessionsParticipants = ({
   const [ouvertes, setOuvertes] = React.useState<string[]>(
     sessions.length === 1 ? [sessions[0].id] : [],
   );
+  const [enEdition, setEnEdition] = React.useState<string | null>(null);
 
   const bascule = (id: string) =>
     setOuvertes((actuelles) =>
@@ -93,6 +98,26 @@ export const FormationSessionsParticipants = ({
 
             {ouverte && (
               <div className={fr.cx("fr-px-3w", "fr-pb-2w")}>
+                {enEdition === session.id ? (
+                  <FormationSessionEditForm
+                    sessionId={session.id}
+                    start={session.start}
+                    dureeHeures={session.dureeHeures}
+                    capacite={session.maxSeats}
+                    lienVisioAdmin={session.lienVisioAdmin}
+                    onDone={() => setEnEdition(null)}
+                  />
+                ) : (
+                  <Button
+                    className={fr.cx("fr-mb-2w")}
+                    priority="secondary"
+                    size="small"
+                    nativeButtonProps={{ type: "button" }}
+                    onClick={() => setEnEdition(session.id)}
+                  >
+                    Modifier cette date
+                  </Button>
+                )}
                 {participants.length === 0 ? (
                   <p className={fr.cx("fr-hint-text", "fr-mb-0")}>
                     Personne inscrit·e à cette date.

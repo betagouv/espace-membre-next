@@ -341,8 +341,8 @@ export const FormationManagePanel = ({
               <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
                 <Input
                   className={fr.cx("fr-mb-0")}
-                  label="Limite de participants"
-                  hintText="Appliquée à la session à venir."
+                  label="Limite de participants par défaut"
+                  hintText="Proposée pour les prochaines dates. Chaque date programmée garde la sienne, modifiable dans sa propre fiche."
                   state={errors.capacite ? "error" : "default"}
                   stateRelatedMessage={errors.capacite?.message}
                   nativeInputProps={{

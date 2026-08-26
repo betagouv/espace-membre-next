@@ -40,6 +40,9 @@ export const formationSchema = z.object({
         start: z.date().optional(),
         maxSeats: z.number().optional(),
         availableSeats: z.number().optional(),
+        // Propres à la date : chacune peut avoir sa durée et son lien.
+        dureeHeures: z.number().optional(),
+        lienVisioAdmin: z.string().optional(),
       }),
     )
     .optional(),

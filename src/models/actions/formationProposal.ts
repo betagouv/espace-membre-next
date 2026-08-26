@@ -243,3 +243,34 @@ export const formationScheduleSchema = z
 export type formationScheduleSchemaType = z.infer<
   typeof formationScheduleSchema
 >;
+
+/**
+ * Modification d'une date précise.
+ *
+ * Distincte de la modification de la formation : le sujet, la description ou
+ * l'animateur·ice valent pour toutes les dates, alors que l'horaire, la durée,
+ * la capacité et le lien de visioconférence appartiennent à une date seule.
+ */
+export const formationSessionUpdateSchema = z.object({
+  sessionId: z.string().min(1),
+  dateDebut: z
+    .string({ required_error: "La date est requise" })
+    .trim()
+    .min(1, "La date est requise"),
+  duree: z.enum(FORMATION_DUREES.map((d) => d.label) as [string, ...string[]], {
+    errorMap: () => ({ message: "La durée est requise" }),
+  }),
+  capacite: z.coerce
+    .number({
+      required_error: "La limite de participants est requise",
+      invalid_type_error: "La limite de participants est requise",
+    })
+    .int("Indique un nombre entier")
+    .min(1, "Au moins une place")
+    .max(500, "Nombre trop élevé"),
+  lienVisioAdmin: optionalUrl,
+});
+
+export type formationSessionUpdateSchemaType = z.infer<
+  typeof formationSessionUpdateSchema
+>;

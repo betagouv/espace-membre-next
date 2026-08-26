@@ -140,6 +140,12 @@ function formatToFormation(
           start: toDate(row.fields[GRIST_SESSIONS_COLUMNS.debut]),
           maxSeats: capacity || undefined,
           availableSeats: typeof left === "number" ? left : capacity,
+          dureeHeures:
+            Number(row.fields[GRIST_SESSIONS_COLUMNS.dureeIndicative] ?? 0) ||
+            undefined,
+          lienVisioAdmin:
+            String(row.fields[GRIST_SESSIONS_COLUMNS.lienVisioAdmin] ?? "") ||
+            undefined,
         };
       }),
       animatorTchap:
