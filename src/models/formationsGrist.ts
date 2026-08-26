@@ -104,3 +104,31 @@ export const GRIST_SESSIONS_COLUMNS = {
   lienVisioAdmin: "Lien_visio_admin",
   capacite: "Capacite",
 } as const;
+
+/**
+ * Rythme de répétition d'une formation.
+ *
+ * Grist ne connaît pas la notion de récurrence : on crée autant de sessions que
+ * d'occurrences demandées. Chacune vit ensuite sa vie — sa propre capacité, ses
+ * propres inscrits — ce qui permet d'en annuler ou d'en déplacer une sans
+ * toucher aux autres.
+ */
+export enum FORMATION_RECURRENCE {
+  AUCUNE = "aucune",
+  HEBDOMADAIRE = "hebdomadaire",
+  BIMENSUELLE = "bimensuelle",
+  MENSUELLE = "mensuelle",
+}
+
+export const FORMATION_RECURRENCE_CHOICES = [
+  { value: FORMATION_RECURRENCE.AUCUNE, label: "Une seule date" },
+  { value: FORMATION_RECURRENCE.HEBDOMADAIRE, label: "Chaque semaine" },
+  {
+    value: FORMATION_RECURRENCE.BIMENSUELLE,
+    label: "Toutes les deux semaines",
+  },
+  { value: FORMATION_RECURRENCE.MENSUELLE, label: "Chaque mois" },
+] as const;
+
+// Un an de sessions hebdomadaires : au-delà, c'est une erreur de saisie.
+export const MAX_FORMATION_OCCURRENCES = 52;

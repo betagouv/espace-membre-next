@@ -47,25 +47,32 @@ export async function fetchGristFormations({
     getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID),
   ]);
 
-  // Prochaine session à venir de chaque format, celles déjà passées ne
-  // servent pas à l'inscription.
+  // Dates à venir de chaque format, la plus proche en tête. Les sessions
+  // passées ne servent plus à l'inscription.
   const now = Date.now();
-  const nextSessionByFormat = new Map<number, GristRow>();
+  const sessionsByFormat = new Map<number, GristRow[]>();
   for (const session of sessions) {
     const formatId = Number(session.fields[GRIST_SESSIONS_COLUMNS.format]);
     const start = toDate(session.fields[GRIST_SESSIONS_COLUMNS.debut]);
     if (!formatId || !start || start.getTime() < now) continue;
-    const current = nextSessionByFormat.get(formatId);
-    const currentStart = current
-      ? toDate(current.fields[GRIST_SESSIONS_COLUMNS.debut])
-      : undefined;
-    if (!currentStart || start < currentStart) {
-      nextSessionByFormat.set(formatId, session);
-    }
+    sessionsByFormat.set(formatId, [
+      ...(sessionsByFormat.get(formatId) ?? []),
+      session,
+    ]);
+  }
+  for (const [formatId, rows] of sessionsByFormat) {
+    sessionsByFormat.set(
+      formatId,
+      [...rows].sort(
+        (a, b) =>
+          Number(a.fields[GRIST_SESSIONS_COLUMNS.debut] ?? 0) -
+          Number(b.fields[GRIST_SESSIONS_COLUMNS.debut] ?? 0),
+      ),
+    );
   }
 
   return formats.map((format) =>
-    formatToFormation(format, nextSessionByFormat.get(format.id)),
+    formatToFormation(format, sessionsByFormat.get(format.id) ?? []),
   );
 }
 
@@ -90,8 +97,14 @@ export async function fetchGristPendingFormations(): Promise<Formation[]> {
   return fetchGristFormations({ statuts: [FORMATION_STATUT.PROPOSEE] });
 }
 
-function formatToFormation(format: GristRow, session?: GristRow): Formation {
+function formatToFormation(
+  format: GristRow,
+  upcoming: GristRow[] = [],
+): Formation {
   {
+    // La session la plus proche fournit la date et les places affichées ; les
+    // suivantes restent accessibles par la liste.
+    const [session] = upcoming;
     const f = format.fields;
     // La colonne Image ne contient que des identifiants de pièces jointes :
     // l'URL passe par la route qui les relaie avec la clé d'API.
@@ -115,6 +128,20 @@ function formatToFormation(format: GristRow, session?: GristRow): Formation {
       created_at: new Date(),
       imageUrl: imageId ? `/api/formations/image/${imageId}` : undefined,
       sessionId: session ? String(session.id) : undefined,
+      sessions: upcoming.map((row) => {
+        const capacity = Number(
+          row.fields[GRIST_SESSIONS_COLUMNS.capacite] ??
+            f[GRIST_FORMATIONS_COLUMNS.capacite] ??
+            0,
+        );
+        const left = row.fields["Places_restantes"];
+        return {
+          id: String(row.id),
+          start: toDate(row.fields[GRIST_SESSIONS_COLUMNS.debut]),
+          maxSeats: capacity || undefined,
+          availableSeats: typeof left === "number" ? left : capacity,
+        };
+      }),
       animatorTchap:
         String(f[GRIST_FORMATIONS_COLUMNS.animateurTchap] ?? "") || undefined,
       statut: String(f[GRIST_FORMATIONS_COLUMNS.statut] ?? "") || undefined,

@@ -20,10 +20,13 @@ import {
   updateGristRecords,
   uploadGristAttachments,
 } from "@/lib/grist";
+import { formationSessionDates } from "@/lib/formationRecurrence";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import {
   formationProposalSchema,
   formationProposalSchemaType,
+  formationScheduleSchema,
+  formationScheduleSchemaType,
   getImageFile,
   formationUpdateSchema,
   formationUpdateSchemaType,
@@ -449,6 +452,86 @@ export const validateFormation = withErrorHandling(
     revalidatePath(`/formations/${formationId}`);
     revalidatePath("/formations");
     return { ok: true };
+  },
+);
+
+/**
+ * Programmation de dates pour une formation existante.
+ *
+ * Couvre les deux besoins d'un seul geste : reprogrammer une formation à une
+ * autre date, ou en poser une série. Chaque occurrence devient une session à
+ * part entière, avec ses propres inscriptions.
+ */
+export const scheduleFormationSessions = withErrorHandling(
+  async (data: formationScheduleSchemaType) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    const parsed = formationScheduleSchema.parse(data);
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+
+    const formation = await fetchGristFormationById(parsed.formationId, {
+      statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+    });
+    if (!formation) {
+      throw new BusinessError(
+        "FormationInconnue",
+        "Cette formation n'existe pas.",
+      );
+    }
+    if (!(await canManageFormation(session.user, formation))) {
+      throw new AuthorizationError(
+        "Seule l'équipe d'animation ou la personne qui anime peut programmer des dates.",
+      );
+    }
+
+    const dureeHeures =
+      FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+
+    // La série se calcule en heure murale, puis chaque occurrence devient un
+    // instant : « tous les mois à 14 h » reste 14 h après le changement
+    // d'heure, ce qui ne serait pas le cas en ajoutant des durées à un instant.
+    const dates = formationSessionDates(
+      parsed.dateDebut,
+      parsed.recurrence,
+      parsed.occurrences,
+    );
+
+    const animateurRowId = await findMembreRowId(
+      formation.animatorTchap?.split("@")[0] || undefined,
+    );
+    const organisateurRowId = await findOrCreateMembreRowId(session.user.id);
+
+    await addGristRecords(
+      config.GRIST_FORMATIONS_DOC_ID,
+      config.GRIST_FORMATIONS_SESSIONS_TABLE_ID,
+      dates.map((date) => ({
+        [GRIST_SESSIONS_COLUMNS.format]: Number(parsed.formationId),
+        // Les colonnes DateTime attendent des secondes epoch.
+        [GRIST_SESSIONS_COLUMNS.debut]: parisDateToEpochSeconds(date),
+        // `Fin` est une colonne formule : elle se déduit du début et de la
+        // durée.
+        [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
+        [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
+        [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite,
+        [GRIST_SESSIONS_COLUMNS.organisateur]: organisateurRowId,
+        [GRIST_SESSIONS_COLUMNS.animateurIce]: animateurRowId
+          ? ["L", animateurRowId]
+          : null,
+      })),
+    );
+
+    revalidatePath(`/formations/${parsed.formationId}`);
+    revalidatePath("/formations");
+    return { ok: true, created: dates.length };
   },
 );
 

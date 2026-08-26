@@ -12,6 +12,8 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { formatInTimeZone } from "date-fns-tz";
+import { fr as frLocale } from "date-fns/locale/fr";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -19,6 +21,7 @@ import {
   updateFormation,
   validateFormation,
 } from "@/app/api/formations/actions";
+import { FormationScheduleForm } from "@/components/Formation/FormationScheduleForm";
 import { GristParticipant } from "@/lib/formationsGrist";
 import {
   formationUpdateSchema,
@@ -64,15 +67,24 @@ export const FormationManagePanel = ({
   participants,
   statut,
   canValidate = false,
+  sessions = [],
 }: {
   defaultValues: formationUpdateSchemaType;
   participants: GristParticipant[];
   statut?: string;
+  // Dates à venir : une formation peut être programmée plusieurs fois.
+  sessions?: {
+    id: string;
+    start?: Date;
+    maxSeats?: number;
+    availableSeats?: number;
+  }[];
   // Valider ne revient pas à gérer : seule l'équipe d'animation le peut, pas la
   // personne qui a déposé la proposition.
   canValidate?: boolean;
 }) => {
   const [editing, setEditing] = React.useState(false);
+  const [scheduling, setScheduling] = React.useState(false);
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>(null);
   const router = useRouter();
@@ -241,6 +253,55 @@ export const FormationManagePanel = ({
                   </li>
                 ))}
               </ul>
+            )}
+
+            <p className={fr.cx("fr-mt-3w", "fr-mb-1w")}>
+              <strong>Dates programmées ({sessions.length})</strong>
+            </p>
+            {sessions.length === 0 ? (
+              <p className={fr.cx("fr-hint-text")}>Aucune date à venir.</p>
+            ) : (
+              <ul className={fr.cx("fr-mb-0")}>
+                {sessions.map((session) => (
+                  <li key={session.id}>
+                    {session.start
+                      ? // Fuseau explicite : le serveur tourne en UTC, le
+                        // navigateur à Paris.
+                        formatInTimeZone(
+                          session.start,
+                          "Europe/Paris",
+                          "EEEE d MMMM yyyy à HH'h'mm",
+                          { locale: frLocale },
+                        )
+                      : "Date inconnue"}
+                    {session.maxSeats
+                      ? ` — ${
+                          session.maxSeats - (session.availableSeats ?? 0)
+                        }/${session.maxSeats} inscrit·es`
+                      : ""}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <Button
+              className={fr.cx("fr-mt-2w")}
+              priority="secondary"
+              nativeButtonProps={{ type: "button" }}
+              onClick={() => setScheduling((was) => !was)}
+            >
+              {scheduling ? "Annuler" : "Programmer une autre date"}
+            </Button>
+
+            {scheduling && (
+              <div className={fr.cx("fr-mt-2w")}>
+                <FormationScheduleForm
+                  formationId={defaultValues.formationId}
+                  defaultDuree={defaultValues.duree}
+                  defaultCapacite={defaultValues.capacite}
+                  defaultLienVisioAdmin={defaultValues.lienVisioAdmin}
+                />
+              </div>
             )}
 
             <Button

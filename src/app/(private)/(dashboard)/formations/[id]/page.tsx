@@ -296,6 +296,7 @@ export default async function Page(props: Readonly<Props>) {
           <FormationManagePanel
             statut={formation.statut}
             canValidate={isAnimation}
+            sessions={formation.sessions ?? []}
             participants={participants}
             defaultValues={{
               formationId: formation.id,

@@ -31,6 +31,18 @@ export const formationSchema = z.object({
   // Identifiant de la session Grist à venir, quand la formation en a une :
   // c'est à elle qu'on s'inscrit, pas au format.
   sessionId: z.string().optional(),
+  // Toutes les dates à venir, la plus proche en tête. Une formation peut être
+  // programmée plusieurs fois : chaque date a ses propres inscriptions.
+  sessions: z
+    .array(
+      z.object({
+        id: z.string(),
+        start: z.date().optional(),
+        maxSeats: z.number().optional(),
+        availableSeats: z.number().optional(),
+      }),
+    )
+    .optional(),
   // Champs de gestion, visibles seulement par l'animateur·ice et l'équipe
   // d'animation.
   statut: z.string().optional(),

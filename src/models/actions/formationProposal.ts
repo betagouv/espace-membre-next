@@ -4,7 +4,9 @@ import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
   FORMATION_MODALITE,
+  FORMATION_RECURRENCE,
   FORMATION_THEMATIQUES,
+  MAX_FORMATION_OCCURRENCES,
 } from "@/models/formationsGrist";
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -174,3 +176,62 @@ export const formationUpdateSchema = formationProposalSchema
   .superRefine(requireVisioWhenRemote);
 
 export type formationUpdateSchemaType = z.infer<typeof formationUpdateSchema>;
+
+/**
+ * Programmation de dates pour une formation existante.
+ *
+ * Sert aussi bien à dupliquer une formation à une autre date qu'à en poser une
+ * série : une occurrence unique n'est qu'un cas particulier de récurrence.
+ */
+export const formationScheduleSchema = z
+  .object({
+    formationId: z.string().min(1),
+    dateDebut: z
+      .string({ required_error: "La date est requise" })
+      .trim()
+      .min(1, "La date est requise"),
+    duree: z.enum(
+      FORMATION_DUREES.map((d) => d.label) as [string, ...string[]],
+      {
+        errorMap: () => ({ message: "La durée est requise" }),
+      },
+    ),
+    capacite: z.coerce
+      .number({
+        required_error: "La limite de participants est requise",
+        invalid_type_error: "La limite de participants est requise",
+      })
+      .int("Indique un nombre entier")
+      .min(1, "Au moins une place")
+      .max(500, "Nombre trop élevé"),
+    lienVisioAdmin: optionalUrl,
+    recurrence: z.nativeEnum(FORMATION_RECURRENCE, {
+      errorMap: () => ({ message: "Le rythme est requis" }),
+    }),
+    occurrences: z.coerce
+      .number({ invalid_type_error: "Indique un nombre de dates" })
+      .int("Indique un nombre entier")
+      .min(1, "Au moins une date")
+      .max(
+        MAX_FORMATION_OCCURRENCES,
+        `${MAX_FORMATION_OCCURRENCES} dates au maximum`,
+      ),
+  })
+  .superRefine((data, ctx) => {
+    // Une série d'une seule date n'est pas une série : c'est probablement le
+    // rythme qui a été oublié.
+    if (
+      data.recurrence !== FORMATION_RECURRENCE.AUCUNE &&
+      data.occurrences < 2
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["occurrences"],
+        message: "Au moins deux dates pour une formation qui se répète",
+      });
+    }
+  });
+
+export type formationScheduleSchemaType = z.infer<
+  typeof formationScheduleSchema
+>;
