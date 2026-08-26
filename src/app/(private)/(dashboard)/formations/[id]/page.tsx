@@ -17,6 +17,7 @@ import {
 } from "@/lib/formationsGrist";
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
 import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
+import { FormationOtherDates } from "@/components/Formation/FormationOtherDates";
 import {
   canManageFormation,
   isFormationAnimator,
@@ -292,6 +293,14 @@ export default async function Page(props: Readonly<Props>) {
             </p>
           </div>
         </div>
+        {!formation.isELearning && (
+          <FormationOtherDates
+            // La première date est déjà celle de la carte ci-dessus.
+            sessions={(formation.sessions ?? []).slice(1)}
+            inscriptions={inscriptions}
+            isAnimator={isAnimator}
+          />
+        )}
         {canManage && (
           <FormationManagePanel
             statut={formation.statut}
