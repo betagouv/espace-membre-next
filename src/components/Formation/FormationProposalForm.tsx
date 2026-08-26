@@ -149,25 +149,13 @@ export const FormationProposalForm = ({
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
-            label="Date de début de formation (facultatif)"
-            hintText="Si la date est déjà fixée. Une session sera créée avec la formation."
+            label="Date de la formation (facultatif)"
+            hintText="Si la date est déjà fixée. La fin est déduite de la durée."
             state={errors.dateDebut ? "error" : "default"}
             stateRelatedMessage={errors.dateDebut?.message}
             nativeInputProps={{
               type: "datetime-local",
               ...register("dateDebut", { setValueAs: emptyAsUndefined }),
-            }}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            className={fr.cx("fr-mb-0")}
-            label="Date de fin de formation (facultatif)"
-            state={errors.dateFin ? "error" : "default"}
-            stateRelatedMessage={errors.dateFin?.message}
-            nativeInputProps={{
-              type: "datetime-local",
-              ...register("dateFin", { setValueAs: emptyAsUndefined }),
             }}
           />
         </div>

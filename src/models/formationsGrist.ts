@@ -43,6 +43,7 @@ export const FORMATION_AUDIENCES: string[] = [
 // Durées proposées par le formulaire (reprises d'Airtable), convertie en
 // heures pour la colonne numérique Grist Formats.Duree.
 export const FORMATION_DUREES: { label: string; hours: number }[] = [
+  { label: "30 min", hours: 0.5 },
   { label: "1h", hours: 1 },
   { label: "1h30", hours: 1.5 },
   { label: "2h", hours: 2 },

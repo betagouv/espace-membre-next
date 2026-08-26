@@ -38,7 +38,6 @@ export const formationProposalSchema = z
       .min(1, "Choisis au moins une audience"),
     // Si la date est déjà fixée : une session est créée avec la formation.
     dateDebut: z.string().optional(),
-    dateFin: z.string().optional(),
     lienVisioAdmin: optionalUrl,
     duree: z
       .enum(FORMATION_DUREES.map((d) => d.label) as [string, ...string[]], {
@@ -94,24 +93,6 @@ export const formationProposalSchema = z
         });
       }
     }
-    if (data.dateFin && !data.dateDebut) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["dateDebut"],
-        message: "Indique aussi la date de début",
-      });
-    }
-    if (
-      data.dateDebut &&
-      data.dateFin &&
-      new Date(data.dateFin) <= new Date(data.dateDebut)
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["dateFin"],
-        message: "La fin doit être après le début",
-      });
-    }
   });
 
 export type formationProposalSchemaType = z.infer<
@@ -125,7 +106,7 @@ export type formationProposalSchemaType = z.infer<
  */
 export const formationUpdateSchema = formationProposalSchema
   .innerType()
-  .omit({ image: true, dateDebut: true, dateFin: true })
+  .omit({ image: true, dateDebut: true })
   .extend({
     formationId: z.string().min(1),
   });

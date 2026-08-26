@@ -133,14 +133,10 @@ export const submitFormationProposal = withErrorHandling(
         [GRIST_SESSIONS_COLUMNS.debut]: parisDateToEpochSeconds(
           parsed.dateDebut,
         ),
-        // La fin est déduite par Grist : on lui donne la durée en heures, prise
-        // de l'écart entre les deux dates si elles sont fournies, sinon de la
-        // durée choisie dans la liste.
-        [GRIST_SESSIONS_COLUMNS.dureeIndicative]: parsed.dateFin
-          ? (parisDateToEpochSeconds(parsed.dateFin) -
-              parisDateToEpochSeconds(parsed.dateDebut)) /
-            3600
-          : dureeHeures,
+        // `Fin` est une colonne formule dans Grist : elle se déduit du début
+        // et de la durée. La durée choisie dans la liste en est la seule
+        // source, il n'y a pas de date de fin à saisir.
+        [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
         [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
         [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
         [GRIST_SESSIONS_COLUMNS.organisateur]: referentRowId,
