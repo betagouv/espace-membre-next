@@ -9,6 +9,27 @@ import {
 
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
+/**
+ * Récupère le fichier, qu'il arrive en File ou en FileList.
+ *
+ * Un champ fichier passé à react-hook-form rend une FileList : la validation
+ * tourne donc sur une FileList côté navigateur, et sur un File côté serveur.
+ * `FileList` n'existe pas sous Node, d'où le test par la forme plutôt que par
+ * le type.
+ */
+export const getImageFile = (value: unknown): File | undefined => {
+  if (value instanceof File) return value;
+  if (
+    value &&
+    typeof value === "object" &&
+    "length" in value &&
+    (value as FileList)[0] instanceof File
+  ) {
+    return (value as FileList)[0];
+  }
+  return undefined;
+};
+
 const optionalUrl = z
   .string()
   .trim()
@@ -87,8 +108,8 @@ export const formationProposalSchema = z
   .superRefine((data, ctx) => {
     requireVisioWhenRemote(data, ctx);
 
-    const image = data.image;
-    if (!(image instanceof File) || image.size === 0) {
+    const image = getImageFile(data.image);
+    if (!image || image.size === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["image"],

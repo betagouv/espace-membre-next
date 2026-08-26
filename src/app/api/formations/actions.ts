@@ -17,6 +17,7 @@ import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import {
   formationProposalSchema,
   formationProposalSchemaType,
+  getImageFile,
   formationUpdateSchema,
   formationUpdateSchemaType,
 } from "@/models/actions/formationProposal";
@@ -81,9 +82,9 @@ export const submitFormationProposal = withErrorHandling(
 
     // L'illustration passe par le magasin de pièces jointes du document : la
     // colonne Image ne stocke que des identifiants.
-    const image = parsed.image;
+    const image = getImageFile(parsed.image);
     const attachmentIds =
-      image instanceof File && image.size > 0
+      image && image.size > 0
         ? await uploadGristAttachments(config.GRIST_FORMATIONS_DOC_ID, [image])
         : [];
     const dureeHeures =
