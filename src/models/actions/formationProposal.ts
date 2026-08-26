@@ -73,33 +73,21 @@ export const formationProposalSchema = z
         errorMap: () => ({ message: "La durée est requise" }),
       },
     ),
-    // Champ vidé -> undefined côté formulaire (setValueAs), jamais "". Requis :
-    // sans limite, la liste d'attente ne se déclenche jamais.
+    // Champ vidé -> undefined côté formulaire (setValueAs), jamais "".
+    // Facultative : sans limite, tout le monde est inscrit et la liste
+    // d'attente ne se déclenche jamais.
     capacite: z.coerce
-      .number({
-        required_error: "La limite de participants est requise",
-        // Le champ est de type nombre : le navigateur refuse déjà les lettres.
-        // Un type invalide ne peut donc venir que d'un champ laissé vide.
-        invalid_type_error: "La limite de participants est requise",
-      })
+      .number({ invalid_type_error: "Indique un nombre de places" })
       .int("Indique un nombre entier")
       .min(1, "Au moins une place")
-      .max(500, "Nombre trop élevé"),
+      .max(500, "Nombre trop élevé")
+      .optional(),
     lienSupport: optionalUrl,
     lienFeedback: optionalUrl,
     animateur: z
       .string({ required_error: "Le nom de l'animateur·ice est requis" })
       .trim()
       .min(1, "Le nom de l'animateur·ice est requis"),
-    // L'identifiant Tchap technique (@prenom.nom-beta.gouv.fr:agent.dinum...)
-    // est imbuvable a saisir : on demande l'adresse, qui suffit a retrouver la
-    // personne et a la contacter.
-    animateurTchap: z
-      .string()
-      .trim()
-      .email("Adresse invalide")
-      .or(z.literal(""))
-      .optional(),
     emailOrganisateur: z
       .string({ required_error: "L'email de l'organisateur·trice est requis" })
       .trim()
@@ -203,13 +191,11 @@ export const formationScheduleSchema = z
       },
     ),
     capacite: z.coerce
-      .number({
-        required_error: "La limite de participants est requise",
-        invalid_type_error: "La limite de participants est requise",
-      })
+      .number({ invalid_type_error: "Indique un nombre de places" })
       .int("Indique un nombre entier")
       .min(1, "Au moins une place")
-      .max(500, "Nombre trop élevé"),
+      .max(500, "Nombre trop élevé")
+      .optional(),
     lienVisioAdmin: optionalUrl,
     frequence: z.nativeEnum(FORMATION_FREQUENCE, {
       errorMap: () => ({ message: "Le rythme est requis" }),
@@ -266,13 +252,11 @@ export const formationSessionUpdateSchema = z.object({
     errorMap: () => ({ message: "La durée est requise" }),
   }),
   capacite: z.coerce
-    .number({
-      required_error: "La limite de participants est requise",
-      invalid_type_error: "La limite de participants est requise",
-    })
+    .number({ invalid_type_error: "Indique un nombre de places" })
     .int("Indique un nombre entier")
     .min(1, "Au moins une place")
-    .max(500, "Nombre trop élevé"),
+    .max(500, "Nombre trop élevé")
+    .optional(),
   lienVisioAdmin: optionalUrl,
 });
 

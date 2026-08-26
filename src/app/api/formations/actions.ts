@@ -158,7 +158,9 @@ export const submitFormationProposal = withErrorHandling(
       [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
       [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
       [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
-      [GRIST_FORMATIONS_COLUMNS.animateurTchap]: parsed.animateurTchap ?? "",
+      // Plus demandée au formulaire : l'adresse de qui dépose sert à
+      // reconnaître l'animateur·ice, comme le faisait la valeur pré-remplie.
+      [GRIST_FORMATIONS_COLUMNS.animateurTchap]: session.user.email ?? "",
       [GRIST_FORMATIONS_COLUMNS.emailOrganisateur]: parsed.emailOrganisateur,
       [GRIST_FORMATIONS_COLUMNS.image]: attachmentIds.length
         ? ["L", ...attachmentIds]
@@ -176,9 +178,7 @@ export const submitFormationProposal = withErrorHandling(
     // ghid ; introuvable, la session reste sans référence, le texte du Format
     // fait foi.
     if (parsed.dateDebut) {
-      const animateurRowId = await findMembreRowId(
-        parsed.animateurTchap?.split("@")[0] || undefined,
-      );
+      const animateurRowId = await findMembreRowId(session.user.id);
       const sessionFields: GristRecordFields = {
         [GRIST_SESSIONS_COLUMNS.format]: formatRowId,
         // Les colonnes DateTime attendent des secondes epoch.
@@ -425,7 +425,7 @@ export const validateFormation = withErrorHandling(
 
     if (!(await isAnimationTeamMember(session.user))) {
       throw new AuthorizationError(
-        "Seule l'équipe d'animation peut valider une formation.",
+        "Seule l'équipe animation peut valider une formation.",
       );
     }
 
@@ -492,7 +492,7 @@ export const scheduleFormationSessions = withErrorHandling(
     }
     if (!(await canManageFormation(session.user, formation))) {
       throw new AuthorizationError(
-        "Seule l'équipe d'animation ou la personne qui anime peut programmer des dates.",
+        "Seule l'équipe animation ou la personne qui anime peut programmer des dates.",
       );
     }
 
@@ -526,7 +526,7 @@ export const scheduleFormationSessions = withErrorHandling(
         // durée.
         [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
         [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
-        [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite,
+        [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
         [GRIST_SESSIONS_COLUMNS.organisateur]: organisateurRowId,
         [GRIST_SESSIONS_COLUMNS.animateurIce]: animateurRowId
           ? ["L", animateurRowId]
@@ -588,7 +588,7 @@ export const updateFormationSession = withErrorHandling(
     }
     if (!(await canManageFormation(session.user, formation))) {
       throw new AuthorizationError(
-        "Seule l'équipe d'animation ou la personne qui anime peut modifier cette date.",
+        "Seule l'équipe animation ou la personne qui anime peut modifier cette date.",
       );
     }
 
@@ -611,7 +611,7 @@ export const updateFormationSession = withErrorHandling(
 
     // La capacité vient de changer : les inscriptions déjà prises doivent être
     // reclassées, sans quoi la liste d'attente resterait figée.
-    await syncSessionWaitingList(sessionRowId, parsed.capacite);
+    await syncSessionWaitingList(sessionRowId, parsed.capacite ?? null);
 
     revalidatePath(`/formations/${formatRowId}`);
     revalidatePath("/formations");
@@ -674,7 +674,7 @@ export const deleteFormationSession = withErrorHandling(
     }
     if (!(await canManageFormation(session.user, formation))) {
       throw new AuthorizationError(
-        "Seule l'équipe d'animation ou la personne qui anime peut supprimer cette date.",
+        "Seule l'équipe animation ou la personne qui anime peut supprimer cette date.",
       );
     }
 
@@ -725,7 +725,7 @@ export const updateFormation = withErrorHandling(
     }
     if (!(await canManageFormation(session.user, formation))) {
       throw new AuthorizationError(
-        "Seule l'équipe d'animation ou la personne qui anime peut modifier cette formation.",
+        "Seule l'équipe animation ou la personne qui anime peut modifier cette formation.",
       );
     }
 
@@ -753,8 +753,6 @@ export const updateFormation = withErrorHandling(
             [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
             [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
             [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
-            [GRIST_FORMATIONS_COLUMNS.animateurTchap]:
-              parsed.animateurTchap ?? "",
             [GRIST_FORMATIONS_COLUMNS.emailOrganisateur]:
               parsed.emailOrganisateur,
           },

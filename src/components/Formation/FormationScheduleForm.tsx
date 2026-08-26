@@ -211,7 +211,8 @@ export const FormationScheduleForm = ({
       )}
 
       <Input
-        label="Limite de participants"
+        label="Limite de participants (facultatif)"
+        hintText="Sans limite, les inscriptions restent ouvertes."
         nativeInputProps={{
           type: "number",
           min: 1,

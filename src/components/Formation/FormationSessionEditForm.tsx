@@ -112,8 +112,8 @@ export const FormationSessionEditForm = ({
       />
 
       <Input
-        label="Limite de participants"
-        hintText="Baisser la limite bascule les dernières inscriptions sur la liste d'attente."
+        label="Limite de participants (facultatif)"
+        hintText="Baisser la limite bascule les dernières inscriptions sur la liste d'attente. Vide, les inscriptions restent ouvertes."
         nativeInputProps={{
           type: "number",
           min: 1,

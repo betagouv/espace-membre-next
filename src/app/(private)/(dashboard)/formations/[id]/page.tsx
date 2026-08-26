@@ -364,7 +364,6 @@ export default async function Page(props: Readonly<Props>) {
               lienSupport: formation.lienSupport ?? "",
               lienFeedback: formation.lienFeedback ?? "",
               animateur: formation.animator ?? "",
-              animateurTchap: formation.animatorTchap ?? "",
               emailOrganisateur: formation.animatorEmail ?? "",
             }}
           />

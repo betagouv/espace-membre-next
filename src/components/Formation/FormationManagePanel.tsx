@@ -181,7 +181,7 @@ export const FormationManagePanel = ({
                   </Button>
                 </>
               ) : (
-                "Elle sera visible au catalogue une fois validée par l'équipe d'animation."
+                "Elle sera visible au catalogue une fois validée par l'équipe animation."
               )
             }
           />
@@ -213,10 +213,6 @@ export const FormationManagePanel = ({
                   value={defaultValues.audience?.join(", ")}
                 />
                 <Detail label="Animateur·ice" value={defaultValues.animateur} />
-                <Detail
-                  label="Adresse Tchap"
-                  value={defaultValues.animateurTchap}
-                />
                 <Detail
                   label="Email organisateur·trice"
                   value={defaultValues.emailOrganisateur}
@@ -341,7 +337,7 @@ export const FormationManagePanel = ({
               <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
                 <Input
                   className={fr.cx("fr-mb-0")}
-                  label="Limite de participants par défaut"
+                  label="Limite de participants par défaut (facultatif)"
                   hintText="Proposée pour les prochaines dates. Chaque date programmée garde la sienne, modifiable dans sa propre fiche."
                   state={errors.capacite ? "error" : "default"}
                   stateRelatedMessage={errors.capacite?.message}
@@ -394,18 +390,6 @@ export const FormationManagePanel = ({
               state={errors.animateur ? "error" : "default"}
               stateRelatedMessage={errors.animateur?.message}
               nativeInputProps={{ ...register("animateur") }}
-            />
-            <Input
-              label="Adresse Tchap de l'animateur·ice"
-              state={errors.animateurTchap ? "error" : "default"}
-              stateRelatedMessage={errors.animateurTchap?.message}
-              nativeInputProps={{
-                type: "email",
-                placeholder: "prenom.nom@beta.gouv.fr",
-                ...register("animateurTchap", {
-                  setValueAs: emptyAsUndefined,
-                }),
-              }}
             />
             <Input
               label="Email de l'organisateur·trice"

@@ -74,7 +74,7 @@ export const FormationProposalForm = ({
         title: isAnimation ? "Formation créée" : "Proposition envoyée",
         message: isAnimation
           ? "La formation est ajoutée au catalogue. Tu peux maintenant planifier des sessions dans Grist."
-          : "Merci ! L'équipe d'animation va examiner ta proposition et revenir vers toi.",
+          : "Merci ! L'équipe animation va examiner ta proposition et revenir vers toi.",
         type: "success",
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -206,7 +206,8 @@ export const FormationProposalForm = ({
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
-            label="Limite de participants"
+            label="Limite de participants (facultatif)"
+            hintText="Sans limite, les inscriptions restent ouvertes."
             state={errors.capacite ? "error" : "default"}
             stateRelatedMessage={errors.capacite?.message}
             nativeInputProps={{
@@ -250,18 +251,6 @@ export const FormationProposalForm = ({
         state={errors.animateur ? "error" : "default"}
         stateRelatedMessage={errors.animateur?.message}
         nativeInputProps={{ ...register("animateur") }}
-      />
-
-      <Input
-        label="Adresse Tchap de l'animateur·ice (facultatif)"
-        hintText="L'adresse professionnelle utilisée sur Tchap, pour pouvoir la contacter."
-        state={errors.animateurTchap ? "error" : "default"}
-        stateRelatedMessage={errors.animateurTchap?.message}
-        nativeInputProps={{
-          type: "email",
-          placeholder: "prenom.nom@beta.gouv.fr",
-          ...register("animateurTchap", { setValueAs: emptyAsUndefined }),
-        }}
       />
 
       <Input
@@ -362,7 +351,7 @@ export const FormationProposalForm = ({
           className={fr.cx("fr-my-2w")}
           severity="info"
           small
-          description="Ta proposition sera examinée par l'équipe d'animation avant d'apparaître au catalogue."
+          description="Ta proposition sera examinée par l'équipe animation avant d'apparaître au catalogue."
         />
       )}
 

@@ -28,7 +28,6 @@ export default async function FormationProposalPage() {
   const user = await getUserBasicInfo({ uuid: session.user.uuid });
   const defaultValues = {
     animateur: user?.fullname || "",
-    animateurTchap: user?.primary_email || "",
     emailOrganisateur: user?.primary_email || user?.secondary_email || "",
   };
 
@@ -47,7 +46,7 @@ export default async function FormationProposalPage() {
       <p>
         {isAnimation
           ? "La formation sera ajoutée au catalogue, tu pourras ensuite planifier des sessions."
-          : "Tu connais un sujet et tu veux le partager avec la communauté ? Propose une formation, l'équipe d'animation reviendra vers toi."}
+          : "Tu connais un sujet et tu veux le partager avec la communauté ? Propose une formation, l'équipe animation reviendra vers toi."}
       </p>
       <FormationProposalForm
         images={images}
