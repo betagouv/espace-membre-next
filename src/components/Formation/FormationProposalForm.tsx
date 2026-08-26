@@ -198,7 +198,7 @@ export const FormationProposalForm = ({
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
-            label="Limite de participants (facultatif)"
+            label="Limite de participants"
             state={errors.capacite ? "error" : "default"}
             stateRelatedMessage={errors.capacite?.message}
             nativeInputProps={{

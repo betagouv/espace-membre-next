@@ -284,7 +284,9 @@ export default async function Page(props: Readonly<Props>) {
                 "") as formationUpdateSchemaType["modalite"],
               thematiques: formation.category ?? [],
               audience: formation.audience ?? [],
-              capacite: formation.maxSeats,
+              // La capacité est requise : les formations d'avant la règle
+              // peuvent ne pas en avoir, on repart d'une valeur modifiable.
+              capacite: formation.maxSeats ?? 1,
               // La durée est requise : à défaut de correspondance, on propose
               // la plus courte plutôt qu'un champ vide qui bloquerait l'envoi.
               duree:

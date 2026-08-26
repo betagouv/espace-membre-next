@@ -48,13 +48,18 @@ export const formationProposalSchema = z
         errorMap: () => ({ message: "La durée est requise" }),
       },
     ),
-    // Champ vidé -> undefined côté formulaire (setValueAs), jamais "".
+    // Champ vidé -> undefined côté formulaire (setValueAs), jamais "". Requis :
+    // sans limite, la liste d'attente ne se déclenche jamais.
     capacite: z.coerce
-      .number({ invalid_type_error: "Indique un nombre" })
+      .number({
+        required_error: "La limite de participants est requise",
+        // Le champ est de type nombre : le navigateur refuse déjà les lettres.
+        // Un type invalide ne peut donc venir que d'un champ laissé vide.
+        invalid_type_error: "La limite de participants est requise",
+      })
       .int("Indique un nombre entier")
       .min(1, "Au moins une place")
-      .max(500, "Nombre trop élevé")
-      .optional(),
+      .max(500, "Nombre trop élevé"),
     lienSupport: optionalUrl,
     lienFeedback: optionalUrl,
     animateur: z
