@@ -149,8 +149,8 @@ export const FormationProposalForm = ({
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
-            label="Date de la formation (facultatif)"
-            hintText="Si la date est déjà fixée. La fin est déduite de la durée."
+            label="Date de la formation"
+            hintText="La fin est déduite de la durée."
             state={errors.dateDebut ? "error" : "default"}
             stateRelatedMessage={errors.dateDebut?.message}
             nativeInputProps={{
@@ -162,7 +162,8 @@ export const FormationProposalForm = ({
       </div>
 
       <Input
-        label="Lien de visioconférence administrateur (facultatif)"
+        label="Lien de visioconférence administrateur"
+        hintText="Requis pour une formation en distanciel."
         state={errors.lienVisioAdmin ? "error" : "default"}
         stateRelatedMessage={errors.lienVisioAdmin?.message}
         nativeInputProps={{
@@ -179,7 +180,7 @@ export const FormationProposalForm = ({
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Select
             className={fr.cx("fr-mb-0")}
-            label="Durée (facultatif)"
+            label="Durée"
             state={errors.duree ? "error" : "default"}
             stateRelatedMessage={errors.duree?.message}
             nativeSelectProps={{
@@ -267,8 +268,8 @@ export const FormationProposalForm = ({
       />
 
       <Upload
-        label="Image ou bannière de la formation (facultatif)"
-        hint="Une illustration pour le catalogue. JPG ou PNG, 5 Mo maximum."
+        label="Image ou bannière de la formation"
+        hint="Elle illustre la formation au catalogue. JPG ou PNG, 5 Mo maximum."
         state={errors.image ? "error" : "default"}
         stateRelatedMessage={errors.image?.message?.toString()}
         nativeInputProps={{

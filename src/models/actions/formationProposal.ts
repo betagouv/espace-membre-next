@@ -37,13 +37,17 @@ export const formationProposalSchema = z
       .array(z.enum(FORMATION_AUDIENCES as [string, ...string[]]))
       .min(1, "Choisis au moins une audience"),
     // Si la date est déjà fixée : une session est créée avec la formation.
-    dateDebut: z.string().optional(),
+    dateDebut: z
+      .string({ required_error: "La date est requise" })
+      .trim()
+      .min(1, "La date est requise"),
     lienVisioAdmin: optionalUrl,
-    duree: z
-      .enum(FORMATION_DUREES.map((d) => d.label) as [string, ...string[]], {
-        errorMap: () => ({ message: "Durée inconnue" }),
-      })
-      .optional(),
+    duree: z.enum(
+      FORMATION_DUREES.map((d) => d.label) as [string, ...string[]],
+      {
+        errorMap: () => ({ message: "La durée est requise" }),
+      },
+    ),
     // Champ vidé -> undefined côté formulaire (setValueAs), jamais "".
     capacite: z.coerce
       .number({ invalid_type_error: "Indique un nombre" })
@@ -71,27 +75,35 @@ export const formationProposalSchema = z
       .trim()
       .email("Email invalide"),
     gestionInscriptions: z.boolean().optional(),
-    // Illustration facultative. Le type File n'existe pas dans zod : on valide
-    // la taille et le type dans le superRefine ci-dessous.
-    image: z.any().optional(),
+    // Le type File n'existe pas dans zod : présence, type et taille sont
+    // validés dans le superRefine ci-dessous.
+    image: z.any(),
   })
   .superRefine((data, ctx) => {
+    requireVisioWhenRemote(data, ctx);
+
     const image = data.image;
-    if (image instanceof File && image.size > 0) {
-      if (!image.type.startsWith("image/")) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["image"],
-          message: "Le fichier doit être une image",
-        });
-      }
-      if (image.size > MAX_IMAGE_BYTES) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["image"],
-          message: "L'image ne doit pas dépasser 5 Mo",
-        });
-      }
+    if (!(image instanceof File) || image.size === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["image"],
+        message: "Une image est requise",
+      });
+      return;
+    }
+    if (!image.type.startsWith("image/")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["image"],
+        message: "Le fichier doit être une image",
+      });
+    }
+    if (image.size > MAX_IMAGE_BYTES) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["image"],
+        message: "L'image ne doit pas dépasser 5 Mo",
+      });
     }
   });
 
@@ -104,11 +116,35 @@ export type formationProposalSchemaType = z.infer<
  * l'image ni les dates : la session se gère à part, et remplacer l'illustration
  * demande un nouvel envoi de fichier.
  */
+/**
+ * Le lien de visioconférence n'a de sens qu'à distance, mais il y devient
+ * indispensable : sans lui, personne ne sait où se connecter.
+ */
+const requireVisioWhenRemote = (
+  data: { modalite?: FORMATION_MODALITE; lienVisioAdmin?: string },
+  ctx: z.RefinementCtx,
+) => {
+  if (
+    data.modalite === FORMATION_MODALITE.DISTANCIEL &&
+    !data.lienVisioAdmin?.trim()
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["lienVisioAdmin"],
+      message: "Le lien de visioconférence est requis en distanciel",
+    });
+  }
+};
+
 export const formationUpdateSchema = formationProposalSchema
   .innerType()
   .omit({ image: true, dateDebut: true })
   .extend({
     formationId: z.string().min(1),
-  });
+  })
+  // `innerType()` laisse les refinements du schéma de dépôt derrière lui : la
+  // règle du lien visio doit être rappelée ici, sinon elle ne s'appliquerait
+  // qu'à la création.
+  .superRefine(requireVisioWhenRemote);
 
 export type formationUpdateSchemaType = z.infer<typeof formationUpdateSchema>;

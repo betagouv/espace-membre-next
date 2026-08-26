@@ -285,8 +285,11 @@ export default async function Page(props: Readonly<Props>) {
               thematiques: formation.category ?? [],
               audience: formation.audience ?? [],
               capacite: formation.maxSeats,
-              duree: FORMATION_DUREES.find((d) => d.hours === formation.duree)
-                ?.label,
+              // La durée est requise : à défaut de correspondance, on propose
+              // la plus courte plutôt qu'un champ vide qui bloquerait l'envoi.
+              duree:
+                FORMATION_DUREES.find((d) => d.hours === formation.duree)
+                  ?.label ?? FORMATION_DUREES[0].label,
               lienVisioAdmin: formation.lienAdmin ?? "",
               lienSupport: formation.lienSupport ?? "",
               lienFeedback: formation.lienFeedback ?? "",
