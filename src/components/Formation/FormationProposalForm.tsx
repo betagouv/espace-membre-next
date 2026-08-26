@@ -27,6 +27,7 @@ import {
   FORMATION_THEMATIQUES,
 } from "@/models/formationsGrist";
 import { routes } from "@/lib/routes";
+import { FormationImagePicker } from "@/components/Formation/FormationImagePicker";
 import { FormationImage } from "@/lib/formationsGrist";
 
 // Un input number ou url vidé renvoie "" : on le transforme en undefined pour
@@ -264,74 +265,26 @@ export const FormationProposalForm = ({
         }}
       />
 
-      <fieldset className={fr.cx("fr-fieldset")}>
-        <legend className={fr.cx("fr-fieldset__legend")}>
+      <div className={fr.cx("fr-input-group")}>
+        <p className={fr.cx("fr-label", "fr-mb-1v")}>
           Image ou bannière de la formation
           <span className={fr.cx("fr-hint-text")}>
-            Elle illustre la formation au catalogue.
+            Elle illustre la formation au catalogue. Choisis-en une, ou envoie
+            la tienne.
           </span>
-        </legend>
+        </p>
 
-        {images.length > 0 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(9rem, 1fr))",
-              gap: "0.75rem",
-              marginBottom: "1rem",
-            }}
-          >
-            {images.map((image) => {
-              const choisie = imageId === image.id;
-              return (
-                <button
-                  type="button"
-                  key={image.id}
-                  aria-pressed={choisie}
-                  onClick={() =>
-                    // Recliquer sur l'illustration choisie la retire : c'est le
-                    // seul moyen de revenir à l'envoi d'un fichier.
-                    setValue("imageId", choisie ? "" : image.id, {
-                      shouldValidate: true,
-                    })
-                  }
-                  style={{
-                    padding: 0,
-                    border: choisie
-                      ? "3px solid var(--border-active-blue-france)"
-                      : "1px solid var(--border-default-grey)",
-                    background: "none",
-                    cursor: "pointer",
-                    textAlign: "left",
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={image.url}
-                    alt={image.nom}
-                    style={{
-                      width: "100%",
-                      height: "5.5rem",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                  <span
-                    className={fr.cx("fr-text--xs", "fr-px-1v", "fr-py-1v")}
-                    style={{ display: "block" }}
-                  >
-                    {image.nom}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
+        <FormationImagePicker
+          images={images}
+          value={imageId}
+          onChange={(id) => setValue("imageId", id, { shouldValidate: true })}
+        />
 
         <input type="hidden" {...register("imageId")} />
 
         {!imageId && (
           <Upload
+            className={fr.cx("fr-mt-2w")}
             label={
               images.length > 0 ? "Ou envoie la tienne" : "Envoie une image"
             }
@@ -344,7 +297,7 @@ export const FormationProposalForm = ({
             }}
           />
         )}
-      </fieldset>
+      </div>
 
       {!isAnimation && (
         <Alert
