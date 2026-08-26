@@ -23,7 +23,10 @@ import {
   validateFormation,
 } from "@/app/api/formations/actions";
 import { FormationScheduleForm } from "@/components/Formation/FormationScheduleForm";
-import { GristParticipant } from "@/lib/formationsGrist";
+import {
+  FormationSessionsParticipants,
+  ParticipantAvecFiche,
+} from "@/components/Formation/FormationSessionsParticipants";
 import {
   formationUpdateSchema,
   formationUpdateSchemaType,
@@ -65,7 +68,7 @@ const Detail = ({
  */
 export const FormationManagePanel = ({
   defaultValues,
-  participants,
+  participantsBySession,
   statut,
   canValidate = false,
   sessions = [],
@@ -73,7 +76,7 @@ export const FormationManagePanel = ({
   defaultValues: formationUpdateSchemaType;
   // `profileUrl` est calculé côté serveur : seules les personnes présentes dans
   // l'annuaire ont une fiche vers laquelle pointer.
-  participants: (GristParticipant & { profileUrl?: string })[];
+  participantsBySession: Record<string, ParticipantAvecFiche[]>;
   statut?: string;
   // Dates à venir : une formation peut être programmée plusieurs fois.
   sessions?: {
@@ -141,9 +144,6 @@ export const FormationManagePanel = ({
       });
     }
   };
-
-  const inscrits = participants.filter((p) => !p.onWaitingList);
-  const enAttente = participants.filter((p) => p.onWaitingList);
 
   return (
     <div className={fr.cx("fr-mt-4w")}>
@@ -231,63 +231,12 @@ export const FormationManagePanel = ({
             </table>
 
             <p className={fr.cx("fr-mt-3w", "fr-mb-1w")}>
-              <strong>
-                Participants ({inscrits.length}
-                {enAttente.length ? ` + ${enAttente.length} en attente` : ""})
-              </strong>
-            </p>
-            {participants.length === 0 ? (
-              <p className={fr.cx("fr-hint-text")}>Personne inscrit·e.</p>
-            ) : (
-              <ul className={fr.cx("fr-mb-0")}>
-                {participants.map((participant, index) => (
-                  <li key={`${participant.email}-${index}`}>
-                    {participant.profileUrl ? (
-                      <Link href={participant.profileUrl}>
-                        {participant.name}
-                      </Link>
-                    ) : (
-                      participant.name
-                    )}
-                    {participant.email ? ` — ${participant.email}` : ""}{" "}
-                    {participant.onWaitingList && (
-                      <Badge as="span" small>
-                        liste d&apos;attente
-                      </Badge>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <p className={fr.cx("fr-mt-3w", "fr-mb-1w")}>
               <strong>Dates programmées ({sessions.length})</strong>
             </p>
-            {sessions.length === 0 ? (
-              <p className={fr.cx("fr-hint-text")}>Aucune date à venir.</p>
-            ) : (
-              <ul className={fr.cx("fr-mb-0")}>
-                {sessions.map((session) => (
-                  <li key={session.id}>
-                    {session.start
-                      ? // Fuseau explicite : le serveur tourne en UTC, le
-                        // navigateur à Paris.
-                        formatInTimeZone(
-                          session.start,
-                          "Europe/Paris",
-                          "EEEE d MMMM yyyy à HH'h'mm",
-                          { locale: frLocale },
-                        )
-                      : "Date inconnue"}
-                    {session.maxSeats
-                      ? ` — ${
-                          session.maxSeats - (session.availableSeats ?? 0)
-                        }/${session.maxSeats} inscrit·es`
-                      : ""}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <FormationSessionsParticipants
+              sessions={sessions}
+              participantsBySession={participantsBySession}
+            />
 
             <Button
               className={fr.cx("fr-mt-2w")}

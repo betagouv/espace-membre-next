@@ -15,7 +15,7 @@ import { routes } from "@/lib/routes";
 import {
   fetchGristFormationById,
   fetchGristInscriptions,
-  fetchGristSessionParticipants,
+  fetchGristParticipantsForSessions,
 } from "@/lib/formationsGrist";
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
 import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
@@ -149,10 +149,14 @@ export default async function Page(props: Readonly<Props>) {
   // anime. Le droit est recalculé côté serveur, l'affichage n'en est que la
   // conséquence.
   const isAnimator = isFormationAnimator(session.user, formation);
-  const participants =
-    canManage && formation.sessionId
-      ? await fetchGristSessionParticipants(formation.sessionId)
-      : [];
+  // Toutes les dates, pas seulement la plus proche : le panneau de gestion
+  // déplie les inscrits date par date.
+  const participantsBySession = canManage
+    ? await fetchGristParticipantsForSessions(
+        (formation.sessions ?? []).map((s) => s.id),
+      )
+    : {};
+  const participants = Object.values(participantsBySession).flat();
 
   // Un lien vers une fiche inexistante est pire que pas de lien : on ne relie
   // que les personnes présentes dans l'annuaire de l'espace membre. Les autres
@@ -171,13 +175,19 @@ export default async function Page(props: Readonly<Props>) {
         ).map((user) => user.username)
       : [],
   );
-  const participantsAvecFiche = participants.map((participant) => ({
-    ...participant,
-    profileUrl:
-      participant.ghid && knownGhids.has(participant.ghid)
-        ? routes.communityMember({ username: participant.ghid })
-        : undefined,
-  }));
+  const ficheUrl = (ghid?: string) =>
+    ghid && knownGhids.has(ghid)
+      ? routes.communityMember({ username: ghid })
+      : undefined;
+  const participantsAvecFiche = Object.fromEntries(
+    Object.entries(participantsBySession).map(([sessionId, liste]) => [
+      sessionId,
+      liste.map((participant) => ({
+        ...participant,
+        profileUrl: ficheUrl(participant.ghid),
+      })),
+    ]),
+  );
 
   const dbUser = userInfosToModel(
     await getUserInfos({
@@ -333,7 +343,7 @@ export default async function Page(props: Readonly<Props>) {
             statut={formation.statut}
             canValidate={isAnimation}
             sessions={formation.sessions ?? []}
-            participants={participantsAvecFiche}
+            participantsBySession={participantsAvecFiche}
             defaultValues={{
               formationId: formation.id,
               titre: formation.name,

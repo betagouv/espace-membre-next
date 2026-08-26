@@ -315,23 +315,29 @@ const inscriptionOrder = (inscription: GristRow): number => {
   const parsed = Date.parse(raw.replace(" ", "T"));
   return Number.isNaN(parsed) ? 0 : parsed;
 };
-
 /**
- * Participants d'une session, pour l'animateur·ice et l'équipe d'animation.
- * Le nom vient de la table Membres, l'email de l'inscription.
+ * Participants de plusieurs sessions à la fois.
+ *
+ * Une formation peut avoir une dizaine de dates : les interroger une par une
+ * ferait autant d'allers-retours, plus une lecture de la table Membres à chaque
+ * fois. Ici tout tient en deux appels.
+ *
+ * @returns les participants par identifiant de session, dans l'ordre
+ * d'inscription.
  */
-export async function fetchGristSessionParticipants(
-  sessionId: string,
-): Promise<GristParticipant[]> {
-  if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) return [];
+export async function fetchGristParticipantsForSessions(
+  sessionIds: string[],
+): Promise<Record<string, GristParticipant[]>> {
+  if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) return {};
+  if (sessionIds.length === 0) return {};
   const docId = config.GRIST_FORMATIONS_DOC_ID;
 
   const inscriptions = await getGristRecords(
     docId,
     config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
-    { [GRIST_INSCRIPTIONS_COLUMNS.session]: [Number(sessionId)] },
+    { [GRIST_INSCRIPTIONS_COLUMNS.session]: sessionIds.map(Number) },
   );
-  if (inscriptions.length === 0) return [];
+  if (inscriptions.length === 0) return {};
 
   // La table Membres compte plusieurs milliers de lignes : on la lit une fois
   // et on résout les références en mémoire.
@@ -349,16 +355,28 @@ export async function fetchGristSessionParticipants(
     ]),
   );
 
-  return inscriptions.map((inscription) => {
+  const parSession: Record<string, GristParticipant[]> = {};
+  // L'identifiant de ligne croît avec les inscriptions : il donne l'ordre
+  // d'arrivée, celui de la liste d'attente.
+  for (const inscription of [...inscriptions].sort((a, b) => a.id - b.id)) {
+    const sessionId = String(
+      inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.session],
+    );
     const membre = membreByRowId.get(
       Number(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]),
     );
-    return {
-      name: membre?.name || "Membre inconnu",
-      ghid: membre?.ghid,
-      email: String(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.email] ?? ""),
-      onWaitingList:
-        !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
-    };
-  });
+    parSession[sessionId] = [
+      ...(parSession[sessionId] ?? []),
+      {
+        name: membre?.name || "Membre inconnu",
+        ghid: membre?.ghid,
+        email: String(
+          inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.email] ?? "",
+        ),
+        onWaitingList:
+          !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+      },
+    ];
+  }
+  return parSession;
 }
