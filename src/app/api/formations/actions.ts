@@ -8,7 +8,10 @@ import {
   canManageFormation,
   isFormationAnimator,
 } from "@/lib/canManageFormation";
-import { fetchGristFormationById } from "@/lib/formationsGrist";
+import {
+  fetchGristFormationById,
+  syncSessionWaitingList,
+} from "@/lib/formationsGrist";
 import {
   addGristRecords,
   getGristRecords,
@@ -354,6 +357,13 @@ export const updateFormation = withErrorHandling(
             },
           },
         ],
+      );
+
+      // Changer la capacité ne suffit pas : les inscriptions déjà prises
+      // gardent le drapeau posé le jour de l'inscription. On les reclasse.
+      await syncSessionWaitingList(
+        Number(formation.sessionId),
+        parsed.capacite,
       );
     }
 

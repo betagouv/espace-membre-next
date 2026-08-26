@@ -1,4 +1,8 @@
-import { getGristRecords, GristRecordFields } from "@/lib/grist";
+import {
+  getGristRecords,
+  GristRecordFields,
+  updateGristRecords,
+} from "@/lib/grist";
 import { Formation } from "@/models/formation";
 import {
   FORMATION_MODALITE,
@@ -174,6 +178,101 @@ export type GristParticipant = {
   name: string;
   email: string;
   onWaitingList: boolean;
+};
+
+/**
+ * Remet la liste d'attente d'accord avec la capacité de la session.
+ *
+ * La capacité peut bouger après coup : la baisser doit faire basculer les
+ * dernières personnes inscrites sur la liste d'attente, la remonter doit
+ * repêcher celles qui y patientent. Sans ce recalcul, le drapeau resterait
+ * figé à ce qu'il valait au moment de l'inscription.
+ *
+ * L'ordre d'arrivée fait foi : premier·e inscrit·e, premier·e servi·e.
+ *
+ * @returns le nombre de places gagnées et perdues, pour l'affichage.
+ */
+export async function syncSessionWaitingList(
+  sessionId: number,
+  capacite: number | null | undefined,
+): Promise<{ promoted: number; demoted: number }> {
+  if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+    return { promoted: 0, demoted: 0 };
+  }
+  const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+  const inscriptions = await getGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+    { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionId] },
+  );
+  if (inscriptions.length === 0) return { promoted: 0, demoted: 0 };
+
+  const changed = computeWaitingListChanges(inscriptions, capacite);
+  if (changed.length === 0) return { promoted: 0, demoted: 0 };
+
+  await updateGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+    changed.map(({ id, shouldWait }) => ({
+      id,
+      fields: {
+        [GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente]: shouldWait,
+      },
+    })),
+  );
+
+  return {
+    promoted: changed.filter(({ shouldWait }) => !shouldWait).length,
+    demoted: changed.filter(({ shouldWait }) => shouldWait).length,
+  };
+}
+
+/**
+ * Inscriptions dont le drapeau « liste d'attente » ne correspond plus à la
+ * capacité, avec la valeur qu'il devrait prendre.
+ *
+ * Séparée de l'écriture Grist pour rester testable : c'est du calcul pur.
+ */
+export const computeWaitingListChanges = (
+  inscriptions: GristRow[],
+  capacite: number | null | undefined,
+): { id: number; shouldWait: boolean }[] => {
+  const ordered = [...inscriptions].sort(
+    (a, b) =>
+      inscriptionOrder(a) - inscriptionOrder(b) ||
+      // `created_at` est identique pour des inscriptions rapprochées (et pour
+      // les lignes importées) : l'identifiant de ligne, croissant, tranche.
+      a.id - b.id,
+  );
+
+  // Capacité absente ou nulle : pas de limite, donc pas de liste d'attente.
+  const places = capacite && capacite > 0 ? capacite : ordered.length;
+
+  return ordered
+    .map((inscription, index) => ({
+      id: inscription.id,
+      shouldWait: index >= places,
+      wasWaiting:
+        !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+    }))
+    .filter(({ shouldWait, wasWaiting }) => shouldWait !== wasWaiting)
+    .map(({ id, shouldWait }) => ({ id, shouldWait }));
+};
+
+/**
+ * Date d'inscription, en millisecondes, pour classer les inscriptions.
+ *
+ * La colonne est du texte libre et mélange deux formats : l'ISO écrit par
+ * l'application et le style PostgreSQL des lignes reprises de l'existant
+ * (« 2025-07-21 21:01:46+02:00 »). Une date illisible vaut zéro, donc la plus
+ * ancienne : en cas de doute, personne ne perd sa place.
+ */
+const inscriptionOrder = (inscription: GristRow): number => {
+  const raw = inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.createdAt];
+  if (typeof raw !== "string" || !raw) return 0;
+  const parsed = Date.parse(raw.replace(" ", "T"));
+  return Number.isNaN(parsed) ? 0 : parsed;
 };
 
 /**
