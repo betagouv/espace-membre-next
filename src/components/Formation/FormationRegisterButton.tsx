@@ -7,7 +7,10 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/navigation";
 
-import { registerToFormationSession } from "@/app/api/formations/actions";
+import {
+  registerToFormationSession,
+  unregisterFromFormationSession,
+} from "@/app/api/formations/actions";
 
 type State = "idle" | "inscrit" | "attente";
 
@@ -55,15 +58,49 @@ export const FormationRegisterButton = ({
     );
   }
 
-  if (state === "inscrit") {
+  const onUnregister = async () => {
+    setPending(true);
+    setError(null);
+    const res = await unregisterFromFormationSession(sessionId);
+    setPending(false);
+    if (!res.success) {
+      setError(res.message || "La désinscription n'a pas abouti.");
+      return;
+    }
+    setState("idle");
+    // Le compteur de places et la liste d'attente sont recalculés côté serveur.
+    router.refresh();
+  };
+
+  if (state === "inscrit" || state === "attente") {
     return (
-      <Badge severity="success" as="span">
-        Inscrit
-      </Badge>
+      <>
+        {state === "inscrit" ? (
+          <Badge severity="success" as="span">
+            Inscrit
+          </Badge>
+        ) : (
+          <Badge as="span">Inscrit sur liste d&apos;attente</Badge>
+        )}
+        <Button
+          className="fr-mt-2v"
+          priority="secondary"
+          size="small"
+          nativeButtonProps={{ type: "button", disabled: pending }}
+          onClick={onUnregister}
+        >
+          {pending ? "Désinscription en cours..." : "Me désinscrire"}
+        </Button>
+        {!!error && (
+          <Alert
+            className="fr-mt-2v"
+            severity="warning"
+            small
+            description={error}
+          />
+        )}
+      </>
     );
-  }
-  if (state === "attente") {
-    return <Badge as="span">Inscrit sur liste d&apos;attente</Badge>;
   }
 
   const onClick = async () => {

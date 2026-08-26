@@ -47,6 +47,30 @@ export async function addGristRecords(
   return data.records.map((r) => r.id);
 }
 
+// Delete records from a Grist table, by row id.
+// The REST API exposes deletion under /data/delete, which takes a bare array
+// of row ids — not the { records: [...] } envelope used elsewhere.
+export async function deleteGristRecords(
+  docId: string,
+  tableId: string,
+  rowIds: number[],
+): Promise<void> {
+  if (rowIds.length === 0) return;
+  const url = gristApiUrl(`/docs/${docId}/tables/${tableId}/data/delete`);
+  const response = await fetch(url, {
+    method: "POST",
+    headers: gristHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(rowIds),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(
+      `Grist deleteRecords a échoué (${response.status}): ${text}`,
+    );
+  }
+}
+
 // Fetch records from a Grist table, optionally filtered.
 // `filter` maps a column id to the accepted values, e.g. { ghid: ["jean.dupont"] }.
 export async function getGristRecords(

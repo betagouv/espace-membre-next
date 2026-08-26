@@ -14,6 +14,7 @@ import {
 } from "@/lib/formationsGrist";
 import {
   addGristRecords,
+  deleteGristRecords,
   getGristRecords,
   GristRecordFields,
   updateGristRecords,
@@ -316,6 +317,85 @@ export const registerToFormationSession = withErrorHandling(
  * Le statut n'est pas modifiable par ce chemin — une proposition ne se valide
  * pas elle-même.
  */
+/**
+ * Désinscription d'une session.
+ *
+ * La ligne d'inscription est supprimée, puis la liste d'attente est recalculée :
+ * une place qui se libère doit profiter à la personne qui attend depuis le plus
+ * longtemps, sans intervention manuelle.
+ */
+export const unregisterFromFormationSession = withErrorHandling(
+  async (sessionId: string) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+    const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+    const sessionRowId = Number(sessionId);
+    if (!Number.isInteger(sessionRowId) || sessionRowId <= 0) {
+      throw new BusinessError("SessionInconnue", "Cette session n'existe pas.");
+    }
+
+    // Lecture seule : se désinscrire ne justifie pas de créer une ligne
+    // Membres. Personne dans l'annuaire veut dire personne d'inscrit.
+    const membreRowId = await findMembreRowId(session.user.id);
+    if (!membreRowId) {
+      throw new BusinessError(
+        "PasInscrit",
+        "Tu n'es pas inscrit·e à cette formation.",
+      );
+    }
+
+    const inscriptions = await getGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+      { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
+    );
+    // Une même personne ne devrait avoir qu'une ligne, mais les données
+    // reprises en contiennent des doublons : on retire tout ce qui la concerne.
+    const siennes = inscriptions.filter(
+      (i) =>
+        Number(i.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]) === membreRowId,
+    );
+    if (siennes.length === 0) {
+      throw new BusinessError(
+        "PasInscrit",
+        "Tu n'es pas inscrit·e à cette formation.",
+      );
+    }
+
+    await deleteGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+      siennes.map((i) => i.id),
+    );
+
+    const [sessionRow] = (
+      await getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID)
+    ).filter((row) => row.id === sessionRowId);
+    const capacite = Number(
+      sessionRow?.fields[GRIST_SESSIONS_COLUMNS.capacite] ?? 0,
+    );
+    const { promoted } = await syncSessionWaitingList(sessionRowId, capacite);
+
+    const formatRowId = Number(
+      sessionRow?.fields[GRIST_SESSIONS_COLUMNS.format] ?? 0,
+    );
+    if (formatRowId) revalidatePath(`/formations/${formatRowId}`);
+    revalidatePath("/formations");
+
+    return { ok: true, promoted };
+  },
+);
+
 export const updateFormation = withErrorHandling(
   async (data: formationUpdateSchemaType) => {
     const session = await getServerSession(authOptions);
