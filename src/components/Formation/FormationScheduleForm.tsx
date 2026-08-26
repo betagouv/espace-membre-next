@@ -125,41 +125,55 @@ export const FormationScheduleForm = ({
         stateRelatedMessage={errors.duree?.message}
       />
 
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-        }}
-      >
-        {repeats && (
-          <Input
-            label="Toutes les"
-            nativeInputProps={{
-              type: "number",
-              min: 1,
-              max: MAX_FORMATION_INTERVALLE,
-              style: { width: "5rem" },
-              ...register("intervalle", {
+      {/*
+        Le nombre et l'unité forment une seule phrase : « toutes les 2
+        semaines ». Deux composants côte à côte porteraient chacun leur label et
+        se décaleraient l'un par rapport à l'autre, d'où le balisage à la main.
+      */}
+      <div className={fr.cx("fr-input-group")}>
+        <label className={fr.cx("fr-label")} htmlFor="formation-frequence">
+          {repeats ? "Toutes les" : "Rythme"}
+        </label>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            alignItems: "center",
+            marginTop: "0.5rem",
+          }}
+        >
+          {repeats && (
+            <input
+              className={fr.cx("fr-input")}
+              type="number"
+              min={1}
+              max={MAX_FORMATION_INTERVALLE}
+              aria-label="Nombre de semaines ou de mois entre deux dates"
+              style={{ width: "5rem", flex: "0 0 auto" }}
+              {...register("intervalle", {
                 setValueAs: (value) =>
                   value === "" ? undefined : Number(value),
-              }),
-            }}
-            state={errors.intervalle ? "error" : "default"}
-            stateRelatedMessage={errors.intervalle?.message}
-          />
+              })}
+            />
+          )}
+          <select
+            className={fr.cx("fr-select")}
+            id="formation-frequence"
+            style={{ maxWidth: "16rem" }}
+            {...register("frequence")}
+          >
+            {FORMATION_FREQUENCE_CHOICES.map((choice) => (
+              <option key={choice.value} value={choice.value}>
+                {choice.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        {!!(errors.intervalle || errors.frequence) && (
+          <p className={fr.cx("fr-error-text")}>
+            {errors.intervalle?.message ?? errors.frequence?.message}
+          </p>
         )}
-        <Select
-          label={repeats ? "" : "Rythme"}
-          nativeSelectProps={register("frequence")}
-          options={FORMATION_FREQUENCE_CHOICES.map((choice) => ({
-            value: choice.value,
-            label: choice.label,
-          }))}
-          state={errors.frequence ? "error" : "default"}
-          stateRelatedMessage={errors.frequence?.message}
-        />
       </div>
 
       {repeats && (
