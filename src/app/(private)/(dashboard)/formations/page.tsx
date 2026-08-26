@@ -4,8 +4,12 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import FormationList from "@/components/Formation/FormationList";
+import { FormationPendingMenu } from "@/components/Formation/FormationPendingMenu";
 import { fetchAirtableInscription } from "@/lib/airtable";
-import { fetchGristFormations } from "@/lib/formationsGrist";
+import {
+  fetchGristFormations,
+  fetchGristPendingFormations,
+} from "@/lib/formationsGrist";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
@@ -40,6 +44,18 @@ export default async function Page() {
     // pastilles « Inscrit ».
   }
   const isAnimation = await isAnimationTeamMember(session.user);
+
+  // Les propositions ne sont pas au catalogue : sans cette liste, l'équipe
+  // d'animation n'a aucun moyen de savoir qu'il y en a à examiner. Une panne
+  // Grist ne doit pas emporter la page pour autant.
+  let pending: Awaited<ReturnType<typeof fetchGristPendingFormations>> = [];
+  if (isAnimation) {
+    try {
+      pending = await fetchGristPendingFormations();
+    } catch {
+      // Sans la liste, la page reste utilisable.
+    }
+  }
   return (
     <div className="fr-container fr-container--fluid">
       <div
@@ -52,12 +68,27 @@ export default async function Page() {
         }}
       >
         <h1>{routeTitles.formationList()}</h1>
-        <Button
-          priority="secondary"
-          linkProps={{ href: routes.formationProposal() }}
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            alignItems: "flex-start",
+          }}
         >
-          {isAnimation ? "Créer une formation" : "Proposer une formation"}
-        </Button>
+          <Button
+            priority="secondary"
+            linkProps={{ href: routes.formationProposal() }}
+          >
+            {isAnimation ? "Créer une formation" : "Proposer une formation"}
+          </Button>
+          <FormationPendingMenu
+            formations={pending.map((formation) => ({
+              id: formation.id,
+              name: formation.name,
+              animator: formation.animator,
+            }))}
+          />
+        </div>
       </div>
       {catalogueError && (
         <Alert

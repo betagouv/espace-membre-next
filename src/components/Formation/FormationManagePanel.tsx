@@ -15,7 +15,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import { updateFormation } from "@/app/api/formations/actions";
+import {
+  updateFormation,
+  validateFormation,
+} from "@/app/api/formations/actions";
 import { GristParticipant } from "@/lib/formationsGrist";
 import {
   formationUpdateSchema,
@@ -26,6 +29,7 @@ import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
   FORMATION_MODALITE_CHOICES,
+  FORMATION_STATUT,
   FORMATION_THEMATIQUES,
 } from "@/models/formationsGrist";
 
@@ -59,10 +63,14 @@ export const FormationManagePanel = ({
   defaultValues,
   participants,
   statut,
+  canValidate = false,
 }: {
   defaultValues: formationUpdateSchemaType;
   participants: GristParticipant[];
   statut?: string;
+  // Valider ne revient pas à gérer : seule l'équipe d'animation le peut, pas la
+  // personne qui a déposé la proposition.
+  canValidate?: boolean;
 }) => {
   const [editing, setEditing] = React.useState(false);
   const [alertMessage, setAlertMessage] =
@@ -78,6 +86,27 @@ export const FormationManagePanel = ({
     mode: "onChange",
     defaultValues,
   });
+
+  const [validating, setValidating] = React.useState(false);
+  const onValidate = async () => {
+    setValidating(true);
+    const res = await validateFormation(defaultValues.formationId);
+    setValidating(false);
+    if (res.success) {
+      setAlertMessage({
+        title: "Formation validée",
+        message: "Elle est maintenant au catalogue.",
+        type: "success",
+      });
+      router.refresh();
+    } else {
+      setAlertMessage({
+        title: "Une erreur est survenue",
+        message: res.message || "",
+        type: "warning",
+      });
+    }
+  };
 
   const onSubmit = async (data: formationUpdateSchemaType) => {
     const res = await updateFormation(data);
@@ -111,6 +140,35 @@ export const FormationManagePanel = ({
             title={alertMessage.title}
             description={alertMessage.message}
             small
+          />
+        )}
+
+        {statut === FORMATION_STATUT.PROPOSEE && (
+          <Alert
+            className={fr.cx("fr-mb-2w")}
+            severity="info"
+            small
+            title="Proposition en attente de validation"
+            description={
+              canValidate ? (
+                <>
+                  <p className={fr.cx("fr-mb-1w")}>
+                    Cette formation n&apos;est pas au catalogue tant
+                    qu&apos;elle n&apos;est pas validée.
+                  </p>
+                  <Button
+                    nativeButtonProps={{ type: "button", disabled: validating }}
+                    onClick={onValidate}
+                  >
+                    {validating
+                      ? "Validation en cours..."
+                      : "Valider cette formation"}
+                  </Button>
+                </>
+              ) : (
+                "Elle sera visible au catalogue une fois validée par l'équipe d'animation."
+              )
+            }
           />
         )}
 

@@ -22,6 +22,7 @@ import {
   isFormationAnimator,
 } from "@/lib/canManageFormation";
 import { FORMATION_DUREES, FORMATION_STATUT } from "@/models/formationsGrist";
+import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import { formationUpdateSchemaType } from "@/models/actions/formationProposal";
 import { notFound } from "next/navigation";
 import { getUserInfos } from "@/lib/kysely/queries/users";
@@ -127,6 +128,7 @@ export default async function Page(props: Readonly<Props>) {
     notFound();
   }
 
+  const isAnimation = await isAnimationTeamMember(session.user);
   const canManage = await canManageFormation(session.user, formation);
   // Une formation pas encore validée n'existe pour personne d'autre : 404, et
   // non « accès refusé », qui révélerait qu'elle existe.
@@ -293,6 +295,7 @@ export default async function Page(props: Readonly<Props>) {
         {canManage && (
           <FormationManagePanel
             statut={formation.statut}
+            canValidate={isAnimation}
             participants={participants}
             defaultValues={{
               formationId: formation.id,

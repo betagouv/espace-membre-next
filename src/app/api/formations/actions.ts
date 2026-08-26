@@ -396,6 +396,62 @@ export const unregisterFromFormationSession = withErrorHandling(
   },
 );
 
+/**
+ * Validation d'une proposition : elle entre au catalogue.
+ *
+ * Réservé à l'équipe d'animation, et non à toute personne qui peut gérer la
+ * formation : sans quoi la personne qui propose validerait sa propre
+ * proposition, et le tri n'aurait plus de sens.
+ */
+export const validateFormation = withErrorHandling(
+  async (formationId: string) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+
+    if (!(await isAnimationTeamMember(session.user))) {
+      throw new AuthorizationError(
+        "Seule l'équipe d'animation peut valider une formation.",
+      );
+    }
+
+    const formation = await fetchGristFormationById(formationId, {
+      statuts: [FORMATION_STATUT.PROPOSEE],
+    });
+    if (!formation) {
+      throw new BusinessError(
+        "FormationInconnue",
+        "Cette formation n'existe pas, ou elle est déjà validée.",
+      );
+    }
+
+    await updateGristRecords(
+      config.GRIST_FORMATIONS_DOC_ID,
+      config.GRIST_FORMATIONS_FORMATS_TABLE_ID,
+      [
+        {
+          id: Number(formationId),
+          fields: {
+            [GRIST_FORMATIONS_COLUMNS.statut]: FORMATION_STATUT.VALIDEE,
+          },
+        },
+      ],
+    );
+
+    revalidatePath(`/formations/${formationId}`);
+    revalidatePath("/formations");
+    return { ok: true };
+  },
+);
+
 export const updateFormation = withErrorHandling(
   async (data: formationUpdateSchemaType) => {
     const session = await getServerSession(authOptions);
