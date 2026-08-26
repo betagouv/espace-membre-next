@@ -1,6 +1,7 @@
 "use client";
 import { routes, routeTitles } from "@/lib/routes";
 import React from "react";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -10,11 +11,47 @@ import { useLiveChat } from "@/components/live-chat/useLiveChat";
 
 const isCurrentPath = (pathname, rootPath) => pathname.startsWith(rootPath);
 
+type PendingFormation = { id: string; name: string; animator: string | null };
+
+/**
+ * Formations en attente de validation.
+ *
+ * Chargées après l'affichage plutôt que dans la mise en page : la pastille ne
+ * concerne que l'équipe d'animation, il n'y a pas de raison de retarder le
+ * rendu de toutes les pages pour elle. La route renvoie une liste vide à qui
+ * n'y a pas droit.
+ */
+const usePendingFormations = (enabled: boolean): PendingFormation[] => {
+  const [formations, setFormations] = React.useState<PendingFormation[]>([]);
+
+  React.useEffect(() => {
+    if (!enabled) {
+      setFormations([]);
+      return;
+    }
+    let cancelled = false;
+    fetch("/api/formations/pending")
+      .then((response) => (response.ok ? response.json() : { formations: [] }))
+      .then((data) => {
+        if (!cancelled) setFormations(data.formations ?? []);
+      })
+      .catch(() => {
+        // Le menu se passe très bien de la pastille.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
+
+  return formations;
+};
+
 const MainHeader = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { showLiveChat, isLiveChatLoading } = useLiveChat();
   const pathname = usePathname();
+  const pendingFormations = usePendingFormations(!!session);
 
   const dashboardLink = routes["dashboard"]();
   const accountLink = routes["account"]();
@@ -165,14 +202,45 @@ const MainHeader = () => {
             isActive: isCurrentPath(pathname, startupListLink),
             text: "Produits",
           },
-          {
-            linkProps: {
-              href: "/formations",
-              target: "_self",
-            },
-            text: "Formations",
-            isActive: isCurrentPath(pathname, formationListLink),
-          },
+          pendingFormations.length
+            ? {
+                // Des propositions à traiter : le menu déroulant les liste, et
+                // le compteur évite d'avoir à ouvrir pour savoir s'il y en a.
+                isActive: isCurrentPath(pathname, formationListLink),
+                text: (
+                  <>
+                    Formations{" "}
+                    <Badge as="span" severity="new" small noIcon>
+                      {pendingFormations.length}
+                    </Badge>
+                  </>
+                ),
+                menuLinks: [
+                  {
+                    linkProps: { href: formationListLink },
+                    text: "Catalogue des formations",
+                    isActive: false,
+                  },
+                  ...pendingFormations.map((formation) => ({
+                    linkProps: { href: `/formations/${formation.id}` },
+                    text: `À valider : ${formation.name}${
+                      formation.animator ? ` — ${formation.animator}` : ""
+                    }`,
+                    isActive: isCurrentPath(
+                      pathname,
+                      `/formations/${formation.id}`,
+                    ),
+                  })),
+                ],
+              }
+            : {
+                linkProps: {
+                  href: "/formations",
+                  target: "_self",
+                },
+                text: "Formations",
+                isActive: isCurrentPath(pathname, formationListLink),
+              },
           {
             linkProps: {
               href: "/events",

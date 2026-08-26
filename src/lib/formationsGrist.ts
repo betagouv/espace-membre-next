@@ -30,7 +30,9 @@ type GristRow = { id: number; fields: GristRecordFields };
  * date et les places restantes ; un format sans session reste affiché, sans
  * date — il est au catalogue mais pas encore programmé.
  */
-export async function fetchGristFormations(): Promise<Formation[]> {
+export async function fetchGristFormations({
+  statuts = [FORMATION_STATUT.VALIDEE],
+}: { statuts?: FORMATION_STATUT[] } = {}): Promise<Formation[]> {
   if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
     throw new Error(
       "L'intégration Grist n'est pas configurée (GRIST_API_KEY / GRIST_FORMATIONS_DOC_ID).",
@@ -40,7 +42,7 @@ export async function fetchGristFormations(): Promise<Formation[]> {
 
   const [formats, sessions] = await Promise.all([
     getGristRecords(docId, config.GRIST_FORMATIONS_FORMATS_TABLE_ID, {
-      [GRIST_FORMATIONS_COLUMNS.statut]: [FORMATION_STATUT.VALIDEE],
+      [GRIST_FORMATIONS_COLUMNS.statut]: statuts,
     }),
     getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID),
   ]);
@@ -72,9 +74,20 @@ export async function fetchGristFormations(): Promise<Formation[]> {
  */
 export async function fetchGristFormationById(
   id: string,
+  options?: { statuts?: FORMATION_STATUT[] },
 ): Promise<Formation | undefined> {
-  const formations = await fetchGristFormations();
+  const formations = await fetchGristFormations(options);
   return formations.find((formation) => formation.id === id);
+}
+
+/**
+ * Formations en attente de validation, pour l'équipe d'animation.
+ *
+ * Elles ne sont pas au catalogue : sans cette liste, une proposition déposée
+ * par un membre n'est visible nulle part dans l'application.
+ */
+export async function fetchGristPendingFormations(): Promise<Formation[]> {
+  return fetchGristFormations({ statuts: [FORMATION_STATUT.PROPOSEE] });
 }
 
 function formatToFormation(format: GristRow, session?: GristRow): Formation {

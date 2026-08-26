@@ -21,7 +21,7 @@ import {
   canManageFormation,
   isFormationAnimator,
 } from "@/lib/canManageFormation";
-import { FORMATION_DUREES } from "@/models/formationsGrist";
+import { FORMATION_DUREES, FORMATION_STATUT } from "@/models/formationsGrist";
 import { formationUpdateSchemaType } from "@/models/actions/formationProposal";
 import { notFound } from "next/navigation";
 import { getUserInfos } from "@/lib/kysely/queries/users";
@@ -40,7 +40,9 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // fetch data
   const params = await props.params;
-  const formation = await fetchGristFormationById(params.id);
+  const formation = await fetchGristFormationById(params.id, {
+    statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+  });
   return {
     title: `${formation?.name ?? "Formation"} / Espace Membre`,
   };
@@ -115,8 +117,20 @@ export default async function Page(props: Readonly<Props>) {
     // Return the modified URL as a string
     return url.toString();
   };
-  const formation = await fetchGristFormationById(params.id);
+  // Les propositions ne sont pas au catalogue, mais l'équipe d'animation et la
+  // personne qui anime doivent pouvoir les ouvrir pour les examiner. On les
+  // charge donc, quitte à refermer la porte juste après.
+  const formation = await fetchGristFormationById(params.id, {
+    statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+  });
   if (!formation) {
+    notFound();
+  }
+
+  const canManage = await canManageFormation(session.user, formation);
+  // Une formation pas encore validée n'existe pour personne d'autre : 404, et
+  // non « accès refusé », qui révélerait qu'elle existe.
+  if (formation.statut !== FORMATION_STATUT.VALIDEE && !canManage) {
     notFound();
   }
 
@@ -129,7 +143,6 @@ export default async function Page(props: Readonly<Props>) {
   // Panneau de gestion : réservé à l'équipe d'animation et à la personne qui
   // anime. Le droit est recalculé côté serveur, l'affichage n'en est que la
   // conséquence.
-  const canManage = await canManageFormation(session.user, formation);
   const isAnimator = isFormationAnimator(session.user, formation);
   const participants =
     canManage && formation.sessionId
