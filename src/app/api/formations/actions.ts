@@ -36,6 +36,7 @@ import {
 } from "@/models/formationsGrist";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
+import { db } from "@/lib/kysely";
 import {
   AuthorizationError,
   BusinessError,
@@ -50,7 +51,9 @@ const parisDateToEpochSeconds = (value: string): number =>
   Math.floor(fromZonedTime(value, PARIS_TZ).getTime() / 1000);
 
 // La table Membres est indexée sur le ghid (= username). Renvoie l'id de ligne,
-// ou 0 (référence vide côté Grist) si la personne n'y est pas.
+// ou 0 (référence vide côté Grist) si la personne n'y est pas. Simple lecture :
+// à réserver aux ghid devinés (partie locale d'une adresse Tchap saisie à la
+// main), qu'on ne veut surtout pas transformer en lignes.
 async function findMembreRowId(ghid: string | undefined): Promise<number> {
   if (!ghid || !config.GRIST_FORMATIONS_DOC_ID) return 0;
   const membres = await getGristRecords(
@@ -59,6 +62,41 @@ async function findMembreRowId(ghid: string | undefined): Promise<number> {
     { ghid: [ghid] },
   );
   return membres[0]?.id ?? 0;
+}
+
+/**
+ * Identifiant de ligne dans la table Membres, indexée sur le ghid (= username).
+ *
+ * La table a été peuplée par un import : toute personne arrivée depuis en est
+ * absente, et sans ligne il n'y a pas d'inscription possible. On la crée donc
+ * au passage plutôt que de dépendre d'une resynchronisation.
+ *
+ * Renvoie 0 (référence vide côté Grist) si la création échoue ou si le
+ * document n'est pas configuré.
+ */
+async function findOrCreateMembreRowId(
+  ghid: string | undefined,
+): Promise<number> {
+  if (!ghid || !config.GRIST_FORMATIONS_DOC_ID) return 0;
+  const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+  const existing = await findMembreRowId(ghid);
+  if (existing) return existing;
+
+  // Le nom complet vient de l'annuaire interne ; à défaut, le ghid fait
+  // l'affaire : mieux vaut une ligne au nom technique que pas d'inscription.
+  const user = await db
+    .selectFrom("users")
+    .select("fullname")
+    .where("username", "=", ghid)
+    .executeTakeFirst();
+
+  const [createdId] = await addGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_MEMBRES_TABLE_ID,
+    [{ ghid, name: user?.fullname || ghid }],
+  );
+  return createdId ?? 0;
 }
 
 export const submitFormationProposal = withErrorHandling(
@@ -84,7 +122,7 @@ export const submitFormationProposal = withErrorHandling(
       ? FORMATION_STATUT.VALIDEE
       : FORMATION_STATUT.PROPOSEE;
 
-    const referentRowId = await findMembreRowId(session.user.id);
+    const referentRowId = await findOrCreateMembreRowId(session.user.id);
 
     // L'illustration passe par le magasin de pièces jointes du document : la
     // colonne Image ne stocke que des identifiants.
@@ -188,11 +226,13 @@ export const registerToFormationSession = withErrorHandling(
       throw new BusinessError("SessionInconnue", "Cette session n'existe pas.");
     }
 
-    const membreRowId = await findMembreRowId(session.user.id);
+    // La ligne Membres est créée au besoin : n'échouer ici que si Grist l'a
+    // refusée.
+    const membreRowId = await findOrCreateMembreRowId(session.user.id);
     if (!membreRowId) {
       throw new BusinessError(
         "MembreIntrouvable",
-        "Ton compte n'a pas été trouvé dans l'annuaire des formations.",
+        "Ton compte n'a pas pu être ajouté à l'annuaire des formations.",
       );
     }
 
