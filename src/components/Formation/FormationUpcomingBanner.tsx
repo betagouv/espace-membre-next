@@ -18,6 +18,22 @@ export type ProchaineFormation = {
 
 const CARTE = 15; // largeur d'une carte, en rem
 
+/** Voile dégradé au bord de la piste, du côté où il reste des cartes. */
+const Degrade = ({ cote }: { cote: "left" | "right" }) => (
+  <span
+    aria-hidden
+    style={{
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      [cote]: "-0.25rem",
+      width: "3rem",
+      pointerEvents: "none",
+      background: `linear-gradient(to ${cote}, transparent, var(--background-alt-blue-france))`,
+    }}
+  />
+);
+
 /**
  * Bandeau des prochaines formations auxquelles on est inscrit·e.
  *
@@ -238,23 +254,10 @@ export const FormationUpcomingBanner = ({
           ))}
         </div>
 
-        {/* Un dégradé au bord annonce qu'il reste des cartes : sans lui, la
-            dernière semble coupée par accident. */}
-        {!fin && (
-          <span
-            aria-hidden
-            style={{
-              position: "absolute",
-              top: 0,
-              right: "-0.25rem",
-              bottom: 0,
-              width: "3rem",
-              pointerEvents: "none",
-              background:
-                "linear-gradient(to right, transparent, var(--background-alt-blue-france))",
-            }}
-          />
-        )}
+        {/* Un dégradé de chaque côté annonce les cartes hors champ : sans lui,
+            celles que la piste tranche semblent coupées par accident. */}
+        {!debut && <Degrade cote="left" />}
+        {!fin && <Degrade cote="right" />}
       </div>
     </section>
   );
