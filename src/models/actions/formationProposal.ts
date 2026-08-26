@@ -3,9 +3,11 @@ import { z } from "zod";
 import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
+  FORMATION_FREQUENCE,
+  FORMATION_JOURS,
   FORMATION_MODALITE,
-  FORMATION_RECURRENCE,
   FORMATION_THEMATIQUES,
+  MAX_FORMATION_INTERVALLE,
   MAX_FORMATION_OCCURRENCES,
 } from "@/models/formationsGrist";
 
@@ -205,9 +207,19 @@ export const formationScheduleSchema = z
       .min(1, "Au moins une place")
       .max(500, "Nombre trop élevé"),
     lienVisioAdmin: optionalUrl,
-    recurrence: z.nativeEnum(FORMATION_RECURRENCE, {
+    frequence: z.nativeEnum(FORMATION_FREQUENCE, {
       errorMap: () => ({ message: "Le rythme est requis" }),
     }),
+    intervalle: z.coerce
+      .number({ invalid_type_error: "Indique un nombre" })
+      .int("Indique un nombre entier")
+      .min(1, "Au moins 1")
+      .max(MAX_FORMATION_INTERVALLE, `${MAX_FORMATION_INTERVALLE} au maximum`),
+    // Champ vide : la série garde le jour de la date de départ.
+    jour: z
+      .enum(FORMATION_JOURS.map((j) => j.value) as [string, ...string[]])
+      .or(z.literal(""))
+      .optional(),
     occurrences: z.coerce
       .number({ invalid_type_error: "Indique un nombre de dates" })
       .int("Indique un nombre entier")
@@ -220,10 +232,7 @@ export const formationScheduleSchema = z
   .superRefine((data, ctx) => {
     // Une série d'une seule date n'est pas une série : c'est probablement le
     // rythme qui a été oublié.
-    if (
-      data.recurrence !== FORMATION_RECURRENCE.AUCUNE &&
-      data.occurrences < 2
-    ) {
+    if (data.frequence !== FORMATION_FREQUENCE.AUCUNE && data.occurrences < 2) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["occurrences"],

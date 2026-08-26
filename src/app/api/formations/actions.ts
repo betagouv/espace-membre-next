@@ -499,11 +499,13 @@ export const scheduleFormationSessions = withErrorHandling(
     // La série se calcule en heure murale, puis chaque occurrence devient un
     // instant : « tous les mois à 14 h » reste 14 h après le changement
     // d'heure, ce qui ne serait pas le cas en ajoutant des durées à un instant.
-    const dates = formationSessionDates(
-      parsed.dateDebut,
-      parsed.recurrence,
-      parsed.occurrences,
-    );
+    const dates = formationSessionDates(parsed.dateDebut, {
+      frequence: parsed.frequence,
+      intervalle: parsed.intervalle,
+      // Champ vide : la série garde le jour de la date de départ.
+      jour: parsed.jour ? Number(parsed.jour) : undefined,
+      occurrences: parsed.occurrences,
+    });
 
     const animateurRowId = await findMembreRowId(
       formation.animatorTchap?.split("@")[0] || undefined,

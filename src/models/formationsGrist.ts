@@ -113,22 +113,35 @@ export const GRIST_SESSIONS_COLUMNS = {
  * propres inscrits — ce qui permet d'en annuler ou d'en déplacer une sans
  * toucher aux autres.
  */
-export enum FORMATION_RECURRENCE {
+export enum FORMATION_FREQUENCE {
   AUCUNE = "aucune",
-  HEBDOMADAIRE = "hebdomadaire",
-  BIMENSUELLE = "bimensuelle",
-  MENSUELLE = "mensuelle",
+  SEMAINE = "semaine",
+  MOIS = "mois",
 }
 
-export const FORMATION_RECURRENCE_CHOICES = [
-  { value: FORMATION_RECURRENCE.AUCUNE, label: "Une seule date" },
-  { value: FORMATION_RECURRENCE.HEBDOMADAIRE, label: "Chaque semaine" },
-  {
-    value: FORMATION_RECURRENCE.BIMENSUELLE,
-    label: "Toutes les deux semaines",
-  },
-  { value: FORMATION_RECURRENCE.MENSUELLE, label: "Chaque mois" },
+export const FORMATION_FREQUENCE_CHOICES = [
+  { value: FORMATION_FREQUENCE.AUCUNE, label: "Une seule date" },
+  { value: FORMATION_FREQUENCE.SEMAINE, label: "semaine(s)" },
+  { value: FORMATION_FREQUENCE.MOIS, label: "mois" },
+] as const;
+
+/**
+ * Jours de la semaine, numérotés comme `Date.getDay()` : 0 vaut dimanche.
+ * Listés du lundi au dimanche, l'ordre habituel d'un calendrier français.
+ */
+export const FORMATION_JOURS = [
+  { value: "1", label: "lundi" },
+  { value: "2", label: "mardi" },
+  { value: "3", label: "mercredi" },
+  { value: "4", label: "jeudi" },
+  { value: "5", label: "vendredi" },
+  { value: "6", label: "samedi" },
+  { value: "0", label: "dimanche" },
 ] as const;
 
 // Un an de sessions hebdomadaires : au-delà, c'est une erreur de saisie.
 export const MAX_FORMATION_OCCURRENCES = 52;
+
+// « Toutes les 12 semaines » ou « tous les 12 mois » couvre largement les
+// besoins ; au-delà on ne programme plus, on planifie.
+export const MAX_FORMATION_INTERVALLE = 12;

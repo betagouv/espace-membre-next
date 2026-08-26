@@ -19,8 +19,10 @@ import {
 import { AlertMessageType } from "@/models/common";
 import {
   FORMATION_DUREES,
-  FORMATION_RECURRENCE,
-  FORMATION_RECURRENCE_CHOICES,
+  FORMATION_FREQUENCE,
+  FORMATION_FREQUENCE_CHOICES,
+  FORMATION_JOURS,
+  MAX_FORMATION_INTERVALLE,
 } from "@/models/formationsGrist";
 
 /**
@@ -57,13 +59,17 @@ export const FormationScheduleForm = ({
       duree: defaultDuree,
       capacite: defaultCapacite,
       lienVisioAdmin: defaultLienVisioAdmin ?? "",
-      recurrence: FORMATION_RECURRENCE.AUCUNE,
+      frequence: FORMATION_FREQUENCE.AUCUNE,
+      intervalle: 1,
+      jour: "",
       occurrences: 1,
     },
   });
 
-  // Le nombre de dates n'a de sens que si la formation se répète.
-  const repeats = watch("recurrence") !== FORMATION_RECURRENCE.AUCUNE;
+  // L'intervalle, le jour et le nombre de dates n'ont de sens que si la
+  // formation se répète.
+  const frequence = watch("frequence");
+  const repeats = frequence !== FORMATION_FREQUENCE.AUCUNE;
 
   const onSubmit = async (data: formationScheduleSchemaType) => {
     const res = await scheduleFormationSessions(data);
@@ -119,31 +125,75 @@ export const FormationScheduleForm = ({
         stateRelatedMessage={errors.duree?.message}
       />
 
-      <Select
-        label="Rythme"
-        nativeSelectProps={register("recurrence")}
-        options={FORMATION_RECURRENCE_CHOICES.map((choice) => ({
-          value: choice.value,
-          label: choice.label,
-        }))}
-        state={errors.recurrence ? "error" : "default"}
-        stateRelatedMessage={errors.recurrence?.message}
-      />
+      <div
+        style={{
+          display: "flex",
+          gap: "1rem",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+        }}
+      >
+        {repeats && (
+          <Input
+            label="Toutes les"
+            nativeInputProps={{
+              type: "number",
+              min: 1,
+              max: MAX_FORMATION_INTERVALLE,
+              style: { width: "5rem" },
+              ...register("intervalle", {
+                setValueAs: (value) =>
+                  value === "" ? undefined : Number(value),
+              }),
+            }}
+            state={errors.intervalle ? "error" : "default"}
+            stateRelatedMessage={errors.intervalle?.message}
+          />
+        )}
+        <Select
+          label={repeats ? "" : "Rythme"}
+          nativeSelectProps={register("frequence")}
+          options={FORMATION_FREQUENCE_CHOICES.map((choice) => ({
+            value: choice.value,
+            label: choice.label,
+          }))}
+          state={errors.frequence ? "error" : "default"}
+          stateRelatedMessage={errors.frequence?.message}
+        />
+      </div>
 
       {repeats && (
-        <Input
-          label="Nombre de dates"
-          hintText="La première comprise."
-          nativeInputProps={{
-            type: "number",
-            min: 2,
-            ...register("occurrences", {
-              setValueAs: (value) => (value === "" ? undefined : Number(value)),
-            }),
-          }}
-          state={errors.occurrences ? "error" : "default"}
-          stateRelatedMessage={errors.occurrences?.message}
-        />
+        <>
+          <Select
+            label="Toujours le"
+            hint="Sans choix, la série garde le jour de la date ci-dessus."
+            nativeSelectProps={register("jour")}
+            options={[
+              { value: "", label: "Le jour de la date choisie" },
+              ...FORMATION_JOURS.map((j) => ({
+                value: j.value,
+                label: j.label,
+              })),
+            ]}
+            state={errors.jour ? "error" : "default"}
+            stateRelatedMessage={errors.jour?.message}
+          />
+
+          <Input
+            label="Nombre de dates"
+            hintText="La première comprise."
+            nativeInputProps={{
+              type: "number",
+              min: 2,
+              ...register("occurrences", {
+                setValueAs: (value) =>
+                  value === "" ? undefined : Number(value),
+              }),
+            }}
+            state={errors.occurrences ? "error" : "default"}
+            stateRelatedMessage={errors.occurrences?.message}
+          />
+        </>
       )}
 
       <Input
