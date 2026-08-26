@@ -616,6 +616,87 @@ export const updateFormationSession = withErrorHandling(
   },
 );
 
+/**
+ * Suppression d'une date.
+ *
+ * Les inscriptions de la date partent avec elle : les laisser ferait des lignes
+ * orphelines, rattachées à une session qui n'existe plus, qui gonfleraient les
+ * compteurs sans correspondre à rien.
+ *
+ * Rien n'est prévenu automatiquement : c'est à la personne qui annule de
+ * prévenir les inscrits, d'où le décompte renvoyé.
+ *
+ * @returns le nombre d'inscriptions supprimées avec la date.
+ */
+export const deleteFormationSession = withErrorHandling(
+  async (sessionId: string) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+    const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+    const sessionRowId = Number(sessionId);
+    if (!Number.isInteger(sessionRowId) || sessionRowId <= 0) {
+      throw new BusinessError("SessionInconnue", "Cette date n'existe pas.");
+    }
+
+    const [sessionRow] = (
+      await getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID)
+    ).filter((row) => row.id === sessionRowId);
+    if (!sessionRow) {
+      throw new BusinessError("SessionInconnue", "Cette date n'existe pas.");
+    }
+
+    const formatRowId = Number(
+      sessionRow.fields[GRIST_SESSIONS_COLUMNS.format] ?? 0,
+    );
+    const formation = formatRowId
+      ? await fetchGristFormationById(String(formatRowId), {
+          statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+        })
+      : undefined;
+    if (!formation) {
+      throw new BusinessError(
+        "FormationInconnue",
+        "Cette formation n'existe pas.",
+      );
+    }
+    if (!(await canManageFormation(session.user, formation))) {
+      throw new AuthorizationError(
+        "Seule l'équipe d'animation ou la personne qui anime peut supprimer cette date.",
+      );
+    }
+
+    const inscriptions = await getGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+      { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
+    );
+    // Les inscriptions d'abord : si la suppression de la session échouait
+    // ensuite, mieux vaut une date vide qu'une date fantôme avec des inscrits.
+    await deleteGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+      inscriptions.map((i) => i.id),
+    );
+    await deleteGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID, [
+      sessionRowId,
+    ]);
+
+    revalidatePath(`/formations/${formatRowId}`);
+    revalidatePath("/formations");
+    return { ok: true, deleted: inscriptions.length };
+  },
+);
+
 export const updateFormation = withErrorHandling(
   async (data: formationUpdateSchemaType) => {
     const session = await getServerSession(authOptions);

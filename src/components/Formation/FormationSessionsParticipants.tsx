@@ -3,12 +3,15 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
+import { deleteFormationSession } from "@/app/api/formations/actions";
 import { FormationSessionEditForm } from "@/components/Formation/FormationSessionEditForm";
 import { GristParticipant } from "@/lib/formationsGrist";
 
@@ -41,6 +44,25 @@ export const FormationSessionsParticipants = ({
     sessions.length === 1 ? [sessions[0].id] : [],
   );
   const [enEdition, setEnEdition] = React.useState<string | null>(null);
+  // Suppression en deux temps : le premier clic demande confirmation en
+  // annonçant ce qui sera perdu, le second exécute.
+  const [aSupprimer, setASupprimer] = React.useState<string | null>(null);
+  const [suppressionEnCours, setSuppressionEnCours] = React.useState(false);
+  const [erreur, setErreur] = React.useState<string | null>(null);
+  const router = useRouter();
+
+  const supprimer = async (id: string) => {
+    setSuppressionEnCours(true);
+    setErreur(null);
+    const res = await deleteFormationSession(id);
+    setSuppressionEnCours(false);
+    if (!res.success) {
+      setErreur(res.message || "La suppression n'a pas abouti.");
+      return;
+    }
+    setASupprimer(null);
+    router.refresh();
+  };
 
   const bascule = (id: string) =>
     setOuvertes((actuelles) =>
@@ -107,16 +129,72 @@ export const FormationSessionsParticipants = ({
                     lienVisioAdmin={session.lienVisioAdmin}
                     onDone={() => setEnEdition(null)}
                   />
-                ) : (
-                  <Button
+                ) : aSupprimer === session.id ? (
+                  <Alert
                     className={fr.cx("fr-mb-2w")}
-                    priority="secondary"
-                    size="small"
-                    nativeButtonProps={{ type: "button" }}
-                    onClick={() => setEnEdition(session.id)}
-                  >
-                    Modifier cette date
-                  </Button>
+                    severity="warning"
+                    small
+                    title="Supprimer cette date ?"
+                    description={
+                      <>
+                        <p className={fr.cx("fr-mb-1w")}>
+                          {participants.length === 0
+                            ? "Personne n'y est inscrit·e."
+                            : `Les ${participants.length} inscriptions de cette date seront supprimées, liste d'attente comprise. Personne n'est prévenu·e automatiquement.`}
+                        </p>
+                        <Button
+                          priority="secondary"
+                          size="small"
+                          nativeButtonProps={{
+                            type: "button",
+                            disabled: suppressionEnCours,
+                          }}
+                          onClick={() => supprimer(session.id)}
+                        >
+                          {suppressionEnCours
+                            ? "Suppression..."
+                            : "Confirmer la suppression"}
+                        </Button>
+                        <Button
+                          className={fr.cx("fr-ml-2v")}
+                          priority="tertiary no outline"
+                          size="small"
+                          nativeButtonProps={{ type: "button" }}
+                          onClick={() => setASupprimer(null)}
+                        >
+                          Annuler
+                        </Button>
+                      </>
+                    }
+                  />
+                ) : (
+                  <div className={fr.cx("fr-mb-2w")}>
+                    <Button
+                      priority="secondary"
+                      size="small"
+                      nativeButtonProps={{ type: "button" }}
+                      onClick={() => setEnEdition(session.id)}
+                    >
+                      Modifier cette date
+                    </Button>
+                    <Button
+                      className={fr.cx("fr-ml-2v")}
+                      priority="tertiary no outline"
+                      size="small"
+                      nativeButtonProps={{ type: "button" }}
+                      onClick={() => setASupprimer(session.id)}
+                    >
+                      Supprimer cette date
+                    </Button>
+                    {!!erreur && (
+                      <Alert
+                        className={fr.cx("fr-mt-2w")}
+                        severity="warning"
+                        small
+                        description={erreur}
+                      />
+                    )}
+                  </div>
                 )}
                 {participants.length === 0 ? (
                   <p className={fr.cx("fr-hint-text", "fr-mb-0")}>
