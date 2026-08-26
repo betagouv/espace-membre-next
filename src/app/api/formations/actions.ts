@@ -152,8 +152,6 @@ export const submitFormationProposal = withErrorHandling(
       [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
       [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
       [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
-      [GRIST_FORMATIONS_COLUMNS.gestionInscriptions]:
-        parsed.gestionInscriptions ?? false,
       [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
       [GRIST_FORMATIONS_COLUMNS.animateurTchap]: parsed.animateurTchap ?? "",
       [GRIST_FORMATIONS_COLUMNS.emailOrganisateur]: parsed.emailOrganisateur,
@@ -589,8 +587,6 @@ export const updateFormation = withErrorHandling(
             [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
             [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
             [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
-            [GRIST_FORMATIONS_COLUMNS.gestionInscriptions]:
-              parsed.gestionInscriptions ?? false,
             [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
             [GRIST_FORMATIONS_COLUMNS.animateurTchap]:
               parsed.animateurTchap ?? "",

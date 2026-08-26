@@ -74,7 +74,6 @@ export const GRIST_FORMATIONS_COLUMNS = {
   lienAdmin: "Lien_admin",
   lienSupport: "Lien_support",
   lienFeedback: "Lien_feedback",
-  gestionInscriptions: "Gestion_inscriptions",
   animateur: "Animateur",
   animateurTchap: "Animateur_tchap",
   image: "Image",

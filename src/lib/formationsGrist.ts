@@ -151,8 +151,6 @@ function formatToFormation(
         String(f[GRIST_FORMATIONS_COLUMNS.lienSupport] ?? "") || undefined,
       lienFeedback:
         String(f[GRIST_FORMATIONS_COLUMNS.lienFeedback] ?? "") || undefined,
-      gestionInscriptions:
-        !!f[GRIST_FORMATIONS_COLUMNS.gestionInscriptions] || undefined,
       duree: Number(f[GRIST_FORMATIONS_COLUMNS.duree] ?? 0) || undefined,
       modalite: String(f[GRIST_FORMATIONS_COLUMNS.modalite] ?? "") || undefined,
       is_embarquement: false,

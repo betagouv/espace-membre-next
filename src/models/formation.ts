@@ -49,7 +49,6 @@ export const formationSchema = z.object({
   lienAdmin: z.string().optional(),
   lienSupport: z.string().optional(),
   lienFeedback: z.string().optional(),
-  gestionInscriptions: z.boolean().optional(),
   duree: z.number().optional(),
   modalite: z.string().optional(),
 });

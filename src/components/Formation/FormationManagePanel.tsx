@@ -224,10 +224,6 @@ export const FormationManagePanel = ({
                 />
                 <Detail label="Support" value={defaultValues.lienSupport} />
                 <Detail label="Feedback" value={defaultValues.lienFeedback} />
-                <Detail
-                  label="Inscriptions gérées par l'équipe"
-                  value={defaultValues.gestionInscriptions ? "Oui" : undefined}
-                />
               </tbody>
             </table>
 
@@ -461,15 +457,6 @@ export const FormationManagePanel = ({
                 type: "email",
                 ...register("emailOrganisateur"),
               }}
-            />
-            <Checkbox
-              legend="Souhaites-tu que nous gérions les inscriptions ?"
-              options={[
-                {
-                  label: "Oui, je veux bien",
-                  nativeInputProps: { ...register("gestionInscriptions") },
-                },
-              ]}
             />
             <input type="hidden" {...register("formationId")} />
 

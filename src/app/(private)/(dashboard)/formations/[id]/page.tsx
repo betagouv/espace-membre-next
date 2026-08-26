@@ -320,7 +320,6 @@ export default async function Page(props: Readonly<Props>) {
               animateur: formation.animator ?? "",
               animateurTchap: formation.animatorTchap ?? "",
               emailOrganisateur: formation.animatorEmail ?? "",
-              gestionInscriptions: formation.gestionInscriptions ?? false,
             }}
           />
         )}

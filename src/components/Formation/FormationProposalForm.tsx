@@ -278,17 +278,6 @@ export const FormationProposalForm = ({
         }}
       />
 
-      <Checkbox
-        legend="Souhaites-tu que nous gérions les inscriptions ?"
-        hintText="Si oui : lien d'inscription proposé aux participants, relance la veille de la formation, et un mail dès que la formation est complète."
-        options={[
-          {
-            label: "Oui, je veux bien",
-            nativeInputProps: { ...register("gestionInscriptions") },
-          },
-        ]}
-      />
-
       {!isAnimation && (
         <Alert
           className={fr.cx("fr-my-2w")}

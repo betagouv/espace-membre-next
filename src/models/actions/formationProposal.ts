@@ -104,7 +104,6 @@ export const formationProposalSchema = z
       .string({ required_error: "L'email de l'organisateur·trice est requis" })
       .trim()
       .email("Email invalide"),
-    gestionInscriptions: z.boolean().optional(),
     // Le type File n'existe pas dans zod : présence, type et taille sont
     // validés dans le superRefine ci-dessous.
     image: z.any(),
