@@ -10,6 +10,8 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
+import { db } from "@/lib/kysely";
+import { routes } from "@/lib/routes";
 import {
   fetchGristFormationById,
   fetchGristInscriptions,
@@ -151,6 +153,31 @@ export default async function Page(props: Readonly<Props>) {
     canManage && formation.sessionId
       ? await fetchGristSessionParticipants(formation.sessionId)
       : [];
+
+  // Un lien vers une fiche inexistante est pire que pas de lien : on ne relie
+  // que les personnes présentes dans l'annuaire de l'espace membre. Les autres
+  // viennent d'un import, ou ont quitté la communauté.
+  const ghids = participants
+    .map((participant) => participant.ghid)
+    .filter((ghid): ghid is string => !!ghid);
+  const knownGhids = new Set(
+    ghids.length
+      ? (
+          await db
+            .selectFrom("users")
+            .select("username")
+            .where("username", "in", ghids)
+            .execute()
+        ).map((user) => user.username)
+      : [],
+  );
+  const participantsAvecFiche = participants.map((participant) => ({
+    ...participant,
+    profileUrl:
+      participant.ghid && knownGhids.has(participant.ghid)
+        ? routes.communityMember({ username: participant.ghid })
+        : undefined,
+  }));
 
   const dbUser = userInfosToModel(
     await getUserInfos({
@@ -306,7 +333,7 @@ export default async function Page(props: Readonly<Props>) {
             statut={formation.statut}
             canValidate={isAnimation}
             sessions={formation.sessions ?? []}
-            participants={participants}
+            participants={participantsAvecFiche}
             defaultValues={{
               formationId: formation.id,
               titre: formation.name,

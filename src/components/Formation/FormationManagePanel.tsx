@@ -14,6 +14,7 @@ import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -70,7 +71,9 @@ export const FormationManagePanel = ({
   sessions = [],
 }: {
   defaultValues: formationUpdateSchemaType;
-  participants: GristParticipant[];
+  // `profileUrl` est calculé côté serveur : seules les personnes présentes dans
+  // l'annuaire ont une fiche vers laquelle pointer.
+  participants: (GristParticipant & { profileUrl?: string })[];
   statut?: string;
   // Dates à venir : une formation peut être programmée plusieurs fois.
   sessions?: {
@@ -239,7 +242,13 @@ export const FormationManagePanel = ({
               <ul className={fr.cx("fr-mb-0")}>
                 {participants.map((participant, index) => (
                   <li key={`${participant.email}-${index}`}>
-                    {participant.name}
+                    {participant.profileUrl ? (
+                      <Link href={participant.profileUrl}>
+                        {participant.name}
+                      </Link>
+                    ) : (
+                      participant.name
+                    )}
                     {participant.email ? ` — ${participant.email}` : ""}{" "}
                     {participant.onWaitingList && (
                       <Badge as="span" small>

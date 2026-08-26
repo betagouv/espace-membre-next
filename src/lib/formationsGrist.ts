@@ -216,6 +216,9 @@ export type GristParticipant = {
   name: string;
   email: string;
   onWaitingList: boolean;
+  // Identifiant beta.gouv.fr, quand la personne est reliée à l'annuaire : il
+  // permet de renvoyer vers sa fiche membre.
+  ghid?: string;
 };
 
 /**
@@ -336,20 +339,26 @@ export async function fetchGristSessionParticipants(
     docId,
     config.GRIST_FORMATIONS_MEMBRES_TABLE_ID,
   );
-  const nameByRowId = new Map(
+  const membreByRowId = new Map(
     membres.map((m) => [
       m.id,
-      String(m.fields["name"] ?? m.fields["ghid"] ?? ""),
+      {
+        name: String(m.fields["name"] ?? m.fields["ghid"] ?? ""),
+        ghid: String(m.fields["ghid"] ?? "") || undefined,
+      },
     ]),
   );
 
-  return inscriptions.map((inscription) => ({
-    name:
-      nameByRowId.get(
-        Number(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]),
-      ) || "Membre inconnu",
-    email: String(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.email] ?? ""),
-    onWaitingList:
-      !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
-  }));
+  return inscriptions.map((inscription) => {
+    const membre = membreByRowId.get(
+      Number(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]),
+    );
+    return {
+      name: membre?.name || "Membre inconnu",
+      ghid: membre?.ghid,
+      email: String(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.email] ?? ""),
+      onWaitingList:
+        !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+    };
+  });
 }
