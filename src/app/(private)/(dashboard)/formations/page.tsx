@@ -5,9 +5,11 @@ import { getServerSession } from "next-auth";
 
 import FormationList from "@/components/Formation/FormationList";
 import { FormationPendingMenu } from "@/components/Formation/FormationPendingMenu";
+import { FormationUpcomingBanner } from "@/components/Formation/FormationUpcomingBanner";
 import { fetchAirtableInscription } from "@/lib/airtable";
 import {
   fetchGristFormations,
+  fetchGristInscriptions,
   fetchGristPendingFormations,
 } from "@/lib/formationsGrist";
 import config from "@/server/config";
@@ -43,6 +45,38 @@ export default async function Page() {
     // Sans inscriptions, le catalogue s'affiche : on perd seulement les
     // pastilles « Inscrit ».
   }
+  // Ses propres inscriptions, pour le bandeau de rappel. Une panne de lecture
+  // le fait disparaître, elle n'emporte pas le catalogue.
+  let mesInscriptions: Awaited<ReturnType<typeof fetchGristInscriptions>> = [];
+  try {
+    mesInscriptions = await fetchGristInscriptions(session.user.id);
+  } catch {
+    // Sans elles, le bandeau ne s'affiche pas.
+  }
+  // `formation.sessions` ne contient que les dates à venir : une séance passée
+  // ne remonte donc jamais dans le bandeau.
+  const mesProchaines = formations
+    .flatMap((formation) =>
+      (formation.sessions ?? []).flatMap((session) => {
+        const inscription = mesInscriptions.find(
+          (i) => i.sessionId === session.id,
+        );
+        return inscription
+          ? [
+              {
+                formationId: formation.id,
+                sessionId: session.id,
+                titre: formation.name,
+                imageUrl: formation.imageUrl,
+                start: session.start,
+                onWaitingList: inscription.onWaitingList,
+              },
+            ]
+          : [];
+      }),
+    )
+    .sort((a, b) => (a.start?.getTime() ?? 0) - (b.start?.getTime() ?? 0));
+
   const isAnimation = await isAnimationTeamMember(session.user);
 
   // Les propositions ne sont pas au catalogue : sans cette liste, l'équipe
@@ -98,6 +132,7 @@ export default async function Page() {
           description="La liste des formations n'a pas pu être chargée. Tu peux quand même proposer une formation."
         />
       )}
+      <FormationUpcomingBanner formations={mesProchaines} />
       <FormationList
         formations={formations}
         inscriptions={inscriptions}
