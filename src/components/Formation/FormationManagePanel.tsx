@@ -7,6 +7,7 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
@@ -234,14 +235,29 @@ export const FormationManagePanel = ({
               participantsBySession={participantsBySession}
             />
 
-            <Button
-              className={fr.cx("fr-mt-2w")}
-              priority="secondary"
-              nativeButtonProps={{ type: "button" }}
-              onClick={() => setScheduling((was) => !was)}
-            >
-              {scheduling ? "Annuler" : "Programmer une autre date"}
-            </Button>
+            {/* Groupe de boutons du système de design : les actions d'un même
+                bloc se suivent en ligne et s'empilent sur écran étroit. */}
+            <ButtonsGroup
+              className={fr.cx("fr-mt-3w")}
+              inlineLayoutWhen="sm and up"
+              buttonsSize="small"
+              buttons={[
+                {
+                  children: scheduling
+                    ? "Annuler"
+                    : "Programmer une autre date",
+                  priority: "secondary",
+                  type: "button",
+                  onClick: () => setScheduling((was) => !was),
+                },
+                {
+                  children: "Modifier les informations",
+                  priority: "secondary",
+                  type: "button",
+                  onClick: () => setEditing(true),
+                },
+              ]}
+            />
 
             {scheduling && (
               <div className={fr.cx("fr-mt-2w")}>
@@ -253,15 +269,6 @@ export const FormationManagePanel = ({
                 />
               </div>
             )}
-
-            <Button
-              className={fr.cx("fr-mt-3w")}
-              priority="secondary"
-              nativeButtonProps={{ type: "button" }}
-              onClick={() => setEditing(true)}
-            >
-              Modifier les informations
-            </Button>
           </>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -405,20 +412,24 @@ export const FormationManagePanel = ({
             <input type="hidden" {...register("lienFeedback")} />
             <input type="hidden" {...register("formationId")} />
 
-            <Button
+            <ButtonsGroup
               className={fr.cx("fr-mt-2w")}
-              nativeButtonProps={{ type: "submit", disabled: isSubmitting }}
-            >
-              {isSubmitting ? "Enregistrement..." : "Enregistrer"}
-            </Button>
-            <Button
-              className={fr.cx("fr-mt-2w", "fr-ml-2w")}
-              priority="secondary"
-              nativeButtonProps={{ type: "button" }}
-              onClick={() => setEditing(false)}
-            >
-              Annuler
-            </Button>
+              inlineLayoutWhen="sm and up"
+              buttonsSize="small"
+              buttons={[
+                {
+                  children: isSubmitting ? "Enregistrement..." : "Enregistrer",
+                  type: "submit",
+                  disabled: isSubmitting,
+                },
+                {
+                  children: "Annuler",
+                  priority: "secondary",
+                  type: "button",
+                  onClick: () => setEditing(false),
+                },
+              ]}
+            />
           </form>
         )}
       </Accordion>

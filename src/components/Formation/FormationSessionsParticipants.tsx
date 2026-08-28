@@ -5,7 +5,7 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
@@ -172,66 +172,62 @@ export const FormationSessionsParticipants = ({
                             ? "Personne n'y est inscrit·e."
                             : `Les ${participants.length} inscriptions de cette date seront supprimées, liste d'attente comprise. Personne n'est prévenu·e automatiquement.`}
                         </p>
-                        <Button
-                          priority="secondary"
-                          size="small"
-                          nativeButtonProps={{
-                            type: "button",
-                            disabled: suppressionEnCours,
-                          }}
-                          onClick={() => supprimer(session.id)}
-                        >
-                          {suppressionEnCours
-                            ? "Suppression..."
-                            : "Confirmer la suppression"}
-                        </Button>
-                        <Button
-                          className={fr.cx("fr-ml-2v")}
-                          priority="tertiary no outline"
-                          size="small"
-                          nativeButtonProps={{ type: "button" }}
-                          onClick={() => setASupprimer(null)}
-                        >
-                          Annuler
-                        </Button>
+                        <ButtonsGroup
+                          inlineLayoutWhen="sm and up"
+                          buttonsSize="small"
+                          buttons={[
+                            {
+                              children: suppressionEnCours
+                                ? "Suppression..."
+                                : "Confirmer la suppression",
+                              priority: "secondary",
+                              type: "button",
+                              disabled: suppressionEnCours,
+                              onClick: () => supprimer(session.id),
+                            },
+                            {
+                              children: "Annuler",
+                              priority: "tertiary no outline",
+                              type: "button",
+                              onClick: () => setASupprimer(null),
+                            },
+                          ]}
+                        />
                       </>
                     }
                   />
                 ) : (
                   <div className={fr.cx("fr-mb-2w")}>
-                    <Button
-                      priority="secondary"
-                      size="small"
-                      nativeButtonProps={{ type: "button" }}
-                      onClick={() => setEnEdition(session.id)}
-                    >
-                      Modifier cette date
-                    </Button>
-                    <Button
-                      className={fr.cx("fr-ml-2v")}
-                      priority="tertiary no outline"
-                      size="small"
-                      nativeButtonProps={{
-                        type: "button",
-                        disabled: emailsInscrits.length === 0,
-                        title:
-                          emailsInscrits.length === 0
-                            ? "Aucune adresse à copier"
-                            : undefined,
-                      }}
-                      onClick={() => copierAdresses(session.id, emailsInscrits)}
-                    >
-                      Copier les emails ({emailsInscrits.length})
-                    </Button>
-                    <Button
-                      className={fr.cx("fr-ml-2v")}
-                      priority="tertiary no outline"
-                      size="small"
-                      nativeButtonProps={{ type: "button" }}
-                      onClick={() => setASupprimer(session.id)}
-                    >
-                      Supprimer cette date
-                    </Button>
+                    <ButtonsGroup
+                      inlineLayoutWhen="sm and up"
+                      buttonsSize="small"
+                      buttons={[
+                        {
+                          children: "Modifier cette date",
+                          priority: "secondary",
+                          type: "button",
+                          onClick: () => setEnEdition(session.id),
+                        },
+                        {
+                          children: `Copier les emails (${emailsInscrits.length})`,
+                          priority: "tertiary no outline",
+                          type: "button",
+                          disabled: emailsInscrits.length === 0,
+                          title:
+                            emailsInscrits.length === 0
+                              ? "Aucune adresse à copier"
+                              : undefined,
+                          onClick: () =>
+                            copierAdresses(session.id, emailsInscrits),
+                        },
+                        {
+                          children: "Supprimer cette date",
+                          priority: "tertiary no outline",
+                          type: "button",
+                          onClick: () => setASupprimer(session.id),
+                        },
+                      ]}
+                    />
                     {!!erreur && (
                       <Alert
                         className={fr.cx("fr-mt-2w")}

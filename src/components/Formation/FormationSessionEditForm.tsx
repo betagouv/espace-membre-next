@@ -4,7 +4,7 @@ import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { Button } from "@codegouvfr/react-dsfr/Button";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -143,17 +143,25 @@ export const FormationSessionEditForm = ({
         stateRelatedMessage={errors.lienVisioAdmin?.message}
       />
 
-      <Button nativeButtonProps={{ type: "submit", disabled: isSubmitting }}>
-        {isSubmitting ? "Enregistrement..." : "Enregistrer cette date"}
-      </Button>
-      <Button
-        className={fr.cx("fr-ml-2v")}
-        priority="secondary"
-        nativeButtonProps={{ type: "button" }}
-        onClick={onDone}
-      >
-        Annuler
-      </Button>
+      <ButtonsGroup
+        inlineLayoutWhen="sm and up"
+        buttonsSize="small"
+        buttons={[
+          {
+            children: isSubmitting
+              ? "Enregistrement..."
+              : "Enregistrer cette date",
+            type: "submit",
+            disabled: isSubmitting,
+          },
+          {
+            children: "Annuler",
+            priority: "secondary",
+            type: "button",
+            onClick: onDone,
+          },
+        ]}
+      />
     </form>
   );
 };
