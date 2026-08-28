@@ -368,26 +368,11 @@ export const FormationManagePanel = ({
                 ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
               }}
             />
-            <Input
-              label="Lien du support"
-              state={errors.lienSupport ? "error" : "default"}
-              stateRelatedMessage={errors.lienSupport?.message}
-              nativeInputProps={{
-                type: "url",
-                placeholder: "https://",
-                ...register("lienSupport", { setValueAs: emptyAsUndefined }),
-              }}
-            />
-            <Input
-              label="Lien du formulaire de feedback"
-              state={errors.lienFeedback ? "error" : "default"}
-              stateRelatedMessage={errors.lienFeedback?.message}
-              nativeInputProps={{
-                type: "url",
-                placeholder: "https://",
-                ...register("lienFeedback", { setValueAs: emptyAsUndefined }),
-              }}
-            />
+            {/* Support et retour d'expérience sont retirés du formulaire pour
+                l'instant. Les valeurs restent enregistrées : sans ces champs
+                cachés, la moindre modification les effacerait. */}
+            <input type="hidden" {...register("lienSupport")} />
+            <input type="hidden" {...register("lienFeedback")} />
             <Input
               label="Qui animera cette formation ?"
               state={errors.animateur ? "error" : "default"}

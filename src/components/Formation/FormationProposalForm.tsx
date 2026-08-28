@@ -171,6 +171,24 @@ export const FormationProposalForm = ({
             }}
           />
         </div>
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Select
+            className={fr.cx("fr-mb-0")}
+            label="Durée"
+            state={errors.duree ? "error" : "default"}
+            stateRelatedMessage={errors.duree?.message}
+            nativeSelectProps={{
+              ...register("duree", { setValueAs: emptyAsUndefined }),
+            }}
+            options={[
+              { label: "Sélectionner une durée", value: "" },
+              ...FORMATION_DUREES.map((duree) => ({
+                label: duree.label,
+                value: duree.label,
+              })),
+            ]}
+          />
+        </div>
       </div>
 
       <Input
@@ -190,24 +208,6 @@ export const FormationProposalForm = ({
         style={{ alignItems: "flex-end" }}
       >
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Select
-            className={fr.cx("fr-mb-0")}
-            label="Durée"
-            state={errors.duree ? "error" : "default"}
-            stateRelatedMessage={errors.duree?.message}
-            nativeSelectProps={{
-              ...register("duree", { setValueAs: emptyAsUndefined }),
-            }}
-            options={[
-              { label: "Sélectionner une durée", value: "" },
-              ...FORMATION_DUREES.map((duree) => ({
-                label: duree.label,
-                value: duree.label,
-              })),
-            ]}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
             label="Limite de participants (facultatif)"
@@ -226,29 +226,6 @@ export const FormationProposalForm = ({
           />
         </div>
       </div>
-
-      <Input
-        label="Lien du support (facultatif)"
-        state={errors.lienSupport ? "error" : "default"}
-        stateRelatedMessage={errors.lienSupport?.message}
-        nativeInputProps={{
-          type: "url",
-          placeholder: "https://",
-          ...register("lienSupport", { setValueAs: emptyAsUndefined }),
-        }}
-      />
-
-      <Input
-        label="Lien vers le formulaire de feedback (facultatif)"
-        hintText="Un formulaire pour savoir comment s'est passée la formation."
-        state={errors.lienFeedback ? "error" : "default"}
-        stateRelatedMessage={errors.lienFeedback?.message}
-        nativeInputProps={{
-          type: "url",
-          placeholder: "https://",
-          ...register("lienFeedback", { setValueAs: emptyAsUndefined }),
-        }}
-      />
 
       <Input
         label="Qui animera cette formation ?"

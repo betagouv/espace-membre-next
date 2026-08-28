@@ -93,23 +93,34 @@ export const FormationSessionEditForm = ({
 
       <input type="hidden" {...register("sessionId")} />
 
-      <Input
-        label="Date et heure"
-        nativeInputProps={{ type: "datetime-local", ...register("dateDebut") }}
-        state={errors.dateDebut ? "error" : "default"}
-        stateRelatedMessage={errors.dateDebut?.message}
-      />
-
-      <Select
-        label="Durée"
-        nativeSelectProps={register("duree")}
-        options={FORMATION_DUREES.map((d) => ({
-          value: d.label,
-          label: d.label,
-        }))}
-        state={errors.duree ? "error" : "default"}
-        stateRelatedMessage={errors.duree?.message}
-      />
+      <div
+        className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
+        style={{ alignItems: "flex-end" }}
+      >
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Input
+            label="Date et heure"
+            nativeInputProps={{
+              type: "datetime-local",
+              ...register("dateDebut"),
+            }}
+            state={errors.dateDebut ? "error" : "default"}
+            stateRelatedMessage={errors.dateDebut?.message}
+          />
+        </div>
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Select
+            label="Durée"
+            nativeSelectProps={register("duree")}
+            options={FORMATION_DUREES.map((d) => ({
+              value: d.label,
+              label: d.label,
+            }))}
+            state={errors.duree ? "error" : "default"}
+            stateRelatedMessage={errors.duree?.message}
+          />
+        </div>
+      </div>
 
       <Input
         label="Limite de participants (facultatif)"
