@@ -227,23 +227,35 @@ export const FormationProposalForm = ({
         </div>
       </div>
 
-      <Input
-        label="Qui animera cette formation ?"
-        state={errors.animateur ? "error" : "default"}
-        stateRelatedMessage={errors.animateur?.message}
-        nativeInputProps={{ ...register("animateur") }}
-      />
-
-      <Input
-        label="Email de l'organisateur·trice"
-        hintText="Il ou elle sera averti·e dès que la formation sera complète."
-        state={errors.emailOrganisateur ? "error" : "default"}
-        stateRelatedMessage={errors.emailOrganisateur?.message}
-        nativeInputProps={{
-          type: "email",
-          ...register("emailOrganisateur"),
-        }}
-      />
+      {/* Même remarque que plus haut : le texte d'aide creuse une différence de
+          hauteur que `flex-end` et `fr-mb-0` rattrapent. */}
+      <div
+        className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
+        style={{ alignItems: "flex-end" }}
+      >
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Input
+            className={fr.cx("fr-mb-0")}
+            label="Qui animera cette formation ?"
+            state={errors.animateur ? "error" : "default"}
+            stateRelatedMessage={errors.animateur?.message}
+            nativeInputProps={{ ...register("animateur") }}
+          />
+        </div>
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Input
+            className={fr.cx("fr-mb-0")}
+            label="Email de l'organisateur·trice"
+            hintText="Il ou elle sera averti·e dès que la formation sera complète."
+            state={errors.emailOrganisateur ? "error" : "default"}
+            stateRelatedMessage={errors.emailOrganisateur?.message}
+            nativeInputProps={{
+              type: "email",
+              ...register("emailOrganisateur"),
+            }}
+          />
+        </div>
+      </div>
 
       <div className={fr.cx("fr-input-group")}>
         <p className={fr.cx("fr-label", "fr-mb-1v")}>
