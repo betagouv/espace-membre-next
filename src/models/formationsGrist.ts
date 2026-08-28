@@ -88,6 +88,13 @@ export const GRIST_INSCRIPTIONS_COLUMNS = {
   surListeDAttente: "Sur_liste_d_attente",
   present: "present",
   email: "Email",
+  // Renseignées pour les notifications, envoyées depuis n8n : l'état d'attente
+  // au moment de l'inscription permet de reconnaître un repêchage, et chaque
+  // drapeau empêche un envoi de se répéter à chaque passage.
+  enAttenteALInscription: "en_attente_a_l_inscription",
+  mailInscriptionEnvoye: "mail_inscription_envoye",
+  mailRepechageEnvoye: "mail_repechage_envoye",
+  mailRappelEnvoye: "mail_rappel_envoye",
 } as const;
 
 // Identifiants de colonnes de la table Sessions, remplie quand la date de la
@@ -156,4 +163,20 @@ export const GRIST_IMAGES_COLUMNS = {
   image: "Image",
   categorie: "Categorie",
   active: "Active",
+} as const;
+
+/**
+ * Annulations de dates, conservées pour prévenir les inscrit·es.
+ *
+ * Supprimer une date emporte ses inscriptions : sans cette trace, il ne
+ * resterait aucune adresse à qui écrire. La ligne est donc écrite avant la
+ * suppression, et n8n s'en sert pour envoyer le message.
+ */
+export const GRIST_ANNULATIONS_COLUMNS = {
+  titre: "Titre",
+  debut: "Debut",
+  emails: "Emails",
+  annuleeLe: "Annulee_le",
+  annuleePar: "Annulee_par",
+  mailEnvoye: "mail_envoye",
 } as const;

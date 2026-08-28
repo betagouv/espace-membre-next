@@ -36,6 +36,7 @@ import {
 import {
   FORMATION_DUREES,
   FORMATION_STATUT,
+  GRIST_ANNULATIONS_COLUMNS,
   GRIST_FORMATIONS_COLUMNS,
   GRIST_INSCRIPTIONS_COLUMNS,
   GRIST_SESSIONS_COLUMNS,
@@ -305,6 +306,9 @@ export const registerToFormationSession = withErrorHandling(
           [GRIST_INSCRIPTIONS_COLUMNS.session]: sessionRowId,
           [GRIST_INSCRIPTIONS_COLUMNS.createdAt]: new Date().toISOString(),
           [GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente]: onWaitingList,
+          // Figé ici : un repêchage se reconnaît à ce que cette colonne dise
+          // « en attente » alors que la précédente n'y est plus.
+          [GRIST_INSCRIPTIONS_COLUMNS.enAttenteALInscription]: onWaitingList,
           [GRIST_INSCRIPTIONS_COLUMNS.present]: false,
           [GRIST_INSCRIPTIONS_COLUMNS.email]: session.user.email ?? "",
         },
@@ -683,6 +687,30 @@ export const deleteFormationSession = withErrorHandling(
       config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
       { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
     );
+    // Trace de l'annulation avant de supprimer quoi que ce soit : les
+    // inscriptions partent avec la date, et avec elles les adresses à qui
+    // écrire. C'est cette ligne qui permet de prévenir les inscrit·es.
+    const destinataires = inscriptions
+      .map((i) => String(i.fields[GRIST_INSCRIPTIONS_COLUMNS.email] ?? ""))
+      .filter((email) => !!email);
+    if (destinataires.length > 0) {
+      await addGristRecords(
+        docId,
+        config.GRIST_FORMATIONS_ANNULATIONS_TABLE_ID,
+        [
+          {
+            [GRIST_ANNULATIONS_COLUMNS.titre]: formation.name,
+            [GRIST_ANNULATIONS_COLUMNS.debut]:
+              sessionRow.fields[GRIST_SESSIONS_COLUMNS.debut] ?? null,
+            [GRIST_ANNULATIONS_COLUMNS.emails]: destinataires.join(", "),
+            [GRIST_ANNULATIONS_COLUMNS.annuleeLe]: new Date().toISOString(),
+            [GRIST_ANNULATIONS_COLUMNS.annuleePar]: session.user.id,
+            [GRIST_ANNULATIONS_COLUMNS.mailEnvoye]: false,
+          },
+        ],
+      );
+    }
+
     // Les inscriptions d'abord : si la suppression de la session échouait
     // ensuite, mieux vaut une date vide qu'une date fantôme avec des inscrits.
     await deleteGristRecords(
