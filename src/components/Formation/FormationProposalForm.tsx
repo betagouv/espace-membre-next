@@ -216,22 +216,24 @@ export const FormationProposalForm = ({
         </div>
       </div>
 
-      <Input
-        label="Lien de visioconférence administrateur"
-        hintText="Requis pour une formation en distanciel."
-        state={errors.lienVisioAdmin ? "error" : "default"}
-        stateRelatedMessage={errors.lienVisioAdmin?.message}
-        nativeInputProps={{
-          type: "url",
-          placeholder: "https://",
-          ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
-        }}
-      />
-
       <div
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
         style={{ alignItems: "flex-end" }}
       >
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Input
+            className={fr.cx("fr-mb-0")}
+            label="Lien de visioconférence administrateur"
+            hintText="Requis pour une formation en distanciel."
+            state={errors.lienVisioAdmin ? "error" : "default"}
+            stateRelatedMessage={errors.lienVisioAdmin?.message}
+            nativeInputProps={{
+              type: "url",
+              placeholder: "https://",
+              ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
+            }}
+          />
+        </div>
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
