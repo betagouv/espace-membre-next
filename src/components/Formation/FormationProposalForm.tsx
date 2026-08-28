@@ -223,20 +223,6 @@ export const FormationProposalForm = ({
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
             className={fr.cx("fr-mb-0")}
-            label="Lien de visioconférence administrateur"
-            hintText="Requis pour une formation en distanciel."
-            state={errors.lienVisioAdmin ? "error" : "default"}
-            stateRelatedMessage={errors.lienVisioAdmin?.message}
-            nativeInputProps={{
-              type: "url",
-              placeholder: "https://",
-              ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
-            }}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            className={fr.cx("fr-mb-0")}
             label="Limite de participants (facultatif)"
             hintText="Sans limite, les inscriptions restent ouvertes."
             state={errors.capacite ? "error" : "default"}
@@ -249,6 +235,20 @@ export const FormationProposalForm = ({
                 setValueAs: (value) =>
                   value === "" || value === null ? undefined : Number(value),
               }),
+            }}
+          />
+        </div>
+        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+          <Input
+            className={fr.cx("fr-mb-0")}
+            label="Lien de visioconférence administrateur"
+            hintText="Requis pour une formation en distanciel."
+            state={errors.lienVisioAdmin ? "error" : "default"}
+            stateRelatedMessage={errors.lienVisioAdmin?.message}
+            nativeInputProps={{
+              type: "url",
+              placeholder: "https://",
+              ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
             }}
           />
         </div>
