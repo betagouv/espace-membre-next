@@ -280,6 +280,7 @@ export const FormationManagePanel = ({
             />
             <RadioButtons
               legend="Modalité"
+              orientation="horizontal"
               state={errors.modalite ? "error" : "default"}
               stateRelatedMessage={errors.modalite?.message}
               options={FORMATION_MODALITE_CHOICES.map((modalite) => ({
@@ -288,7 +289,18 @@ export const FormationManagePanel = ({
               }))}
             />
             <Checkbox
+              legend="Audience cible"
+              orientation="horizontal"
+              state={errors.audience ? "error" : "default"}
+              stateRelatedMessage={errors.audience?.message}
+              options={FORMATION_AUDIENCES.map((audience) => ({
+                label: audience,
+                nativeInputProps: { value: audience, ...register("audience") },
+              }))}
+            />
+            <Checkbox
               legend="Catégorie"
+              orientation="horizontal"
               state={errors.thematiques ? "error" : "default"}
               stateRelatedMessage={errors.thematiques?.message}
               options={FORMATION_THEMATIQUES.map((thematique) => ({
@@ -297,15 +309,6 @@ export const FormationManagePanel = ({
                   value: thematique,
                   ...register("thematiques"),
                 },
-              }))}
-            />
-            <Checkbox
-              legend="Audience cible"
-              state={errors.audience ? "error" : "default"}
-              stateRelatedMessage={errors.audience?.message}
-              options={FORMATION_AUDIENCES.map((audience) => ({
-                label: audience,
-                nativeInputProps: { value: audience, ...register("audience") },
               }))}
             />
             <div
