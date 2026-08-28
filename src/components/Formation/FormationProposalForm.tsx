@@ -178,9 +178,8 @@ export const FormationProposalForm = ({
         </div>
       </div>
 
-      {/* alignItems + fr-mb-0 : le texte d'aide rend une colonne plus haute que
-          l'autre, et la marge basse de .fr-input-group varie selon le
-          breakpoint — sans ça les deux champs ne sont pas alignés. */}
+      {/* alignItems + fr-mb-0 : la marge basse de .fr-input-group varie selon
+          le point de rupture, sans quoi les deux champs se décalent. */}
       <div
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
         style={{ alignItems: "flex-end" }}
@@ -189,7 +188,6 @@ export const FormationProposalForm = ({
           <Input
             className={fr.cx("fr-mb-0")}
             label="Date de la formation"
-            hintText="La fin est déduite de la durée."
             state={errors.dateDebut ? "error" : "default"}
             stateRelatedMessage={errors.dateDebut?.message}
             nativeInputProps={{
