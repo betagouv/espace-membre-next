@@ -320,6 +320,36 @@ export const FormationManagePanel = ({
               style={{ alignItems: "flex-end" }}
             >
               <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+                <div
+                  className={fr.cx(
+                    "fr-grid-row",
+                    "fr-grid-row--gutters",
+                    "fr-mb-3w",
+                  )}
+                  style={{ alignItems: "flex-end" }}
+                >
+                  <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+                    <Input
+                      className={fr.cx("fr-mb-0")}
+                      label="Qui animera cette formation ?"
+                      state={errors.animateur ? "error" : "default"}
+                      stateRelatedMessage={errors.animateur?.message}
+                      nativeInputProps={{ ...register("animateur") }}
+                    />
+                  </div>
+                  <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+                    <Input
+                      className={fr.cx("fr-mb-0")}
+                      label="Email de l'organisateur·trice"
+                      state={errors.emailOrganisateur ? "error" : "default"}
+                      stateRelatedMessage={errors.emailOrganisateur?.message}
+                      nativeInputProps={{
+                        type: "email",
+                        ...register("emailOrganisateur"),
+                      }}
+                    />
+                  </div>
+                </div>
                 <Select
                   className={fr.cx("fr-mb-0")}
                   label="Durée"
@@ -373,36 +403,6 @@ export const FormationManagePanel = ({
                 cachés, la moindre modification les effacerait. */}
             <input type="hidden" {...register("lienSupport")} />
             <input type="hidden" {...register("lienFeedback")} />
-            <div
-              className={fr.cx(
-                "fr-grid-row",
-                "fr-grid-row--gutters",
-                "fr-mb-3w",
-              )}
-              style={{ alignItems: "flex-end" }}
-            >
-              <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-                <Input
-                  className={fr.cx("fr-mb-0")}
-                  label="Qui animera cette formation ?"
-                  state={errors.animateur ? "error" : "default"}
-                  stateRelatedMessage={errors.animateur?.message}
-                  nativeInputProps={{ ...register("animateur") }}
-                />
-              </div>
-              <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-                <Input
-                  className={fr.cx("fr-mb-0")}
-                  label="Email de l'organisateur·trice"
-                  state={errors.emailOrganisateur ? "error" : "default"}
-                  stateRelatedMessage={errors.emailOrganisateur?.message}
-                  nativeInputProps={{
-                    type: "email",
-                    ...register("emailOrganisateur"),
-                  }}
-                />
-              </div>
-            </div>
             <input type="hidden" {...register("formationId")} />
 
             <Button
