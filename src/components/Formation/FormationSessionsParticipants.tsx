@@ -48,9 +48,34 @@ export const FormationSessionsParticipants = ({
   // Suppression en deux temps : le premier clic demande confirmation en
   // annonçant ce qui sera perdu, le second exécute.
   const [aSupprimer, setASupprimer] = React.useState<string | null>(null);
+  // Retour de la copie, par date : « copié », ou la liste à copier à la main
+  // quand le presse-papiers est refusé.
+  const [copie, setCopie] = React.useState<{
+    sessionId: string;
+    adresses: string;
+    reussi: boolean;
+  } | null>(null);
   const [suppressionEnCours, setSuppressionEnCours] = React.useState(false);
   const [erreur, setErreur] = React.useState<string | null>(null);
   const router = useRouter();
+
+  /**
+   * Copie les adresses des personnes inscrites, liste d'attente exclue.
+   *
+   * Séparées par des virgules : c'est ce qu'attend le champ destinataires d'un
+   * client de messagerie. Les personnes en attente n'ont pas leur place dans un
+   * envoi qui s'adresse aux participants.
+   */
+  const copierAdresses = async (sessionId: string, adresses: string[]) => {
+    const liste = adresses.join(", ");
+    try {
+      await navigator.clipboard.writeText(liste);
+      setCopie({ sessionId, adresses: liste, reussi: true });
+    } catch {
+      // Presse-papiers refusé : on affiche la liste, il reste le copier-coller.
+      setCopie({ sessionId, adresses: liste, reussi: false });
+    }
+  };
 
   const supprimer = async (id: string) => {
     setSuppressionEnCours(true);
@@ -81,6 +106,10 @@ export const FormationSessionsParticipants = ({
       {sessions.map((session) => {
         const participants = participantsBySession[session.id] ?? [];
         const inscrits = participants.filter((p) => !p.onWaitingList);
+        // La liste d'attente est écartée : ces personnes n'ont pas de place.
+        const emailsInscrits = inscrits
+          .map((p) => p.email)
+          .filter((email) => !!email);
         const enAttente = participants.filter((p) => p.onWaitingList);
         const ouverte = ouvertes.includes(session.id);
 
@@ -182,6 +211,22 @@ export const FormationSessionsParticipants = ({
                       className={fr.cx("fr-ml-2v")}
                       priority="tertiary no outline"
                       size="small"
+                      nativeButtonProps={{
+                        type: "button",
+                        disabled: emailsInscrits.length === 0,
+                        title:
+                          emailsInscrits.length === 0
+                            ? "Aucune adresse à copier"
+                            : undefined,
+                      }}
+                      onClick={() => copierAdresses(session.id, emailsInscrits)}
+                    >
+                      Copier les emails ({emailsInscrits.length})
+                    </Button>
+                    <Button
+                      className={fr.cx("fr-ml-2v")}
+                      priority="tertiary no outline"
+                      size="small"
                       nativeButtonProps={{ type: "button" }}
                       onClick={() => setASupprimer(session.id)}
                     >
@@ -195,6 +240,33 @@ export const FormationSessionsParticipants = ({
                         description={erreur}
                       />
                     )}
+                    {copie?.sessionId === session.id &&
+                      (copie.reussi ? (
+                        <Alert
+                          className={fr.cx("fr-mt-2w")}
+                          severity="success"
+                          small
+                          description={`${emailsInscrits.length} adresse${
+                            emailsInscrits.length > 1 ? "s" : ""
+                          } copiée${
+                            emailsInscrits.length > 1 ? "s" : ""
+                          }. Colle-les dans le champ destinataires.`}
+                        />
+                      ) : (
+                        <div className={fr.cx("fr-mt-2w")}>
+                          <p className={fr.cx("fr-hint-text", "fr-mb-1v")}>
+                            Le presse-papiers a été refusé. Sélectionne et copie
+                            la liste ci-dessous.
+                          </p>
+                          <textarea
+                            className={fr.cx("fr-input")}
+                            readOnly
+                            rows={3}
+                            value={copie.adresses}
+                            onFocus={(event) => event.target.select()}
+                          />
+                        </div>
+                      ))}
                   </div>
                 )}
                 {participants.length === 0 ? (
