@@ -7,6 +7,7 @@ import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
 
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
+import { libelleInscriptions } from "@/lib/formationSeats";
 import { GristInscription } from "@/lib/formationsGrist";
 
 export type FormationDate = {
@@ -14,6 +15,7 @@ export type FormationDate = {
   start?: Date;
   maxSeats?: number;
   availableSeats?: number;
+  inscrits?: number;
 };
 
 /**
@@ -49,10 +51,11 @@ export const FormationOtherDates = ({
             (i) => i.sessionId === session.id,
           );
           const seatsLeft = session.availableSeats ?? 0;
-          const taken =
-            session.maxSeats !== undefined
-              ? Math.max(0, session.maxSeats - seatsLeft)
-              : undefined;
+          // Sans limite, `availableSeats` vaut la capacité, soit zéro : le
+          // décompte vient alors de la liste des participants.
+          const taken = session.maxSeats
+            ? Math.max(0, session.maxSeats - seatsLeft)
+            : (session.inscrits ?? 0);
 
           return (
             <li
@@ -80,11 +83,11 @@ export const FormationOtherDates = ({
                       )
                     : "Date à préciser"}
                 </strong>
-                {session.maxSeats !== undefined && (
-                  <span className={fr.cx("fr-hint-text")}>
-                    Inscription : {taken}/{session.maxSeats}
-                  </span>
-                )}
+                <span className={fr.cx("fr-hint-text")}>
+                  {session.maxSeats
+                    ? `Inscription : ${libelleInscriptions(taken, session.maxSeats)}`
+                    : libelleInscriptions(taken)}
+                </span>
               </span>
               <FormationRegisterButton
                 sessionId={session.id}

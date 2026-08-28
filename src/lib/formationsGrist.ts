@@ -41,12 +41,29 @@ export async function fetchGristFormations({
   }
   const docId = config.GRIST_FORMATIONS_DOC_ID;
 
-  const [formats, sessions] = await Promise.all([
+  const [formats, sessions, inscriptions] = await Promise.all([
     getGristRecords(docId, config.GRIST_FORMATIONS_FORMATS_TABLE_ID, {
       [GRIST_FORMATIONS_COLUMNS.statut]: statuts,
     }),
     getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID),
+    getGristRecords(docId, config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID),
   ]);
+
+  // Une date sans limite n'a pas de « places restantes » à afficher : son
+  // décompte se compte. La liste d'attente n'entre pas dans le total.
+  const inscritsParSession = new Map<number, number>();
+  for (const inscription of inscriptions) {
+    if (inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente]) {
+      continue;
+    }
+    const sessionId = Number(
+      inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.session],
+    );
+    inscritsParSession.set(
+      sessionId,
+      (inscritsParSession.get(sessionId) ?? 0) + 1,
+    );
+  }
 
   // Dates à venir de chaque format, la plus proche en tête. Les sessions
   // passées ne servent plus à l'inscription.
@@ -73,7 +90,11 @@ export async function fetchGristFormations({
   }
 
   return formats.map((format) =>
-    formatToFormation(format, sessionsByFormat.get(format.id) ?? []),
+    formatToFormation(
+      format,
+      sessionsByFormat.get(format.id) ?? [],
+      inscritsParSession,
+    ),
   );
 }
 
@@ -101,6 +122,7 @@ export async function fetchGristPendingFormations(): Promise<Formation[]> {
 function formatToFormation(
   format: GristRow,
   upcoming: GristRow[] = [],
+  inscritsParSession: Map<number, number> = new Map(),
 ): Formation {
   {
     // La session la plus proche fournit la date et les places affichées ; les
@@ -112,10 +134,13 @@ function formatToFormation(
     const [imageId] = choiceList(f[GRIST_FORMATIONS_COLUMNS.image]);
     const s = session?.fields ?? {};
     const start = toDate(s[GRIST_SESSIONS_COLUMNS.debut]);
+    // Une date porte sa propre limite, et son absence en est une réponse :
+    // reprendre celle du format ferait passer « sans limite » pour une limite.
+    // Le format ne sert de repli que tant qu'aucune date n'est programmée.
     const capacite = Number(
-      s[GRIST_SESSIONS_COLUMNS.capacite] ??
-        f[GRIST_FORMATIONS_COLUMNS.capacite] ??
-        0,
+      (session
+        ? s[GRIST_SESSIONS_COLUMNS.capacite]
+        : f[GRIST_FORMATIONS_COLUMNS.capacite]) ?? 0,
     );
     const placesRestantes = s["Places_restantes"];
 
@@ -131,9 +156,7 @@ function formatToFormation(
       sessionId: session ? String(session.id) : undefined,
       sessions: upcoming.map((row) => {
         const capacity = Number(
-          row.fields[GRIST_SESSIONS_COLUMNS.capacite] ??
-            f[GRIST_FORMATIONS_COLUMNS.capacite] ??
-            0,
+          row.fields[GRIST_SESSIONS_COLUMNS.capacite] ?? 0,
         );
         const left = row.fields["Places_restantes"];
         return {
@@ -141,6 +164,7 @@ function formatToFormation(
           start: toDate(row.fields[GRIST_SESSIONS_COLUMNS.debut]),
           maxSeats: capacity || undefined,
           availableSeats: typeof left === "number" ? left : capacity,
+          inscrits: inscritsParSession.get(row.id) ?? 0,
           dureeHeures:
             Number(row.fields[GRIST_SESSIONS_COLUMNS.dureeIndicative] ?? 0) ||
             undefined,

@@ -33,6 +33,7 @@ import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode, Domaine } from "@/models/member";
 import { authOptions } from "@/lib/authoptions";
 import { durationBetweenDate } from "@/lib/date";
+import { libelleInscriptions } from "@/lib/formationSeats";
 
 const mdParser = new MarkdownIt({
   html: true,
@@ -254,22 +255,27 @@ export default async function Page(props: Readonly<Props>) {
                   )}
                   {!formation.isELearning && (
                     <>
-                      {formation.maxSeats !== undefined &&
-                        formation.availableSeats !== undefined && (
-                          <span
-                            style={{
-                              display: "block",
-                              marginBottom: 5,
-                              marginTop: 5,
-                            }}
-                          >
-                            Inscription: {}
-                            {formation.availableSeats > 0
-                              ? formation.maxSeats - formation.availableSeats
-                              : formation.maxSeats}
-                            /{formation.maxSeats}
-                          </span>
-                        )}
+                      <span
+                        style={{
+                          display: "block",
+                          marginBottom: 5,
+                          marginTop: 5,
+                        }}
+                      >
+                        {formation.maxSeats
+                          ? `Inscription : ${libelleInscriptions(
+                              Math.max(
+                                0,
+                                formation.maxSeats -
+                                  (formation.availableSeats ?? 0),
+                              ),
+                              formation.maxSeats,
+                            )}`
+                          : // Sans limite, le décompte remplace la fraction.
+                            libelleInscriptions(
+                              formation.sessions?.[0]?.inscrits ?? 0,
+                            )}
+                      </span>
                       <span
                         style={{
                           display: "block",

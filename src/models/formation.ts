@@ -43,6 +43,9 @@ export const formationSchema = z.object({
         // Propres à la date : chacune peut avoir sa durée et son lien.
         dureeHeures: z.number().optional(),
         lienVisioAdmin: z.string().optional(),
+        // Inscriptions confirmées, hors liste d'attente. Seule façon d'annoncer
+        // un décompte quand la date n'a pas de limite.
+        inscrits: z.number().optional(),
       }),
     )
     .optional(),

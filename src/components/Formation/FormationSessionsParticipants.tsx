@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 
 import { deleteFormationSession } from "@/app/api/formations/actions";
 import { FormationSessionEditForm } from "@/components/Formation/FormationSessionEditForm";
+import { libelleInscriptions } from "@/lib/formationSeats";
 import { GristParticipant } from "@/lib/formationsGrist";
 
 export type ParticipantAvecFiche = GristParticipant & { profileUrl?: string };
@@ -113,8 +114,8 @@ export const FormationSessionsParticipants = ({
                   )
                 : "Date à préciser"}
               {" — "}
-              {inscrits.length}
-              {session.maxSeats ? `/${session.maxSeats}` : ""} inscrit·es
+              {libelleInscriptions(inscrits.length, session.maxSeats)}
+              {session.maxSeats ? " inscrit·es" : ""}
               {enAttente.length ? ` + ${enAttente.length} en attente` : ""}
             </button>
 
