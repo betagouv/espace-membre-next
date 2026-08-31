@@ -38,8 +38,11 @@ import {
   FORMATION_STATUT,
   GRIST_ANNULATIONS_COLUMNS,
   GRIST_FORMATIONS_COLUMNS,
+  GRIST_SUPPRESSIONS_AGENDA_COLUMNS,
   GRIST_INSCRIPTIONS_COLUMNS,
   GRIST_SESSIONS_COLUMNS,
+  uidEvenementAnimation,
+  uidEvenementInscription,
 } from "@/models/formationsGrist";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
@@ -334,6 +337,37 @@ export const registerToFormationSession = withErrorHandling(
  * une place qui se libère doit profiter à la personne qui attend depuis le plus
  * longtemps, sans intervention manuelle.
  */
+/**
+ * Note les événements d'agenda à retirer.
+ *
+ * Écrit avant la suppression des lignes qu'ils concernent : une fois celles-ci
+ * effacées, plus rien ne dirait quoi enlever de l'agenda. Le workflow n8n lit
+ * cette table et fait le ménage.
+ *
+ * Un échec ici ne doit pas empêcher la suppression demandée : l'utilisateur a
+ * cliqué, l'action doit aboutir. On perd le nettoyage de l'agenda, pas plus.
+ */
+async function noterSuppressionsAgenda(
+  docId: string,
+  entrees: { uid: string; contexte: string }[],
+): Promise<void> {
+  if (entrees.length === 0) return;
+  try {
+    await addGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_SUPPRESSIONS_AGENDA_TABLE_ID,
+      entrees.map(({ uid, contexte }) => ({
+        [GRIST_SUPPRESSIONS_AGENDA_COLUMNS.uid]: uid,
+        [GRIST_SUPPRESSIONS_AGENDA_COLUMNS.contexte]: contexte,
+        [GRIST_SUPPRESSIONS_AGENDA_COLUMNS.creeLe]: new Date().toISOString(),
+        [GRIST_SUPPRESSIONS_AGENDA_COLUMNS.supprime]: false,
+      })),
+    );
+  } catch {
+    // Tant pis pour l'agenda : la suppression demandée prime.
+  }
+}
+
 export const unregisterFromFormationSession = withErrorHandling(
   async (sessionId: string) => {
     const session = await getServerSession(authOptions);
@@ -382,6 +416,13 @@ export const unregisterFromFormationSession = withErrorHandling(
       );
     }
 
+    await noterSuppressionsAgenda(
+      docId,
+      siennes.map((i) => ({
+        uid: uidEvenementInscription(sessionRowId, i.id),
+        contexte: `Désinscription de ${session.user.id}`,
+      })),
+    );
     await deleteGristRecords(
       docId,
       config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
@@ -710,6 +751,19 @@ export const deleteFormationSession = withErrorHandling(
         ],
       );
     }
+
+    // Les événements de la date partent aussi : celui de chaque personne
+    // inscrite, et celui de l'animateur·ice.
+    await noterSuppressionsAgenda(docId, [
+      ...inscriptions.map((i) => ({
+        uid: uidEvenementInscription(sessionRowId, i.id),
+        contexte: `Date supprimée : ${formation.name}`,
+      })),
+      {
+        uid: uidEvenementAnimation(sessionRowId),
+        contexte: `Date supprimée : ${formation.name} (animation)`,
+      },
+    ]);
 
     // Les inscriptions d'abord : si la suppression de la session échouait
     // ensuite, mieux vaut une date vide qu'une date fantôme avec des inscrits.

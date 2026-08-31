@@ -180,3 +180,32 @@ export const GRIST_ANNULATIONS_COLUMNS = {
   annuleePar: "Annulee_par",
   mailEnvoye: "mail_envoye",
 } as const;
+
+/**
+ * Événements d'agenda à retirer, en attente de traitement.
+ *
+ * Supprimer une date ou une inscription efface la ligne qui portait l'adresse
+ * de l'événement : sans cette trace écrite avant, plus rien ne permettrait de
+ * retrouver ce qu'il faut effacer dans l'agenda.
+ */
+export const GRIST_SUPPRESSIONS_AGENDA_COLUMNS = {
+  uid: "Uid",
+  contexte: "Contexte",
+  creeLe: "Cree_le",
+  supprime: "supprime",
+} as const;
+
+/**
+ * Identifiants des événements d'agenda.
+ *
+ * La même règle vaut côté n8n, qui les reconstruit pour déposer les
+ * invitations : les deux doivent rester d'accord, sans quoi une suppression
+ * viserait un fichier inexistant.
+ */
+export const uidEvenementInscription = (
+  sessionId: number | string,
+  inscriptionId: number | string,
+) => `formation-${sessionId}-inscription-${inscriptionId}@beta.gouv.fr`;
+
+export const uidEvenementAnimation = (sessionId: number | string) =>
+  `formation-${sessionId}-animation@beta.gouv.fr`;

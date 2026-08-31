@@ -127,6 +127,9 @@ export default {
     process.env.GRIST_FORMATIONS_IMAGES_TABLE_ID || "Images",
   GRIST_FORMATIONS_ANNULATIONS_TABLE_ID:
     process.env.GRIST_FORMATIONS_ANNULATIONS_TABLE_ID || "Annulations",
+  GRIST_FORMATIONS_SUPPRESSIONS_AGENDA_TABLE_ID:
+    process.env.GRIST_FORMATIONS_SUPPRESSIONS_AGENDA_TABLE_ID ||
+    "Suppressions_agenda",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? Number.parseInt(process.env.DS_DEMARCHE_NUMBER)
