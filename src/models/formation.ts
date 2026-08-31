@@ -27,6 +27,9 @@ export const formationSchema = z.object({
   inscriptionLink: z.string(),
   availableSeats: z.number(),
   maxSeats: z.number().optional(),
+  // Limite portée par le format lui-même, proposée aux prochaines dates.
+  // Distincte de `maxSeats`, qui est celle de la date la plus proche.
+  capaciteParDefaut: z.number().optional(),
   waitingListUsernames: z.array(z.string()).optional(),
   // Identifiant de la session Grist à venir, quand la formation en a une :
   // c'est à elle qu'on s'inscrit, pas au format.

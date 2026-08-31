@@ -199,6 +199,8 @@ function formatToFormation(
       formation_date: start,
       inscriptionLink: String(f[GRIST_FORMATIONS_COLUMNS.lienSupport] ?? ""),
       maxSeats: capacite || undefined,
+      capaciteParDefaut:
+        Number(f[GRIST_FORMATIONS_COLUMNS.capacite] ?? 0) || undefined,
       availableSeats:
         typeof placesRestantes === "number" ? placesRestantes : capacite,
     } satisfies Formation;
