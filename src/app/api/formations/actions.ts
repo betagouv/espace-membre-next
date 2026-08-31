@@ -22,6 +22,7 @@ import {
 } from "@/lib/grist";
 import { formationSessionDates } from "@/lib/formationRecurrence";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import {
   formationProposalSchema,
   formationProposalSchemaType,
@@ -33,6 +34,8 @@ import {
   formationUpdateSchema,
   formationUpdateSchemaType,
 } from "@/models/actions/formationProposal";
+import { userInfosToModel } from "@/models/mapper";
+import { CommunicationEmailCode } from "@/models/member";
 import {
   FORMATION_DUREES,
   FORMATION_STATUT,
@@ -315,7 +318,9 @@ export const registerToFormationSession = withErrorHandling(
           // « en attente » alors que la précédente n'y est plus.
           [GRIST_INSCRIPTIONS_COLUMNS.enAttenteALInscription]: onWaitingList,
           [GRIST_INSCRIPTIONS_COLUMNS.present]: false,
-          [GRIST_INSCRIPTIONS_COLUMNS.email]: session.user.email ?? "",
+          [GRIST_INSCRIPTIONS_COLUMNS.email]: await adresseDeContact(
+            session.user,
+          ),
         },
       ],
     );
@@ -349,6 +354,35 @@ export const registerToFormationSession = withErrorHandling(
  * Un échec ici ne doit pas empêcher la suppression demandée : l'utilisateur a
  * cliqué, l'action doit aboutir. On perd le nettoyage de l'agenda, pas plus.
  */
+/**
+ * Adresse à laquelle écrire à un membre.
+ *
+ * `session.user.email` est celle du fournisseur d'identité — primaire, ou
+ * ministérielle via ProConnect. Ce n'est pas nécessairement celle que la
+ * personne lit : le profil porte ce choix, et c'est lui qui fait foi. Elle est
+ * recopiée dans l'inscription, donc figée : la lire ici évite d'écrire
+ * pendant des mois à une boîte que personne n'ouvre.
+ */
+async function adresseDeContact(user: {
+  uuid: string;
+  email?: string | null;
+}): Promise<string> {
+  try {
+    const dbUser = userInfosToModel(await getUserInfos({ uuid: user.uuid }));
+    if (dbUser) {
+      const choisie =
+        dbUser.communication_email === CommunicationEmailCode.PRIMARY
+          ? dbUser.primary_email
+          : dbUser.secondary_email;
+      if (choisie) return choisie;
+    }
+  } catch {
+    // Le profil est indisponible : mieux vaut l'adresse du fournisseur
+    // d'identité qu'une inscription sans adresse, invisible aux relances.
+  }
+  return user.email ?? "";
+}
+
 async function noterSuppressionsAgenda(
   docId: string,
   entrees: { uid: string; contexte: string }[],
