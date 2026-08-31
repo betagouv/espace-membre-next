@@ -170,7 +170,7 @@ export const FormationSessionsParticipants = ({
                         <p className={fr.cx("fr-mb-1w")}>
                           {participants.length === 0
                             ? "Personne n'y est inscrit·e."
-                            : `Les ${participants.length} inscriptions de cette date seront supprimées, liste d'attente comprise. Personne n'est prévenu·e automatiquement.`}
+                            : `Les ${participants.length} inscriptions de cette date seront supprimées, liste d'attente comprise. Un mail d'annulation part automatiquement aux ${participants.length} personnes.`}
                         </p>
                         <ButtonsGroup
                           inlineLayoutWhen="sm and up"
