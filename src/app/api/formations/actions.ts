@@ -281,7 +281,9 @@ export const registerToFormationSession = withErrorHandling(
       sessionRow.fields[GRIST_SESSIONS_COLUMNS.format],
     );
     const formation = formatRowId
-      ? await fetchGristFormationById(String(formatRowId))
+      ? await fetchGristFormationById(String(formatRowId), {
+          statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+        })
       : undefined;
     if (formation && isFormationAnimator(session.user, formation)) {
       throw new BusinessError(
@@ -801,7 +803,9 @@ export const updateFormation = withErrorHandling(
       );
     }
 
-    const formation = await fetchGristFormationById(parsed.formationId);
+    const formation = await fetchGristFormationById(parsed.formationId, {
+      statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+    });
     if (!formation) {
       throw new BusinessError(
         "FormationInconnue",
