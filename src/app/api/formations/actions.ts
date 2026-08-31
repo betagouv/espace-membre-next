@@ -648,7 +648,10 @@ export const updateFormationSession = withErrorHandling(
             parsed.dateDebut,
           ),
           [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
-          [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite,
+          // `?? null` et pas `undefined` : JSON.stringify retire les clés
+          // indéfinies, Grist garderait l'ancienne limite alors que la ligne
+          // suivante reclasse la liste d'attente comme s'il n'y en avait plus.
+          [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
           [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
         },
       },
