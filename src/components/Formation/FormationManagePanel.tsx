@@ -52,12 +52,12 @@ const Detail = ({
   value?: React.ReactNode;
 }) =>
   value ? (
-    <tr>
-      <td style={{ padding: "4px 16px 4px 0", color: "#666" }}>{label}</td>
-      <td style={{ padding: "4px 0" }}>
+    <>
+      <dt style={{ color: "var(--text-mention-grey)" }}>{label}</dt>
+      <dd style={{ margin: 0 }}>
         <strong>{value}</strong>
-      </td>
-    </tr>
+      </dd>
+    </>
   ) : null;
 
 /**
@@ -190,42 +190,47 @@ export const FormationManagePanel = ({
 
         {!editing ? (
           <>
-            <table
+            {/* Des paires libellé / valeur : une liste de définitions, pas un
+                tableau sans en-têtes. La grille se cale sur le libellé le plus
+                long, la valeur vient se coller à lui au lieu de partir à
+                l'autre bout du panneau. */}
+            <dl
               style={{
-                borderCollapse: "collapse",
+                display: "grid",
+                gridTemplateColumns: "max-content 1fr",
+                columnGap: "1.5rem",
+                rowGap: "0.25rem",
                 fontSize: 14,
-                width: "100%",
+                margin: 0,
               }}
             >
-              <tbody>
-                <Detail label="Statut" value={statut} />
-                <Detail label="Modalité" value={defaultValues.modalite} />
-                <Detail label="Durée" value={defaultValues.duree} />
-                <Detail
-                  label="Capacité"
-                  value={defaultValues.capacite?.toString()}
-                />
-                <Detail
-                  label="Catégories"
-                  value={defaultValues.thematiques?.join(", ")}
-                />
-                <Detail
-                  label="Audience"
-                  value={defaultValues.audience?.join(", ")}
-                />
-                <Detail label="Animateur·ice" value={defaultValues.animateur} />
-                <Detail
-                  label="Email organisateur·trice"
-                  value={defaultValues.emailOrganisateur}
-                />
-                <Detail
-                  label="Lien visio admin"
-                  value={defaultValues.lienVisioAdmin}
-                />
-                <Detail label="Support" value={defaultValues.lienSupport} />
-                <Detail label="Feedback" value={defaultValues.lienFeedback} />
-              </tbody>
-            </table>
+              <Detail label="Statut" value={statut} />
+              <Detail label="Modalité" value={defaultValues.modalite} />
+              <Detail label="Durée" value={defaultValues.duree} />
+              <Detail
+                label="Capacité"
+                value={defaultValues.capacite?.toString()}
+              />
+              <Detail
+                label="Catégories"
+                value={defaultValues.thematiques?.join(", ")}
+              />
+              <Detail
+                label="Audience"
+                value={defaultValues.audience?.join(", ")}
+              />
+              <Detail label="Animateur·ice" value={defaultValues.animateur} />
+              <Detail
+                label="Email organisateur·trice"
+                value={defaultValues.emailOrganisateur}
+              />
+              <Detail
+                label="Lien visio admin"
+                value={defaultValues.lienVisioAdmin}
+              />
+              <Detail label="Support" value={defaultValues.lienSupport} />
+              <Detail label="Feedback" value={defaultValues.lienFeedback} />
+            </dl>
 
             <p className={fr.cx("fr-mt-3w", "fr-mb-1w")}>
               <strong>Dates programmées ({sessions.length})</strong>
