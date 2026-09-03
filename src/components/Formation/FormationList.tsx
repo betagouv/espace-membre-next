@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -166,6 +167,10 @@ export default function FormationList({
   filteredFormations.sort(comparerAuCatalogue);
   return (
     <div>
+      {/* Titre de section : les cartes sont en h3, il leur faut un h2, et sans
+          bandeau « Mes prochaines formations » il n'y en aurait aucun entre
+          le h1 et elles. Même graisse que le bandeau, pour ne pas peser. */}
+      <h2 className={fr.cx("fr-h6", "fr-mb-1w")}>Formations à venir</h2>
       <ul className="fr-tags-group fr-my-2w">
         {tags.map((tag) => (
           <li key={tag.value}>

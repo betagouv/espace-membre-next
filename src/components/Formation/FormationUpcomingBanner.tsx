@@ -195,7 +195,7 @@ export const FormationUpcomingBanner = ({
                   }}
                 />
               )}
-              <span
+              <div
                 className={fr.cx("fr-p-2w")}
                 style={{
                   display: "flex",
@@ -204,9 +204,15 @@ export const FormationUpcomingBanner = ({
                   flex: "1 1 auto",
                 }}
               >
-                <strong
+                {/* h3 : chaque formation du bandeau est un élément sous
+                    « Mes prochaines formations », au même niveau que les
+                    cartes du catalogue. La taille reste celle du texte. */}
+                <h3
+                  className={fr.cx("fr-text--md", "fr-mb-0")}
                   style={{
                     color: "var(--text-action-high-blue-france)",
+                    fontSize: "1rem",
+                    fontWeight: 700,
                     display: "-webkit-box",
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: "vertical",
@@ -216,7 +222,7 @@ export const FormationUpcomingBanner = ({
                   }}
                 >
                   {formation.titre}
-                </strong>
+                </h3>
                 <span
                   className={fr.cx("fr-text--sm", "fr-mb-0")}
                   style={{ color: "var(--text-mention-grey)" }}
@@ -249,7 +255,7 @@ export const FormationUpcomingBanner = ({
                 >
                   {formation.onWaitingList ? "Liste d'attente" : "Inscrit·e"}
                 </span>
-              </span>
+              </div>
             </Link>
           ))}
         </div>

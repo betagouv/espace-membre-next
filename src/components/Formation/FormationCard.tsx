@@ -71,7 +71,9 @@ export default function FormationCard({
       start={badges.length ? badges : undefined}
       size="medium"
       title={formation.name}
-      titleAs="h2"
+      // h3 : la carte est un élément de la liste, sous son titre de section.
+      // En h2, elle se plaçait au niveau de « Mes prochaines formations ».
+      titleAs="h3"
       // Le bas de la carte dit « quand » : une date pour une séance, la
       // pastille pour un e-learning qui n'en a pas. En haut, elle passait pour
       // un état du membre, à côté de « Inscrit ».
