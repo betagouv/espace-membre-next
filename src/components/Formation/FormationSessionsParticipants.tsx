@@ -242,11 +242,14 @@ export const FormationSessionsParticipants = ({
                           className={fr.cx("fr-mt-2w")}
                           severity="success"
                           small
+                          // Retour de relecture : dire ce qui est copié, et
+                          // rien de plus. Le « colle-les » supposait un
+                          // pluriel et un usage que la personne connaît déjà.
                           description={`${emailsInscrits.length} adresse${
                             emailsInscrits.length > 1 ? "s" : ""
-                          } copiée${
+                          } email copiée${
                             emailsInscrits.length > 1 ? "s" : ""
-                          }. Colle-les dans le champ destinataires.`}
+                          }.`}
                         />
                       ) : (
                         <div className={fr.cx("fr-mt-2w")}>
