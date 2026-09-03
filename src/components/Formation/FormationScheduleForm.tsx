@@ -39,11 +39,14 @@ export const FormationScheduleForm = ({
   defaultDuree,
   defaultCapacite,
   defaultLienVisioAdmin,
+  onSuccess,
 }: {
   formationId: string;
   defaultDuree?: string;
   defaultCapacite?: number;
   defaultLienVisioAdmin?: string;
+  /** Appelé une fois la date créée : c'est au parent de fermer et d'annoncer. */
+  onSuccess?: () => void;
 }) => {
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>(null);
@@ -71,12 +74,11 @@ export const FormationScheduleForm = ({
   const onSubmit = async (data: formationScheduleSchemaType) => {
     const res = await scheduleFormationSessions(data);
     if (res.success) {
-      setAlertMessage({
-        title: "Date programmée",
-        message: "Elle est ouverte aux inscriptions.",
-        type: "success",
-      });
+      // Le succès se dit hors du formulaire : rester ouvert avec un
+      // « Annuler » à côté laissait croire qu'on pouvait annuler la date
+      // qu'on venait de créer.
       router.refresh();
+      onSuccess?.();
     } else {
       setAlertMessage({
         title: "Une erreur est survenue",

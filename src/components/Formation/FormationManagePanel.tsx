@@ -92,6 +92,9 @@ export const FormationManagePanel = ({
 }) => {
   const [editing, setEditing] = React.useState(false);
   const [scheduling, setScheduling] = React.useState(false);
+  // Vrai juste après une programmation : le formulaire s'est fermé, le
+  // message prend sa place. Rouvrir le formulaire l'efface.
+  const [dateProgrammee, setDateProgrammee] = React.useState(false);
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>(null);
   const router = useRouter();
@@ -253,7 +256,10 @@ export const FormationManagePanel = ({
                     : "Programmer une autre date",
                   priority: "secondary",
                   type: "button",
-                  onClick: () => setScheduling((was) => !was),
+                  onClick: () => {
+                    setDateProgrammee(false);
+                    setScheduling((was) => !was);
+                  },
                 },
                 {
                   children: "Modifier les informations",
@@ -264,6 +270,16 @@ export const FormationManagePanel = ({
               ]}
             />
 
+            {!scheduling && dateProgrammee && (
+              <Alert
+                className={fr.cx("fr-mt-2w")}
+                severity="success"
+                small
+                title="Date programmée"
+                description="Elle est ouverte aux inscriptions et figure dans la liste ci-dessus."
+              />
+            )}
+
             {scheduling && (
               <div className={fr.cx("fr-mt-2w")}>
                 <FormationScheduleForm
@@ -271,6 +287,10 @@ export const FormationManagePanel = ({
                   defaultDuree={defaultValues.duree}
                   defaultCapacite={defaultValues.capacite}
                   defaultLienVisioAdmin={defaultValues.lienVisioAdmin}
+                  onSuccess={() => {
+                    setScheduling(false);
+                    setDateProgrammee(true);
+                  }}
                 />
               </div>
             )}
