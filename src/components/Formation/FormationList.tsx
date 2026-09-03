@@ -5,6 +5,7 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FormationCard from "./FormationCard";
+import { comparerAuCatalogue } from "@/lib/formationOrder";
 import { Formation, FormationInscription } from "@/models/formation";
 
 // FIXME: there is no reason to hardcode all of these – should be
@@ -162,9 +163,7 @@ export default function FormationList({
         }, true);
       })
     : formationsParDate;
-  filteredFormations.sort((a, b) => {
-    return (a.start && b.start && a.start.getTime() - b.start.getTime()) || 0;
-  });
+  filteredFormations.sort(comparerAuCatalogue);
   return (
     <div>
       <ul className="fr-tags-group fr-my-2w">
