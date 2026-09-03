@@ -235,40 +235,43 @@ export const FormationManagePanel = ({
               <Detail label="Feedback" value={defaultValues.lienFeedback} />
             </dl>
 
-            <p className={fr.cx("fr-mt-3w", "fr-mb-1w")}>
-              <strong>Dates programmées ({sessions.length})</strong>
-            </p>
+            {/* Retour de relecture : chaque action au niveau de ce qu'elle
+                touche. Celle-ci modifie les informations ci-dessus. */}
+            <Button
+              className={fr.cx("fr-mt-2w")}
+              size="small"
+              priority="secondary"
+              nativeButtonProps={{ type: "button" }}
+              onClick={() => setEditing(true)}
+            >
+              Modifier les informations
+            </Button>
+
+            {/* h4 : l'accordéon porte un h3. Le filet sépare les deux blocs
+                du panneau, chacun avec son action en bas. */}
+            <h4
+              className={fr.cx("fr-h6", "fr-mt-4w", "fr-mb-1w", "fr-pb-1v")}
+              style={{ borderBottom: "1px solid var(--border-default-grey)" }}
+            >
+              Dates programmées ({sessions.length})
+            </h4>
             <FormationSessionsParticipants
               sessions={sessions}
               participantsBySession={participantsBySession}
             />
 
-            {/* Groupe de boutons du système de design : les actions d'un même
-                bloc se suivent en ligne et s'empilent sur écran étroit. */}
-            <ButtonsGroup
-              className={fr.cx("fr-mt-3w")}
-              inlineLayoutWhen="sm and up"
-              buttonsSize="small"
-              buttons={[
-                {
-                  children: scheduling
-                    ? "Annuler"
-                    : "Programmer une autre date",
-                  priority: "secondary",
-                  type: "button",
-                  onClick: () => {
-                    setDateProgrammee(false);
-                    setScheduling((was) => !was);
-                  },
-                },
-                {
-                  children: "Modifier les informations",
-                  priority: "secondary",
-                  type: "button",
-                  onClick: () => setEditing(true),
-                },
-              ]}
-            />
+            <Button
+              className={fr.cx("fr-mt-2w")}
+              size="small"
+              priority="secondary"
+              nativeButtonProps={{ type: "button" }}
+              onClick={() => {
+                setDateProgrammee(false);
+                setScheduling((was) => !was);
+              }}
+            >
+              {scheduling ? "Annuler" : "Programmer une autre date"}
+            </Button>
 
             {!scheduling && dateProgrammee && (
               <Alert
