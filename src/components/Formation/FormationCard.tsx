@@ -38,13 +38,6 @@ export default function FormationCard({
       );
     }
   }
-  if (!!formation.isELearning) {
-    badges.push(
-      <Badge key={"e-learning"} severity="new" as="span">
-        E-learning
-      </Badge>,
-    );
-  }
 
   // imageUrl et imageAlt forment une union dans le type du composant : les deux
   // ou aucun. Et une chaîne vide vaut 0 dans son `imageUrl.length && ...`
@@ -79,6 +72,20 @@ export default function FormationCard({
       size="medium"
       title={formation.name}
       titleAs="h2"
+      // Le bas de la carte dit « quand » : une date pour une séance, la
+      // pastille pour un e-learning qui n'en a pas. En haut, elle passait pour
+      // un état du membre, à côté de « Inscrit ».
+      end={
+        formation.isELearning ? (
+          <ul className="fr-badges-group">
+            <li>
+              <Badge severity="new" as="span">
+                E-learning
+              </Badge>
+            </li>
+          </ul>
+        ) : undefined
+      }
       endDetail={
         formation.start
           ? // Fuseau explicite : sans lui, le serveur (UTC en conteneur) et le
