@@ -106,7 +106,7 @@ export const FormationScheduleForm = ({
 
       <div
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
-        style={{ alignItems: "flex-end" }}
+        style={{ alignItems: "flex-start" }}
       >
         <Controller
           control={control}

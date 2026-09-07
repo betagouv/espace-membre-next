@@ -155,7 +155,7 @@ export const FormationProposalForm = ({
 
       <div
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
-        style={{ alignItems: "flex-end" }}
+        style={{ alignItems: "flex-start" }}
       >
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
@@ -181,10 +181,12 @@ export const FormationProposalForm = ({
       </div>
 
       {/* alignItems + fr-mb-0 : la marge basse de .fr-input-group varie selon
-          le point de rupture, sans quoi les deux champs se décalent. */}
+          le point de rupture, sans quoi les champs se décalent. L'alignement
+          par le haut, et non par le bas : un message d'erreur pousse vers le
+          bas, et remonterait sinon le champ fautif au-dessus de ses voisins. */}
       <div
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
-        style={{ alignItems: "flex-end" }}
+        style={{ alignItems: "flex-start" }}
       >
         <Controller
           control={control}
@@ -222,7 +224,7 @@ export const FormationProposalForm = ({
 
       <div
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
-        style={{ alignItems: "flex-end" }}
+        style={{ alignItems: "flex-start" }}
       >
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
