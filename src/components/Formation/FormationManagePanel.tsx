@@ -212,7 +212,10 @@ export const FormationManagePanel = ({
               <Detail label="Durée" value={defaultValues.duree} />
               <Detail
                 label="Capacité"
-                value={defaultValues.capacite?.toString()}
+                // La ligne reste même sans limite : la voir disparaître se lit
+                // comme une donnée manquante, alors que l'absence de limite est
+                // un choix, et le seul qui ouvre les inscriptions à tout le monde.
+                value={defaultValues.capacite?.toString() ?? "Pas de limite"}
               />
               <Detail
                 label="Catégories"
