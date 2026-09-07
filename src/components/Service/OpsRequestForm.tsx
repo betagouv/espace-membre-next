@@ -29,7 +29,7 @@ import Link from "next/link";
 // Doc de l'embarquement dev : prérequis obligatoire avant toute commande de
 // ressources.
 const EMBARQUEMENT_DEV_DOC_URL =
-  "https://doc.incubateur.net/communaute/travailler-a-beta-gouv/embarquement-dev";
+  "https://airtable.com/shrUCbUT72KtKefsu";
 
 // Canal Tchap où l'équipe ops traite les demandes : lien de suivi donné à la
 // soumission du formulaire.
