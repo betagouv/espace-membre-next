@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { FormationProposalForm } from "@/components/Formation/FormationProposalForm";
 import { fetchGristFormationImages } from "@/lib/formationsGrist";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
@@ -40,9 +41,14 @@ export default async function FormationProposalPage() {
     // La liste vide suffit.
   }
 
+  const titre = isAnimation ? "Créer une formation" : "Proposer une formation";
+
   return (
     <div className="fr-container fr-container--fluid">
-      <h1>{isAnimation ? "Créer une formation" : "Proposer une formation"}</h1>
+      {/* Le fil d'Ariane doit nommer la page telle qu'elle s'annonce : le titre
+          dépend de qui dépose, et n'est connu qu'ici. */}
+      <BreadCrumbFiller currentPage={titre} currentItemId={null} />
+      <h1>{titre}</h1>
       <p>
         {isAnimation
           ? "La formation sera ajoutée au catalogue, tu pourras ensuite planifier des sessions."
