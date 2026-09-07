@@ -41,7 +41,7 @@ export const FormationOtherDates = ({
 
   return (
     <div className={fr.cx("fr-mt-4w")}>
-      <h2 className={fr.cx("fr-h5")}>Autres dates</h2>
+      <h2 className={fr.cx("fr-h5")}>Autres sessions</h2>
       <ul
         className={fr.cx("fr-mb-0")}
         style={{ listStyle: "none", padding: 0 }}

@@ -251,7 +251,7 @@ export const FormationManagePanel = ({
                 blocs du panneau, chacun avec son action en bas — un filet ici
                 doublerait celui que l'accordéon trace déjà sous lui. */}
             <h4 className={fr.cx("fr-h6", "fr-mt-4w", "fr-mb-1w")}>
-              Dates programmées ({sessions.length})
+              Sessions programmées ({sessions.length})
             </h4>
             <FormationSessionsParticipants
               sessions={sessions}
@@ -268,7 +268,7 @@ export const FormationManagePanel = ({
                 setScheduling((was) => !was);
               }}
             >
-              {scheduling ? "Annuler" : "Programmer une autre date"}
+              {scheduling ? "Annuler" : "Programmer une autre session"}
             </Button>
 
             {!scheduling && dateProgrammee && (
@@ -276,7 +276,7 @@ export const FormationManagePanel = ({
                 className={fr.cx("fr-mt-2w")}
                 severity="success"
                 small
-                title="Date programmée"
+                title="Session programmée"
                 description="Elle est ouverte aux inscriptions et figure dans la liste ci-dessus."
               />
             )}
@@ -404,7 +404,7 @@ export const FormationManagePanel = ({
                 <Input
                   className={fr.cx("fr-mb-0")}
                   label="Limite de participants par défaut (facultatif)"
-                  hintText="Proposée pour les prochaines dates. Chaque date programmée garde la sienne, modifiable dans sa propre fiche."
+                  hintText="Proposée pour les prochaines sessions. Chaque session programmée garde la sienne, modifiable dans sa propre fiche."
                   state={errors.capacite ? "error" : "default"}
                   stateRelatedMessage={errors.capacite?.message}
                   nativeInputProps={{

@@ -153,7 +153,7 @@ export const FormationSessionEditForm = ({
           {
             children: isSubmitting
               ? "Enregistrement..."
-              : "Enregistrer cette date",
+              : "Enregistrer cette session",
             type: "submit",
             disabled: isSubmitting,
           },

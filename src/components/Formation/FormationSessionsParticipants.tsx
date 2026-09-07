@@ -98,7 +98,7 @@ export const FormationSessionsParticipants = ({
     );
 
   if (sessions.length === 0) {
-    return <p className={fr.cx("fr-hint-text")}>Aucune date à venir.</p>;
+    return <p className={fr.cx("fr-hint-text")}>Aucune session à venir.</p>;
   }
 
   return (
@@ -164,13 +164,13 @@ export const FormationSessionsParticipants = ({
                     className={fr.cx("fr-mb-2w")}
                     severity="warning"
                     small
-                    title="Supprimer cette date ?"
+                    title="Supprimer cette session ?"
                     description={
                       <>
                         <p className={fr.cx("fr-mb-1w")}>
                           {participants.length === 0
                             ? "Personne n'y est inscrit·e."
-                            : `Les ${participants.length} inscriptions de cette date seront supprimées, liste d'attente comprise. Un mail d'annulation part automatiquement aux ${participants.length} personnes.`}
+                            : `Les ${participants.length} inscriptions de cette session seront supprimées, liste d'attente comprise. Un mail d'annulation part automatiquement aux ${participants.length} personnes.`}
                         </p>
                         <ButtonsGroup
                           inlineLayoutWhen="sm and up"
@@ -203,7 +203,7 @@ export const FormationSessionsParticipants = ({
                       buttonsSize="small"
                       buttons={[
                         {
-                          children: "Modifier cette date",
+                          children: "Modifier cette session",
                           priority: "secondary",
                           type: "button",
                           onClick: () => setEnEdition(session.id),
@@ -221,7 +221,7 @@ export const FormationSessionsParticipants = ({
                             copierAdresses(session.id, emailsInscrits),
                         },
                         {
-                          children: "Supprimer cette date",
+                          children: "Supprimer cette session",
                           priority: "tertiary no outline",
                           type: "button",
                           onClick: () => setASupprimer(session.id),
