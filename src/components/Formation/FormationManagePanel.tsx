@@ -247,12 +247,10 @@ export const FormationManagePanel = ({
               Modifier les informations
             </Button>
 
-            {/* h4 : l'accordéon porte un h3. Le filet sépare les deux blocs
-                du panneau, chacun avec son action en bas. */}
-            <h4
-              className={fr.cx("fr-h6", "fr-mt-4w", "fr-mb-1w", "fr-pb-1v")}
-              style={{ borderBottom: "1px solid var(--border-default-grey)" }}
-            >
+            {/* h4 : l'accordéon porte un h3. Le titre suffit à séparer les deux
+                blocs du panneau, chacun avec son action en bas — un filet ici
+                doublerait celui que l'accordéon trace déjà sous lui. */}
+            <h4 className={fr.cx("fr-h6", "fr-mt-4w", "fr-mb-1w")}>
               Dates programmées ({sessions.length})
             </h4>
             <FormationSessionsParticipants
