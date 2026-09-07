@@ -9,7 +9,7 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { scheduleFormationSessions } from "@/app/api/formations/actions";
 import {
@@ -17,6 +17,7 @@ import {
   formationScheduleSchemaType,
 } from "@/models/actions/formationProposal";
 import { AlertMessageType } from "@/models/common";
+import { FormationDateTimeFields } from "@/components/Formation/FormationDateTimeFields";
 import {
   FORMATION_DUREES,
   FORMATION_FREQUENCE,
@@ -53,6 +54,7 @@ export const FormationScheduleForm = ({
   const router = useRouter();
 
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -106,18 +108,19 @@ export const FormationScheduleForm = ({
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
         style={{ alignItems: "flex-end" }}
       >
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            label="Date et heure"
-            nativeInputProps={{
-              type: "datetime-local",
-              ...register("dateDebut"),
-            }}
-            state={errors.dateDebut ? "error" : "default"}
-            stateRelatedMessage={errors.dateDebut?.message}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+        <Controller
+          control={control}
+          name="dateDebut"
+          render={({ field }) => (
+            <FormationDateTimeFields
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              error={errors.dateDebut?.message}
+            />
+          )}
+        />
+        <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
           <Select
             label="Durée"
             nativeSelectProps={register("duree")}

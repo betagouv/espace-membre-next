@@ -10,7 +10,7 @@ import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formatInTimeZone } from "date-fns-tz";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { updateFormationSession } from "@/app/api/formations/actions";
 import {
@@ -19,6 +19,7 @@ import {
 } from "@/models/actions/formationProposal";
 import { AlertMessageType } from "@/models/common";
 import { FORMATION_DUREES } from "@/models/formationsGrist";
+import { FormationDateTimeFields } from "@/components/Formation/FormationDateTimeFields";
 
 /**
  * Modification d'une date : horaire, durée, capacité, lien de visioconférence.
@@ -46,6 +47,7 @@ export const FormationSessionEditForm = ({
   const router = useRouter();
 
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
@@ -97,18 +99,19 @@ export const FormationSessionEditForm = ({
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
         style={{ alignItems: "flex-end" }}
       >
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            label="Date et heure"
-            nativeInputProps={{
-              type: "datetime-local",
-              ...register("dateDebut"),
-            }}
-            state={errors.dateDebut ? "error" : "default"}
-            stateRelatedMessage={errors.dateDebut?.message}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+        <Controller
+          control={control}
+          name="dateDebut"
+          render={({ field }) => (
+            <FormationDateTimeFields
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              error={errors.dateDebut?.message}
+            />
+          )}
+        />
+        <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
           <Select
             label="Durée"
             nativeSelectProps={register("duree")}

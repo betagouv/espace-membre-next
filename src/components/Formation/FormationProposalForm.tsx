@@ -12,7 +12,7 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { submitFormationProposal } from "@/app/api/formations/actions";
 import { AlertMessageType } from "@/models/common";
@@ -27,6 +27,7 @@ import {
   FORMATION_THEMATIQUES,
 } from "@/models/formationsGrist";
 import { routes } from "@/lib/routes";
+import { FormationDateTimeFields } from "@/components/Formation/FormationDateTimeFields";
 import { FormationImagePicker } from "@/components/Formation/FormationImagePicker";
 import { FormationImage } from "@/lib/formationsGrist";
 
@@ -47,6 +48,7 @@ export const FormationProposalForm = ({
   defaultValues?: Partial<formationProposalSchemaType>;
 }) => {
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -184,19 +186,21 @@ export const FormationProposalForm = ({
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
         style={{ alignItems: "flex-end" }}
       >
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            className={fr.cx("fr-mb-0")}
-            label="Date de la formation"
-            state={errors.dateDebut ? "error" : "default"}
-            stateRelatedMessage={errors.dateDebut?.message}
-            nativeInputProps={{
-              type: "datetime-local",
-              ...register("dateDebut", { setValueAs: emptyAsUndefined }),
-            }}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+        <Controller
+          control={control}
+          name="dateDebut"
+          render={({ field }) => (
+            <FormationDateTimeFields
+              className={fr.cx("fr-mb-0")}
+              dateLabel="Date de la formation"
+              value={field.value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
+              error={errors.dateDebut?.message}
+            />
+          )}
+        />
+        <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
           <Select
             className={fr.cx("fr-mb-0")}
             label="Durée"
