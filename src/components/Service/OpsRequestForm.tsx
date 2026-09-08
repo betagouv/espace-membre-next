@@ -284,13 +284,11 @@ export const OpsRequestForm = ({
                   state={error ? "error" : undefined}
                   stateRelatedMessage={error?.message}
                   options={(field.options ?? []).map((option) => ({
-                    label:
-                      option === field.defaultValue
-                        ? `${option} (recommandé)`
-                        : option,
+                    label: option.value,
+                    hintText: option.hint,
                     nativeInputProps: {
-                      value: option,
-                      defaultChecked: option === field.defaultValue,
+                      value: option.value,
+                      defaultChecked: option.value === field.defaultValue,
                       ...register(key),
                     },
                   }))}
