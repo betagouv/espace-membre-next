@@ -61,8 +61,9 @@ export interface OpsField {
   label: string;
   hint?: string;
   type?: "text" | "email" | "textarea" | "select" | "startup";
-  // Options for the "select" type (rendered as radio buttons).
-  options?: string[];
+  // Options for the "select" type (rendered as radio buttons). Each option
+  // carries its own description, shown under its label.
+  options?: { value: string; hint?: string }[];
   // Default-checked option for the "select" type.
   defaultValue?: string;
   required?: boolean;
@@ -92,9 +93,19 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   zoneScalingo: {
     key: "zoneScalingo",
     label: "Zone Scalingo",
-    hint: "osc-secnum-fr1 est recommandé (zone SecNumCloud, plus sécurisée). Choisis osc-fr1 uniquement si tu es en dev/preprod et n'exploite pas de données sensibles.",
+    // La description tient sous chaque option plutôt que dans un hint unique :
+    // il fallait sinon garder les deux zones en tête pour trancher.
     type: "select",
-    options: ["osc-secnum-fr1", "osc-fr1"],
+    options: [
+      {
+        value: "osc-secnum-fr1",
+        hint: "Zone SecNumCloud, plus sécurisée. Recommandée.",
+      },
+      {
+        value: "osc-fr1",
+        hint: "Uniquement en dev ou preprod, sans données sensibles.",
+      },
+    ],
     defaultValue: "osc-secnum-fr1",
     required: true,
   },
@@ -178,9 +189,9 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
 export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.SCALINGO_APP]: [
     "nomApp",
+    "projetRattachement",
     "zoneScalingo",
     "emailCollaborateur",
-    "projetRattachement",
     "commentaires",
   ],
   [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]: ["commentaires"],
