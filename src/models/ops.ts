@@ -136,8 +136,11 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   },
   startupId: {
     key: "startupId",
-    label: "Produit concerné",
-    hint: "Sélectionne le produit (startup) : sert à créer/rattacher l'équipe Sentry ou le site Matomo.",
+    // « Produit concerné » se confondait avec le « Projet concerné » posé en
+    // tête de formulaire. Ce champ-ci ne demande pas un contexte : il désigne
+    // la cible de ce qui va être créé.
+    label: "Produit à rattacher",
+    hint: "Le compte est créé au nom de ce produit du référentiel beta.gouv.fr (équipe Sentry, site Matomo…).",
     type: "startup",
     required: true,
   },
@@ -149,8 +152,10 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   },
   projetRattachement: {
     key: "projetRattachement",
-    label: "Projet à relier (optionnel)",
-    hint: "Nom du produit/startup auquel rattacher cette app.",
+    // Même raison que startupId : le libellé dit ce que le champ relie, pour
+    // ne pas se lire comme une seconde version du « Projet concerné ».
+    label: "Produit auquel relier l'app (optionnel)",
+    hint: "Nom du produit ou de la startup qui hébergera cette app Scalingo.",
     required: false,
     warnOnInput:
       "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",
