@@ -32,13 +32,16 @@ export default async function OpsRequestPage() {
   const matrixId = await getMatrixIdByUserId(session.user.uuid);
   const email = user?.primary_email || user?.secondary_email || "";
 
+  // Les produits du membre servent à pré-remplir le projet concerné, y compris
+  // pour un admin : la liste déroulante lui montre tout le référentiel, mais
+  // c'est bien sa propre mission qui pré-remplit le champ.
+  const userStartups = (await getUserStartupsActive(session.user.uuid)).map(
+    (startup) => userStartupToModel(startup),
+  );
+
   // Startups the user can act on (admins see all) — used by the Sentry / Matomo
   // demandes to pick the concerned product.
-  const startups = session.user.isAdmin
-    ? await getAllStartups()
-    : (await getUserStartupsActive(session.user.uuid)).map((startup) =>
-        userStartupToModel(startup),
-      );
+  const startups = session.user.isAdmin ? await getAllStartups() : userStartups;
   const startupOptions: StartupType[] = startups.map((startup) => ({
     value: startup.uuid,
     label: startup.name,
@@ -53,6 +56,10 @@ export default async function OpsRequestPage() {
           tchapId: matrixId || user?.username || "",
           email,
           prenomNom: user?.fullname || "",
+          // Le projet part pré-rempli avec les produits du membre : sans lui,
+          // la colonne « Projet » du Grist arrivait vide chez l'équipe ops,
+          // qui devait remonter à l'auteur pour situer la demande.
+          projet: userStartups.map((startup) => startup.name).join(", "),
           // pré-rempli pour les demandes qui réclament un email
           emailCollaborateur: email,
           emailAssocier: email,
