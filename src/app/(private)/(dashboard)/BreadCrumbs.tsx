@@ -9,6 +9,14 @@ import React from "react";
 
 const isCurrentPath = (pathname, rootPath) => pathname.startsWith(rootPath);
 
+// Le tableau de bord est la racine, et le formulaire de demandes d'OPS ne
+// s'inscrit dans aucune arborescence : leur fil d'Ariane ne mènerait qu'à
+// eux-mêmes. Le menu principal suffit à en sortir.
+const PAGES_SANS_FIL_D_ARIANE: string[] = [
+  routes.dashboard(),
+  routes.opsRequest(),
+];
+
 export function BreadCrumbs() {
   const pathname = usePathname();
 
@@ -301,7 +309,7 @@ export function BreadCrumbs() {
   const tree = findActiveItem(MenuItems);
 
   return (
-    pathname !== "/dashboard" && (
+    !PAGES_SANS_FIL_D_ARIANE.includes(pathname) && (
       <Breadcrumb
         currentPageLabel={tree[tree.length - 1]?.text}
         homeLinkProps={{
