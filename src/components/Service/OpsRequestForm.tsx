@@ -204,7 +204,7 @@ export const OpsRequestForm = ({
           <Input
             className={fr.cx("fr-mb-0")}
             label="Projet concerné"
-            hintText="Pour quel produit ou quel projet tu fais cette demande. Sert à l'équipe ops pour la situer."
+            hintText="Pré-rempli avec ton produit. Remplace-le si la demande concerne autre chose."
             state={errors.projet ? "error" : undefined}
             stateRelatedMessage={errors.projet?.message}
             nativeInputProps={{ ...register("projet") }}
