@@ -33,6 +33,28 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.AUTRE,
 ];
 
+// Libellés affichés dans le formulaire. Ils sont séparés des valeurs de
+// l'enum parce que celles-ci partent telles quelles dans la colonne "Demande"
+// de Grist, sur laquelle les automatisations n8n filtrent : les renommer
+// casserait les workflows et rendrait invalides les lignes déjà enregistrées.
+// La question porte déjà le verbe, le libellé nomme donc juste la ressource.
+export const OPS_DEMANDE_LABELS: Record<OPS_DEMANDE_TYPE, string> = {
+  [OPS_DEMANDE_TYPE.SCALINGO_APP]: "App Scalingo",
+  [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]:
+    "Ressources cloud (Clever Cloud, OVH, Scaleway)",
+  [OPS_DEMANDE_TYPE.DNS_DOMAIN]: "Domaine ou zone DNS (OVH)",
+  [OPS_DEMANDE_TYPE.DNS_RECORD]: "Record DNS sur un domaine OVH (CNAME, A…)",
+  [OPS_DEMANDE_TYPE.BREVO]: "Compte Brevo",
+  [OPS_DEMANDE_TYPE.MATOMO]: "Compte Matomo",
+  [OPS_DEMANDE_TYPE.SENTRY]: "Compte Sentry",
+  [OPS_DEMANDE_TYPE.UPDOWN]: "Site à surveiller (updown.io)",
+  [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: "Certificat SSL Certigna",
+  [OPS_DEMANDE_TYPE.MAILING_LIST]: "Mailing list @beta.gouv.fr",
+  [OPS_DEMANDE_TYPE.TALLY]: "Compte Tally",
+  [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: "Compte Welcome to the Jungle",
+  [OPS_DEMANDE_TYPE.AUTRE]: "Autre",
+};
+
 // Per-demande conditional fields. Keys map to the zod schema and form inputs.
 export interface OpsField {
   key: string;
