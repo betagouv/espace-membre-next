@@ -21,6 +21,7 @@ import { AlertMessageType } from "@/models/common";
 import {
   OPS_DEMANDE_CHOICES,
   OPS_DEMANDE_FIELDS,
+  OPS_DEMANDE_LABELS,
   OPS_DEMANDE_TYPE,
   OPS_FIELDS,
 } from "@/models/ops";
@@ -133,31 +134,33 @@ export const OpsRequestForm = ({
           description={alertMessage.message}
         />
       )}
+      {/* Les deux conditions d'accès en liste : en paragraphe, elles se lisaient
+          comme un avertissement à survoler, et le lien d'inscription — la seule
+          action possible quand on ne les remplit pas — s'y perdait. */}
       <Alert
         className="fr-mb-4v"
         severity="warning"
-        small
+        closable={false}
+        title="Les ressources OPS sont réservées :"
         description={
-          <>
-            Attention, pour pouvoir commander des ressources, tu dois{" "}
-            <strong>obligatoirement</strong> avoir suivi{" "}
-            <a
-              className={fr.cx(
-                "fr-link",
-                "fr-link--icon-right",
-                "fr-icon-external-link-line",
-              )}
-              href={EMBARQUEMENT_DEV_DOC_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              l&apos;embarquement dev
-            </a>
-            . Si ce n&apos;est pas le cas, merci de prendre connaissance de la
-            doc indiquée et de t&apos;inscrire à la prochaine session avant de
-            faire ta demande. Ton produit doit également avoir sa fiche produit
-            publiée pour bénéficier de ces services.
-          </>
+          <ul className={fr.cx("fr-mb-0")}>
+            <li>aux services numériques ayant une fiche produit</li>
+            <li>
+              aux personnes ayant suivi un{" "}
+              <a
+                className={fr.cx(
+                  "fr-link",
+                  "fr-link--icon-right",
+                  "fr-icon-external-link-line",
+                )}
+                href={EMBARQUEMENT_DEV_DOC_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                embarquement dev
+              </a>
+            </li>
+          </ul>
         }
       />
       <p className="fr-text--sm">
@@ -171,11 +174,11 @@ export const OpsRequestForm = ({
         <input type="hidden" {...register("email")} />
 
         <RadioButtons
-          legend="Quelle est ta demande ?"
+          legend="De quelle ressource as-tu besoin ?"
           state={errors.demande ? "error" : undefined}
           stateRelatedMessage={errors.demande?.message}
           options={OPS_DEMANDE_CHOICES.map((choice) => ({
-            label: choice,
+            label: OPS_DEMANDE_LABELS[choice],
             nativeInputProps: {
               value: choice,
               ...register("demande"),
