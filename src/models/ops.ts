@@ -15,6 +15,7 @@ export enum OPS_DEMANDE_TYPE {
   MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
   TALLY = "Création d'un compte tally",
   WELCOME_TO_THE_JUNGLE = "Ajout d'un compte Welcome to the Jungle",
+  PEERTUBE = "Création d'un compte PeerTube",
   AUTRE = "Autre",
 }
 
@@ -30,6 +31,7 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.UPDOWN,
   OPS_DEMANDE_TYPE.TALLY,
   OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE,
+  OPS_DEMANDE_TYPE.PEERTUBE,
   OPS_DEMANDE_TYPE.AUTRE,
 ];
 
@@ -52,6 +54,7 @@ export const OPS_DEMANDE_LABELS: Record<OPS_DEMANDE_TYPE, string> = {
   [OPS_DEMANDE_TYPE.MAILING_LIST]: "Mailing list @beta.gouv.fr",
   [OPS_DEMANDE_TYPE.TALLY]: "Compte Tally",
   [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: "Compte Welcome to the Jungle",
+  [OPS_DEMANDE_TYPE.PEERTUBE]: "Compte PeerTube",
   [OPS_DEMANDE_TYPE.AUTRE]: "Autre",
 };
 
@@ -86,6 +89,9 @@ export type OpsFieldKey =
   | "siteName"
   | "projetRattachement"
   | "nomWorkspace"
+  | "emailEquipe"
+  | "nomChaine"
+  | "nomCompte"
   | "commentaires";
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
@@ -177,6 +183,24 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     hint: "Nom du workspace Tally à créer.",
     required: true,
   },
+  emailEquipe: {
+    key: "emailEquipe",
+    label: "Email de l'équipe",
+    hint: "Une adresse partagée : le compte ne doit pas dépendre d'une seule personne.",
+    type: "email",
+    required: true,
+  },
+  nomChaine: {
+    key: "nomChaine",
+    label: "Nom de la chaîne",
+    required: true,
+  },
+  nomCompte: {
+    key: "nomCompte",
+    label: "Nom du compte",
+    hint: "Différent du nom de la chaîne, et sans tiret.",
+    required: true,
+  },
   commentaires: {
     key: "commentaires",
     label: "Commentaires",
@@ -213,6 +237,12 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   ],
   [OPS_DEMANDE_TYPE.TALLY]: ["nomWorkspace", "commentaires"],
   [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: ["emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.PEERTUBE]: [
+    "emailEquipe",
+    "nomChaine",
+    "nomCompte",
+    "commentaires",
+  ],
   [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
   [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
   [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],
@@ -270,6 +300,9 @@ export const GRIST_OPS_COLUMNS = {
   urlSurveiller: "Url_surveiller",
   emailsNotifier: "Emails_notifier",
   nomWorkspace: "Nom_workspace",
+  emailEquipe: "Email_equipe",
+  nomChaine: "Nom_chaine",
+  nomCompte: "Nom_compte",
   // Incubateur du produit sélectionné (dérivé server-side du startupId).
   incubateur: "Incubateur",
 } as const;
@@ -290,5 +323,8 @@ export const OPS_FIELD_TO_GRIST_COLUMN: Record<OpsFieldKey, string> = {
   siteName: GRIST_OPS_COLUMNS.siteName,
   projetRattachement: GRIST_OPS_COLUMNS.projetRattachement,
   nomWorkspace: GRIST_OPS_COLUMNS.nomWorkspace,
+  emailEquipe: GRIST_OPS_COLUMNS.emailEquipe,
+  nomChaine: GRIST_OPS_COLUMNS.nomChaine,
+  nomCompte: GRIST_OPS_COLUMNS.nomCompte,
   commentaires: GRIST_OPS_COLUMNS.notes,
 };

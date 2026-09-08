@@ -37,6 +37,9 @@ export const opsRequestSchema = z
     siteName: z.string().optional(),
     projetRattachement: z.string().optional(),
     nomWorkspace: z.string().optional(),
+    emailEquipe: z.string().optional(),
+    nomChaine: z.string().optional(),
+    nomCompte: z.string().optional(),
     commentaires: z.string().optional(),
     prenomNom: z.string().optional(),
     statut: z.nativeEnum(OPS_STATUT).optional(),
@@ -53,6 +56,32 @@ export const opsRequestSchema = z
           code: z.ZodIssueCode.custom,
           path: [key],
           message: `${field.label} est requis`,
+        });
+      }
+    }
+
+    // PeerTube refuse un nom de compte identique à celui de la chaîne, et les
+    // tirets dans le nom de compte. Le formulaire le dit en hint, mais rien ne
+    // l'empêchait : la demande partait chez l'équipe ops pour revenir en erreur.
+    if (data.demande === OPS_DEMANDE_TYPE.PEERTUBE) {
+      const nomCompte = data.nomCompte?.trim() ?? "";
+      const nomChaine = data.nomChaine?.trim() ?? "";
+      if (nomCompte.includes("-")) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["nomCompte"],
+          message: "Le nom du compte ne peut pas contenir de tiret",
+        });
+      }
+      if (
+        nomCompte &&
+        nomChaine &&
+        nomCompte.toLowerCase() === nomChaine.toLowerCase()
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["nomCompte"],
+          message: "Le nom du compte doit être différent du nom de la chaîne",
         });
       }
     }
