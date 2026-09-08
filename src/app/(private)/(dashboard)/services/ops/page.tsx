@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -11,6 +12,15 @@ import {
 } from "@/lib/kysely/queries/users";
 import { userStartupToModel } from "@/models/mapper/startupMapper";
 import { authOptions } from "@/lib/authoptions";
+
+// Un seul libellé pour l'onglet du navigateur et pour le titre de la page :
+// séparés, les deux se mettent à diverger, et l'onglet finit par annoncer autre
+// chose que ce qu'on lit à l'écran.
+const TITRE = "Demandes d'OPS";
+
+export const metadata: Metadata = {
+  title: `${TITRE} / Espace Membre`,
+};
 
 export default async function OpsRequestPage() {
   const session = await getServerSession(authOptions);
@@ -36,7 +46,7 @@ export default async function OpsRequestPage() {
 
   return (
     <div>
-      <h1>Demandes d'OPS</h1>
+      <h1>{TITRE}</h1>
       <OpsRequestForm
         startupOptions={startupOptions}
         defaultValues={{
