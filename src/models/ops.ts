@@ -200,6 +200,7 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.BREVO]: ["startupId", "emailAssocier", "commentaires"],
   [OPS_DEMANDE_TYPE.MATOMO]: [
     "startupId",
+    "emailAssocier",
     "urlSite",
     "siteName",
     "commentaires",
