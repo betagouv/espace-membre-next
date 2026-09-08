@@ -29,13 +29,38 @@ import Link from "next/link";
 
 // Doc de l'embarquement dev : prérequis obligatoire avant toute commande de
 // ressources.
-const EMBARQUEMENT_DEV_DOC_URL =
-  "https://airtable.com/shrUCbUT72KtKefsu";
+const EMBARQUEMENT_DEV_DOC_URL = "https://airtable.com/shrUCbUT72KtKefsu";
 
 // Canal Tchap où l'équipe ops traite les demandes : lien de suivi donné à la
 // soumission du formulaire.
 const OPS_TCHAP_CHANNEL_URL =
   "https://tchap.gouv.fr/#/room/!VxFWdbcSlumKPvpVRP:agent.dinum.tchap.gouv.fr";
+
+// Chaque champ passe par ce conteneur : il porte à la fois la largeur et
+// l'espacement. Laissés aux marges par défaut de chaque composant DSFR, les
+// écarts variaient d'un champ à l'autre selon la ressource choisie.
+//
+// Les champs texte s'arrêtent à la moitié de la largeur : à pleine largeur,
+// l'œil balaye tout l'écran pour saisir quelques mots. Les boutons radio et
+// les commentaires gardent la pleine largeur, leur contenu la remplit.
+const Champ = ({
+  children,
+  pleineLargeur = false,
+}: {
+  children: React.ReactNode;
+  pleineLargeur?: boolean;
+}) => (
+  <div className={fr.cx("fr-grid-row", "fr-mb-4w")}>
+    <div
+      className={fr.cx(
+        "fr-col-12",
+        ...(pleineLargeur ? [] : (["fr-col-md-6"] as const)),
+      )}
+    >
+      {children}
+    </div>
+  </div>
+);
 
 interface OpsRequestFormProps {
   defaultValues?: Partial<opsRequestSchemaType>;
@@ -173,18 +198,34 @@ export const OpsRequestForm = ({
         <input type="hidden" {...register("tchapId")} />
         <input type="hidden" {...register("email")} />
 
-        <RadioButtons
-          legend="De quelle ressource as-tu besoin ?"
-          state={errors.demande ? "error" : undefined}
-          stateRelatedMessage={errors.demande?.message}
-          options={OPS_DEMANDE_CHOICES.map((choice) => ({
-            label: OPS_DEMANDE_LABELS[choice],
-            nativeInputProps: {
-              value: choice,
-              ...register("demande"),
-            },
-          }))}
-        />
+        {/* Le projet vaut pour toutes les demandes : il ouvre le formulaire au
+            lieu de le clore, où il se lisait comme une question annexe. */}
+        <Champ>
+          <Input
+            className={fr.cx("fr-mb-0")}
+            label="Projet concerné"
+            hintText="Le produit ou le projet pour lequel tu fais cette demande."
+            state={errors.projet ? "error" : undefined}
+            stateRelatedMessage={errors.projet?.message}
+            nativeInputProps={{ ...register("projet") }}
+          />
+        </Champ>
+
+        <Champ pleineLargeur>
+          <RadioButtons
+            className={fr.cx("fr-mb-0")}
+            legend="De quelle ressource as-tu besoin ?"
+            state={errors.demande ? "error" : undefined}
+            stateRelatedMessage={errors.demande?.message}
+            options={OPS_DEMANDE_CHOICES.map((choice) => ({
+              label: OPS_DEMANDE_LABELS[choice],
+              nativeInputProps: {
+                value: choice,
+                ...register("demande"),
+              },
+            }))}
+          />
+        </Champ>
 
         {demande === OPS_DEMANDE_TYPE.SCALINGO_APP && (
           <Alert
@@ -195,12 +236,21 @@ export const OpsRequestForm = ({
           />
         )}
 
+        {/* Les champs surgissent au choix de la ressource : un titre annonce
+            qu'une nouvelle section apparaît, au lieu de les laisser pousser
+            sans prévenir sous les boutons radio. */}
+        {fields.length > 0 && (
+          <h2 className={fr.cx("fr-h4", "fr-mt-4w", "fr-mb-2w")}>
+            Informations complémentaires
+          </h2>
+        )}
+
         {fields.map((key) => {
           const field = OPS_FIELDS[key];
           const error = errors[key];
           if (field.type === "startup") {
             return (
-              <div key={key} className={fr.cx("fr-mb-3w")}>
+              <Champ key={key}>
                 <SESelect
                   label={field.label}
                   hint={field.hint}
@@ -221,47 +271,52 @@ export const OpsRequestForm = ({
                   }}
                 />
                 <input type="hidden" {...register("startupName")} />
-              </div>
+              </Champ>
             );
           }
           if (field.type === "select") {
             return (
-              <RadioButtons
-                key={key}
-                legend={field.label}
-                hintText={field.hint}
-                state={error ? "error" : undefined}
-                stateRelatedMessage={error?.message}
-                options={(field.options ?? []).map((option) => ({
-                  label:
-                    option === field.defaultValue
-                      ? `${option} (recommandé)`
-                      : option,
-                  nativeInputProps: {
-                    value: option,
-                    defaultChecked: option === field.defaultValue,
-                    ...register(key),
-                  },
-                }))}
-              />
+              <Champ key={key} pleineLargeur>
+                <RadioButtons
+                  className={fr.cx("fr-mb-0")}
+                  legend={field.label}
+                  hintText={field.hint}
+                  state={error ? "error" : undefined}
+                  stateRelatedMessage={error?.message}
+                  options={(field.options ?? []).map((option) => ({
+                    label:
+                      option === field.defaultValue
+                        ? `${option} (recommandé)`
+                        : option,
+                    nativeInputProps: {
+                      value: option,
+                      defaultChecked: option === field.defaultValue,
+                      ...register(key),
+                    },
+                  }))}
+                />
+              </Champ>
             );
           }
           if (field.type === "textarea") {
             return (
-              <Input
-                key={key}
-                label={field.label}
-                hintText={field.hint}
-                textArea
-                state={error ? "error" : undefined}
-                stateRelatedMessage={error?.message}
-                nativeTextAreaProps={{ ...register(key) }}
-              />
+              <Champ key={key} pleineLargeur>
+                <Input
+                  className={fr.cx("fr-mb-0")}
+                  label={field.label}
+                  hintText={field.hint}
+                  textArea
+                  state={error ? "error" : undefined}
+                  stateRelatedMessage={error?.message}
+                  nativeTextAreaProps={{ ...register(key) }}
+                />
+              </Champ>
             );
           }
           return (
-            <div key={key}>
+            <Champ key={key}>
               <Input
+                className={fr.cx("fr-mb-0")}
                 label={field.label}
                 hintText={field.hint}
                 state={error ? "error" : undefined}
@@ -273,22 +328,15 @@ export const OpsRequestForm = ({
               />
               {!!field.warnOnInput && !!watch(key) && (
                 <Alert
-                  className={fr.cx("fr-mt-1v", "fr-mb-2v")}
+                  className={fr.cx("fr-mt-1v")}
                   severity="warning"
                   small
                   description={field.warnOnInput}
                 />
               )}
-            </div>
+            </Champ>
           );
         })}
-
-        <Input
-          label="Si ta demande ne concerne pas une SE, merci de préciser le projet pour lequel tu réalises cette demande."
-          state={errors.projet ? "error" : undefined}
-          stateRelatedMessage={errors.projet?.message}
-          nativeInputProps={{ ...register("projet") }}
-        />
 
         <input type="hidden" {...register("prenomNom")} />
 
