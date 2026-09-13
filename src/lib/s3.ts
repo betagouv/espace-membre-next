@@ -97,5 +97,3 @@ export async function getAvatarUrl(
   const hasImageFlag = await hasImage(s3Key);
   return hasImageFlag ? `/api/member/${username}/image` : undefined;
 }
-
-export default s3;
