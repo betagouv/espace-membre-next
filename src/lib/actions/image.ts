@@ -5,7 +5,11 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { getFileName } from "@/app/api/image/utils";
-import s3 from "@/lib/s3";
+import {
+  deleteImage as deleteImageFromS3,
+  getPutSignedUrl,
+  isS3Available,
+} from "@/lib/s3";
 import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
@@ -39,22 +43,21 @@ async function getSignedUrlAction(input: z.infer<typeof getSignedUrlSchema>) {
   ) {
     throw new AuthorizationError();
   }
-  if (!s3) {
+  if (!isS3Available()) {
     throw new BusinessError(
       "serviceUnavailable",
       "Le service de stockage d'images est momentanément indisponible.",
     );
   }
 
-  const s3Params = {
-    Key: getFileName[params.fileRelativeObjType](
-      params.fileObjIdentifier,
-      params.fileIdentifier,
-    ),
-    Expires: 60,
-    ContentType: params.fileType,
-  };
-  const signedUrl = await s3.getSignedUrlPromise("putObject", s3Params);
+  const key = getFileName[params.fileRelativeObjType](
+    params.fileObjIdentifier,
+    params.fileIdentifier,
+  );
+  const signedUrl = await getPutSignedUrl(key, {
+    contentType: params.fileType,
+    expiresIn: 60,
+  });
 
   if (params.revalidateMemberImage && params.fileRelativeObjType === "member") {
     revalidatePath(`/api/member/${params.fileObjIdentifier}/image`);
@@ -77,14 +80,12 @@ async function deleteImageAction(
     throw new AuthorizationError();
   }
 
-  await s3
-    .deleteObject({
-      Key: getFileName[params.fileRelativeObjType](
-        params.fileObjIdentifier,
-        params.fileIdentifier,
-      ),
-    })
-    .promise();
+  await deleteImageFromS3(
+    getFileName[params.fileRelativeObjType](
+      params.fileObjIdentifier,
+      params.fileIdentifier,
+    ),
+  );
 
   if (params.revalidateMemberImage && params.fileRelativeObjType === "member") {
     revalidatePath(`/api/member/${params.fileObjIdentifier}/image`);
