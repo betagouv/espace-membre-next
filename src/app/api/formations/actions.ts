@@ -21,6 +21,7 @@ import {
   uploadGristAttachments,
 } from "@/lib/grist";
 import { formationSessionDates } from "@/lib/formationRecurrence";
+import { withFormationSessionLock } from "@/lib/formationSessionLock";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import {
@@ -250,27 +251,6 @@ export const registerToFormationSession = withErrorHandling(
       );
     }
 
-    // Les inscriptions de la session servent deux fois : détecter un doublon,
-    // et compter les places prises.
-    const inscriptions = await getGristRecords(
-      docId,
-      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
-      { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
-    );
-
-    const existing = inscriptions.find(
-      (i) =>
-        Number(i.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]) === membreRowId,
-    );
-    if (existing) {
-      return {
-        ok: true,
-        alreadyRegistered: true,
-        onWaitingList:
-          !!existing.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
-      };
-    }
-
     const [sessionRow] = (
       await getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID)
     ).filter((row) => row.id === sessionRowId);
@@ -295,37 +275,68 @@ export const registerToFormationSession = withErrorHandling(
       );
     }
 
-    // Capacité atteinte : on inscrit quand même, sur liste d'attente. Une
-    // capacité absente vaut « pas de limite ».
+    // Capacité absente : « pas de limite ».
     const capacite = Number(
       sessionRow.fields[GRIST_SESSIONS_COLUMNS.capacite] ?? 0,
     );
-    const inscrits = inscriptions.filter(
-      (i) => !i.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
-    ).length;
-    const onWaitingList = capacite > 0 && inscrits >= capacite;
+    // Lue avant le verrou : elle interroge la base et ne dépend pas du
+    // décompte des places. Aucune raison de la faire sous verrou.
+    const email = await adresseDeContact(session.user);
 
-    await addGristRecords(
-      docId,
-      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
-      [
-        {
-          [GRIST_INSCRIPTIONS_COLUMNS.membre]: membreRowId,
-          [GRIST_INSCRIPTIONS_COLUMNS.session]: sessionRowId,
-          [GRIST_INSCRIPTIONS_COLUMNS.createdAt]: new Date().toISOString(),
-          [GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente]: onWaitingList,
-          // Figé ici : un repêchage se reconnaît à ce que cette colonne dise
-          // « en attente » alors que la précédente n'y est plus.
-          [GRIST_INSCRIPTIONS_COLUMNS.enAttenteALInscription]: onWaitingList,
-          [GRIST_INSCRIPTIONS_COLUMNS.present]: false,
-          [GRIST_INSCRIPTIONS_COLUMNS.email]: await adresseDeContact(
-            session.user,
-          ),
-        },
-      ],
-    );
+    // À partir d'ici, tout est sérialisé par session. Compter les places puis
+    // écrire sans verrou laissait deux inscriptions simultanées lire le même
+    // décompte et passer toutes deux hors liste d'attente : la session partait
+    // en surbooking. Grist n'ayant ni transaction ni écriture conditionnelle,
+    // c'est Postgres qui sert de point de rendez-vous.
+    return withFormationSessionLock(sessionRowId, async () => {
+      // Les inscriptions servent deux fois : détecter un doublon, et compter
+      // les places prises. Relues ici, donc à jour de ce qu'une inscription
+      // concurrente vient d'écrire.
+      const inscriptions = await getGristRecords(
+        docId,
+        config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+        { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
+      );
 
-    return { ok: true, alreadyRegistered: false, onWaitingList };
+      const existing = inscriptions.find(
+        (i) =>
+          Number(i.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]) === membreRowId,
+      );
+      if (existing) {
+        return {
+          ok: true,
+          alreadyRegistered: true,
+          onWaitingList:
+            !!existing.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+        };
+      }
+
+      // Capacité atteinte : on inscrit quand même, sur liste d'attente.
+      const inscrits = inscriptions.filter(
+        (i) => !i.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+      ).length;
+      const onWaitingList = capacite > 0 && inscrits >= capacite;
+
+      await addGristRecords(
+        docId,
+        config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+        [
+          {
+            [GRIST_INSCRIPTIONS_COLUMNS.membre]: membreRowId,
+            [GRIST_INSCRIPTIONS_COLUMNS.session]: sessionRowId,
+            [GRIST_INSCRIPTIONS_COLUMNS.createdAt]: new Date().toISOString(),
+            [GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente]: onWaitingList,
+            // Figé ici : un repêchage se reconnaît à ce que cette colonne dise
+            // « en attente » alors que la précédente n'y est plus.
+            [GRIST_INSCRIPTIONS_COLUMNS.enAttenteALInscription]: onWaitingList,
+            [GRIST_INSCRIPTIONS_COLUMNS.present]: false,
+            [GRIST_INSCRIPTIONS_COLUMNS.email]: email,
+          },
+        ],
+      );
+
+      return { ok: true, alreadyRegistered: false, onWaitingList };
+    });
   },
 );
 
@@ -434,44 +445,56 @@ export const unregisterFromFormationSession = withErrorHandling(
       );
     }
 
-    const inscriptions = await getGristRecords(
-      docId,
-      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
-      { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
-    );
-    // Une même personne ne devrait avoir qu'une ligne, mais les données
-    // reprises en contiennent des doublons : on retire tout ce qui la concerne.
-    const siennes = inscriptions.filter(
-      (i) =>
-        Number(i.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]) === membreRowId,
-    );
-    if (siennes.length === 0) {
-      throw new BusinessError(
-        "PasInscrit",
-        "Tu n'es pas inscrit·e à cette formation.",
-      );
-    }
-
-    await noterSuppressionsAgenda(
-      docId,
-      siennes.map((i) => ({
-        uid: uidEvenementInscription(sessionRowId, i.id),
-        contexte: `Désinscription de ${session.user.id}`,
-      })),
-    );
-    await deleteGristRecords(
-      docId,
-      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
-      siennes.map((i) => i.id),
-    );
-
     const [sessionRow] = (
       await getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID)
     ).filter((row) => row.id === sessionRowId);
     const capacite = Number(
       sessionRow?.fields[GRIST_SESSIONS_COLUMNS.capacite] ?? 0,
     );
-    const { promoted } = await syncSessionWaitingList(sessionRowId, capacite);
+
+    // Même verrou qu'à l'inscription, et pour la même raison : la place qui se
+    // libère ici est recalculée par syncSessionWaitingList, qui relit puis
+    // réécrit les drapeaux. Sans sérialisation, une inscription concurrente
+    // pourrait prendre cette place en même temps qu'elle est attribuée à la
+    // personne qui attendait.
+    const { promoted } = await withFormationSessionLock(
+      sessionRowId,
+      async () => {
+        const inscriptions = await getGristRecords(
+          docId,
+          config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+          { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
+        );
+        // Une même personne ne devrait avoir qu'une ligne, mais les données
+        // reprises en contiennent des doublons : on retire tout ce qui la
+        // concerne.
+        const siennes = inscriptions.filter(
+          (i) =>
+            Number(i.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]) === membreRowId,
+        );
+        if (siennes.length === 0) {
+          throw new BusinessError(
+            "PasInscrit",
+            "Tu n'es pas inscrit·e à cette formation.",
+          );
+        }
+
+        await noterSuppressionsAgenda(
+          docId,
+          siennes.map((i) => ({
+            uid: uidEvenementInscription(sessionRowId, i.id),
+            contexte: `Désinscription de ${session.user.id}`,
+          })),
+        );
+        await deleteGristRecords(
+          docId,
+          config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+          siennes.map((i) => i.id),
+        );
+
+        return syncSessionWaitingList(sessionRowId, capacite);
+      },
+    );
 
     const formatRowId = Number(
       sessionRow?.fields[GRIST_SESSIONS_COLUMNS.format] ?? 0,
