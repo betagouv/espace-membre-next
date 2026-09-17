@@ -35,8 +35,22 @@ import { authOptions } from "@/lib/authoptions";
 import { durationBetweenDate } from "@/lib/date";
 import { libelleInscriptions } from "@/lib/formationSeats";
 
+/**
+ * Rendu de la description, écrite par la personne qui dépose la formation.
+ *
+ * `html: false` échappe le HTML brut au lieu de le laisser passer : la
+ * description est du texte libre, rendu ensuite via `dangerouslySetInnerHTML`,
+ * et la fiche est lisible dès le dépôt — avant toute validation. Sans cet
+ * échappement, une balise avec gestionnaire inline (`<img src=x onerror=…>`)
+ * s'exécuterait à l'ouverture de la fiche, en premier lieu chez la personne de
+ * l'équipe d'animation venue la modérer. La CSP ne l'arrête pas : elle autorise
+ * l'inline.
+ *
+ * Le markdown, lui, continue de fonctionner : c'est tout ce dont la description
+ * a besoin.
+ */
 const mdParser = new MarkdownIt({
-  html: true,
+  html: false,
 });
 
 export async function generateMetadata(
