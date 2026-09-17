@@ -14,6 +14,22 @@ import {
 export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 /**
+ * Formats d'illustration acceptés, en liste blanche plutôt qu'en `image/*`.
+ *
+ * `image/*` laissait passer le SVG, qui n'est pas une image inerte mais un
+ * document scriptable. Le type est annoncé par le navigateur, donc un envoi
+ * forgé peut mentir : cette liste ferme le chemin honnête et dit au membre ce
+ * qu'on attend de lui. Ce qui verrouille pour de bon, c'est la route de service
+ * qui rend les pièces jointes en téléchargement.
+ */
+export const TYPES_IMAGE_ACCEPTES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+];
+
+/**
  * Récupère le fichier, qu'il arrive en File ou en FileList.
  *
  * Un champ fichier passé à react-hook-form rend une FileList : la validation
@@ -113,11 +129,11 @@ export const formationProposalSchema = z
       });
       return;
     }
-    if (!image.type.startsWith("image/")) {
+    if (!TYPES_IMAGE_ACCEPTES.includes(image.type.toLowerCase())) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["image"],
-        message: "Le fichier doit être une image",
+        message: "L'image doit être au format JPG, PNG, WEBP ou GIF",
       });
     }
     if (image.size > MAX_IMAGE_BYTES) {

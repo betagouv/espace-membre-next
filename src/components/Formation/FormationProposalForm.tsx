@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form";
 import { submitFormationProposal } from "@/app/api/formations/actions";
 import { AlertMessageType } from "@/models/common";
 import {
+  TYPES_IMAGE_ACCEPTES,
   formationProposalSchema,
   formationProposalSchemaType,
 } from "@/models/actions/formationProposal";
@@ -283,11 +284,13 @@ export const FormationProposalForm = ({
             label={
               images.length > 0 ? "Ou envoie la tienne" : "Envoie une image"
             }
-            hint="JPG ou PNG, 5 Mo maximum."
+            hint="JPG, PNG, WEBP ou GIF, 5 Mo maximum."
             state={errors.image ? "error" : "default"}
             stateRelatedMessage={errors.image?.message?.toString()}
             nativeInputProps={{
-              accept: "image/*",
+              // Même liste que la validation : le sélecteur de fichiers ne
+              // propose pas ce que le schéma refusera.
+              accept: TYPES_IMAGE_ACCEPTES.join(","),
               ...register("image"),
             }}
           />

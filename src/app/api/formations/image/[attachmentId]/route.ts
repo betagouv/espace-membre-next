@@ -39,6 +39,18 @@ export async function GET(
     return new NextResponse(body, {
       headers: {
         "Content-Type": contentType,
+        // Ces fichiers sont déposés par les membres, et un SVG est un document
+        // scriptable : ouvert directement, il s'exécuterait sur l'origine de
+        // l'application, que la CSP laisse faire puisqu'elle autorise l'inline.
+        // Servi en pièce jointe, une navigation directe télécharge au lieu
+        // d'afficher — y compris pour ce qui est déjà stocké. Les balises
+        // <img> du catalogue, elles, ignorent cet en-tête : les illustrations
+        // s'affichent comme avant. Grist le pose déjà sur son propre endpoint
+        // de téléchargement, le relais se contentait de ne pas le reprendre.
+        "Content-Disposition": "attachment",
+        // Et on interdit au navigateur de deviner un type plus dangereux que
+        // celui annoncé.
+        "X-Content-Type-Options": "nosniff",
         // Les pièces jointes Grist sont immuables : leur identifiant change
         // quand le fichier change.
         "Cache-Control": "private, max-age=86400",
