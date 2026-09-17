@@ -3,24 +3,27 @@ import type { Session } from "next-auth";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import { Formation } from "@/models/formation";
 
-/**
- * Droit de voir le détail complet d'une formation et de le modifier.
- *
- * Deux profils : l'équipe d'animation, qui gère le catalogue, et la personne
- * qui anime la formation, qui doit pouvoir corriger ses propres informations.
- *
- * L'animateur·ice est reconnu·e par la partie locale de son adresse Tchap, qui
- * vaut le ghid, ou par l'email de l'organisateur·trice. Les deux sont saisis à
- * la main dans le formulaire : la comparaison ignore la casse et les espaces.
- */
+// Les deux champs comparés sont de la chaîne libre côté Grist : la
+// comparaison ignore la casse et les espaces.
 const normalize = (value?: string) => (value ?? "").trim().toLowerCase();
 
 /**
  * La personne connectée anime-t-elle cette formation ?
  *
- * Reconnue par la partie locale de son adresse Tchap, qui vaut le ghid, ou par
- * l'email de l'organisateur·trice. Les deux sont saisis à la main dans le
- * formulaire : la comparaison ignore la casse et les espaces.
+ * Deux reconnaissances, qui n'ont pas la même valeur — à savoir avant de
+ * toucher à cette fonction :
+ *
+ * - `animatorTchap` est écrit par le serveur au dépôt, depuis l'adresse de la
+ *   session (voir submitFormationProposal). Il n'apparaît dans aucun champ de
+ *   saisie : c'est le lien fiable entre une formation et qui l'a déposée.
+ * - `animatorEmail` vient du champ « email organisateur·trice » du formulaire,
+ *   donc du texte libre. Il ne prouve rien par lui-même. Il reste accepté ici
+ *   parce qu'on ne peut l'écrire qu'en créant sa propre formation ou en
+ *   modifiant une formation qu'on gère déjà : il transmet un droit qu'on a
+ *   déjà, il n'en fabrique pas.
+ *
+ * C'est la raison pour laquelle ajouter ici une reconnaissance par un autre
+ * champ de formulaire serait une faille, alors que celle-ci n'en est pas une.
  */
 export const isFormationAnimator = (
   sessionUser: Session["user"] | undefined,
