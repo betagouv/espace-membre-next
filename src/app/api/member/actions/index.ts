@@ -16,10 +16,7 @@ import {
   memberBaseInfoToMemberPublicInfoModel,
   memberBaseInfoToModel,
 } from "@/models/mapper";
-import {
-  CommunicationEmailCode,
-  memberWrapperPublicInfoSchemaType,
-} from "@/models/member";
+import { CommunicationEmailCode } from "@/models/member";
 import config from "@/server/config";
 import {
   updateContactEmail,
@@ -152,35 +149,6 @@ async function changeContactEmail(
       listType: MAILING_LIST_TYPE.NEWSLETTER,
     });
   }
-}
-
-async function getUserPublicInfo(
-  username: string,
-): Promise<memberWrapperPublicInfoSchemaType> {
-  const user = await userInfos({ username }, false);
-
-  const hasGithubFile = user.userInfos;
-  const hasEmailAddress = user.emailInfos || user.emailRedirections.length > 0;
-  if (!hasGithubFile && !hasEmailAddress) {
-    throw new NoDataError(
-      "Il n'y a pas de membre avec ce compte mail. Vous pouvez commencez par l'inviter <a href=\"/onboarding\">en cliquant ici</a>.",
-    );
-  }
-  const dbUser = await db
-    .selectFrom("users")
-    .selectAll()
-    .where("username", "=", username)
-    .executeTakeFirst();
-  const secondaryEmail: string = dbUser?.secondary_email || "";
-
-  let data: memberWrapperPublicInfoSchemaType = {
-    isExpired: user.isExpired,
-    hasEmailInfos: !!user.emailInfos,
-    isEmailBlocked: user.emailInfos?.isBlocked || false,
-    hasSecondaryEmail: !!secondaryEmail,
-    userPublicInfos: memberBaseInfoToMemberPublicInfoModel(user.userInfos),
-  };
-  return data;
 }
 
 /**
@@ -321,10 +289,7 @@ export async function manageSecondaryEmailForUser({
 }
 
 export const safeUpdateMemberMissions = withErrorHandling(updateMemberMissions);
-export const safeGetUserPublicInfo = withErrorHandling<
-  UnwrapPromise<ReturnType<typeof getUserPublicInfo>>,
-  Parameters<typeof getUserPublicInfo>
->(getUserPublicInfo);
+
 export const safeChangeSecondaryEmailForUser = withErrorHandling<
   UnwrapPromise<ReturnType<typeof changeSecondaryEmailForUser>>,
   Parameters<typeof changeSecondaryEmailForUser>
