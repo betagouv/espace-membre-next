@@ -122,7 +122,7 @@
     "rewire": "^7.0.0",
     "sass": "^1.102.0",
     "sinon": "^17.0.1",
-    "ts-mocha": "^10.0.0",
+    "ts-mocha": "^11.1.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.3"
