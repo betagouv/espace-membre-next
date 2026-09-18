@@ -13,6 +13,7 @@ import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/lib/utils";
 import { getJwtTokenForUser } from "@/lib/session";
 import { EMAIL_TYPES } from "@/lib/email/email";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 async function sendVerificationRequest(params) {
   const { identifier, url } = params;
@@ -164,8 +165,25 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, email }) {
       if (user.id) {
+        // Only the initial login-form submission (`verificationRequest`) can be
+        // sprayed by an unauthenticated caller against arbitrary addresses at
+        // zero cost — it mails whoever is asked about and writes a token to the
+        // DB before this point returns. The redemption phase below (the emailed
+        // link actually being clicked) isn't spray-able the same way, since it
+        // requires a real token from that inbox, so it isn't rate-limited here.
+        if (email?.verificationRequest) {
+          const { allowed } = checkRateLimit(
+            `login-request:${user.id}`,
+            3,
+            15 * 60_000,
+          );
+          if (!allowed) {
+            console.log(`Too many login attempts for ${user.id}`);
+            throw new Error("TooManyAttempts");
+          }
+        }
         const dbUser = await getUserInfos({
           username: user.id,
           options: {
