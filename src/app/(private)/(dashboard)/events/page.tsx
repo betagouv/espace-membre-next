@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 const calendarUrl =
-  "https://calendar.google.com/calendar/ical/0ieonqap1r5jeal5ugeuhoovlg%40group.calendar.google.com/public/basic.ics";
+  "https://messagerie.numerique.gouv.fr/appsuite/api/share/0366722a002da2b9366722802da84e5eb694970c9c989a65/1/2/Y2FsOi8vMC8yMjczNA";
 
 const fetchCalendar = (url) => {
   return fetch(url)
@@ -37,18 +37,9 @@ export default async function Page() {
         <span style={{ fontSize: "1rem" }}>
           <Link
             className={fr.cx("fr-ml-2w")}
-            href="https://calendar.google.com/calendar/ical/0ieonqap1r5jeal5ugeuhoovlg%40group.calendar.google.com/public/basic.ics"
+            href="https://messagerie.numerique.gouv.fr/appsuite/api/share/0366722a002da2b9366722802da84e5eb694970c9c989a65/1/2/Y2FsOi8vMC8yMjczNA"
             target="_blank"
-            title="Fichier iCal de l'agenda public - ouvre une nouvelle fenêtre"
-          >
-            <span className={fr.cx("fr-icon-download-line")}></span>
-            Lien vers le fichier iCal
-          </Link>
-          <Link
-            className={fr.cx("fr-ml-2w")}
-            href="https://calendar.google.com/calendar/embed?src=0ieonqap1r5jeal5ugeuhoovlg%40group.calendar.google.com&ctz=Europe%2FParis"
-            target="_blank"
-            title="Agenda public - ouvre une nouvelle fenêtre"
+            title="Lien vers l'agenda public - ouvre une nouvelle fenêtre"
           >
             <span className={fr.cx("fr-icon-calendar-2-line")}></span>
             Lien vers l'agenda public
