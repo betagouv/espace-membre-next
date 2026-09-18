@@ -65,6 +65,8 @@ fileignoreconfig:
   checksum: 4875c83d95ffdac95c1b9847f3d27d2ffdf0b1cbbc0a6c83ccb6ae9abf25a81d
 - filename: src/lib/routes.ts
   checksum: e2a041fe934441a29c6274fcb06f378a217c25c89d3f96a5c82cee4164a5e4ee
+- filename: src/lib/s3.spec.ts
+  checksum: aa48871cc9298449e92c0fe710e76cc75e0952f00eecbef643b9f2fbc377ec17
 - filename: src/lib/s3.ts
   checksum: 1bdce3d9d9ba297d2170171a44768ca470aaba2c7ac5401ed6951bd36711b6e7
 - filename: src/middleware.ts
