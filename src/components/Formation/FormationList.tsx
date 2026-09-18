@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FormationCard from "./FormationCard";
+import { comparerAuCatalogue } from "@/lib/formationOrder";
 import { Formation, FormationInscription } from "@/models/formation";
 
 // FIXME: there is no reason to hardcode all of these – should be
@@ -138,18 +140,37 @@ export default function FormationList({
       setSelectedFilters([...selectedFilters, tag]);
     }
   };
+  // Au catalogue on choisit une séance, pas un sujet : une formation
+  // programmée cinq fois occupe cinq cartes, chacune avec sa date et ses
+  // places. Une formation sans date garde une carte, qui l'annonce.
+  const formationsParDate: Formation[] = formations.flatMap((formation) => {
+    const sessions = formation.sessions ?? [];
+    if (sessions.length === 0) return [formation];
+    return sessions.map((session) => ({
+      ...formation,
+      sessionId: session.id,
+      start: session.start,
+      startDate: session.start,
+      formation_date: session.start,
+      maxSeats: session.maxSeats,
+      availableSeats: session.availableSeats ?? 0,
+    }));
+  });
+
   const filteredFormations: Formation[] = selectedFilters.length
-    ? formations.filter((formation) => {
+    ? formationsParDate.filter((formation) => {
         return selectedFilters.reduce((acc, filter) => {
           return !!(applyFilter(formation, filter) && acc);
         }, true);
       })
-    : formations;
-  filteredFormations.sort((a, b) => {
-    return (a.start && b.start && a.start.getTime() - b.start.getTime()) || 0;
-  });
+    : formationsParDate;
+  filteredFormations.sort(comparerAuCatalogue);
   return (
     <div>
+      {/* Titre de section : les cartes sont en h3, il leur faut un h2, et sans
+          bandeau « Mes prochaines formations » il n'y en aurait aucun entre
+          le h1 et elles. Même graisse que le bandeau, pour ne pas peser. */}
+      <h2 className={fr.cx("fr-h6", "fr-mb-1w")}>Formations à venir</h2>
       <ul className="fr-tags-group fr-my-2w">
         {tags.map((tag) => (
           <li key={tag.value}>
@@ -170,7 +191,9 @@ export default function FormationList({
         <div className="fr-grid-row fr-grid-row--gutters">
           {filteredFormations.map((formation) => (
             <div
-              key={formation.id}
+              // Une même formation revient autant de fois qu'elle a de dates :
+              // la date fait partie de l'identité de la carte.
+              key={`${formation.id}-${formation.sessionId ?? "sans-date"}`}
               className="fr-col-md-4 fr-col-lg-4 fr-col-sm-12"
             >
               <FormationCard

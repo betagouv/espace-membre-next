@@ -1,7 +1,7 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Card from "@codegouvfr/react-dsfr/Card";
-import { format } from "date-fns/format";
+import { formatInTimeZone } from "date-fns-tz";
 import { fr } from "date-fns/locale/fr";
 import MarkdownIt from "markdown-it";
 import type { Metadata, ResolvingMetadata } from "next";
@@ -10,15 +10,47 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import { fetchAirtableFormationById } from "@/lib/airtable";
+import { db } from "@/lib/kysely";
+import { routes } from "@/lib/routes";
+import {
+  fetchGristFormationById,
+  fetchGristInscriptions,
+  fetchGristParticipantsForSessions,
+} from "@/lib/formationsGrist";
+import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
+import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
+import { FormationOtherDates } from "@/components/Formation/FormationOtherDates";
+import {
+  canManageFormation,
+  isFormationAnimator,
+} from "@/lib/canManageFormation";
+import { FORMATION_DUREES, FORMATION_STATUT } from "@/models/formationsGrist";
+import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
+import { formationUpdateSchemaType } from "@/models/actions/formationProposal";
+import { notFound } from "next/navigation";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode, Domaine } from "@/models/member";
 import { authOptions } from "@/lib/authoptions";
 import { durationBetweenDate } from "@/lib/date";
+import { libelleInscriptions } from "@/lib/formationSeats";
 
+/**
+ * Rendu de la description, écrite par la personne qui dépose la formation.
+ *
+ * `html: false` échappe le HTML brut au lieu de le laisser passer : la
+ * description est du texte libre, rendu ensuite via `dangerouslySetInnerHTML`,
+ * et la fiche est lisible dès le dépôt — avant toute validation. Sans cet
+ * échappement, une balise avec gestionnaire inline (`<img src=x onerror=…>`)
+ * s'exécuterait à l'ouverture de la fiche, en premier lieu chez la personne de
+ * l'équipe d'animation venue la modérer. La CSP ne l'arrête pas : elle autorise
+ * l'inline.
+ *
+ * Le markdown, lui, continue de fonctionner : c'est tout ce dont la description
+ * a besoin.
+ */
 const mdParser = new MarkdownIt({
-  html: true,
+  html: false,
 });
 
 export async function generateMetadata(
@@ -27,9 +59,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // fetch data
   const params = await props.params;
-  const formation = await fetchAirtableFormationById(params.id);
+  const formation = await fetchGristFormationById(params.id, {
+    statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+  });
   return {
-    title: `${formation.name} / Espace Membre`,
+    title: `${formation?.name ?? "Formation"} / Espace Membre`,
   };
 }
 
@@ -102,7 +136,73 @@ export default async function Page(props: Readonly<Props>) {
     // Return the modified URL as a string
     return url.toString();
   };
-  const formation = await fetchAirtableFormationById(params.id);
+  // Les propositions ne sont pas au catalogue, mais l'équipe d'animation et la
+  // personne qui anime doivent pouvoir les ouvrir pour les examiner. On les
+  // charge donc, quitte à refermer la porte juste après.
+  const formation = await fetchGristFormationById(params.id, {
+    statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
+  });
+  if (!formation) {
+    notFound();
+  }
+
+  const isAnimation = await isAnimationTeamMember(session.user);
+  const canManage = await canManageFormation(session.user, formation);
+  // Une formation pas encore validée n'existe pour personne d'autre : 404, et
+  // non « accès refusé », qui révélerait qu'elle existe.
+  if (formation.statut !== FORMATION_STATUT.VALIDEE && !canManage) {
+    notFound();
+  }
+
+  // Inscription du membre à la session à venir, s'il y en a une.
+  const inscriptions = await fetchGristInscriptions(session.user.id);
+  const gristInscription = formation.sessionId
+    ? inscriptions.find((i) => i.sessionId === formation.sessionId)
+    : undefined;
+
+  // Panneau de gestion : réservé à l'équipe d'animation et à la personne qui
+  // anime. Le droit est recalculé côté serveur, l'affichage n'en est que la
+  // conséquence.
+  const isAnimator = isFormationAnimator(session.user, formation);
+  // Toutes les dates, pas seulement la plus proche : le panneau de gestion
+  // déplie les inscrits date par date.
+  const participantsBySession = canManage
+    ? await fetchGristParticipantsForSessions(
+        (formation.sessions ?? []).map((s) => s.id),
+      )
+    : {};
+  const participants = Object.values(participantsBySession).flat();
+
+  // Un lien vers une fiche inexistante est pire que pas de lien : on ne relie
+  // que les personnes présentes dans l'annuaire de l'espace membre. Les autres
+  // viennent d'un import, ou ont quitté la communauté.
+  const ghids = participants
+    .map((participant) => participant.ghid)
+    .filter((ghid): ghid is string => !!ghid);
+  const knownGhids = new Set(
+    ghids.length
+      ? (
+          await db
+            .selectFrom("users")
+            .select("username")
+            .where("username", "in", ghids)
+            .execute()
+        ).map((user) => user.username)
+      : [],
+  );
+  const ficheUrl = (ghid?: string) =>
+    ghid && knownGhids.has(ghid)
+      ? routes.communityMember({ username: ghid })
+      : undefined;
+  const participantsAvecFiche = Object.fromEntries(
+    Object.entries(participantsBySession).map(([sessionId, liste]) => [
+      sessionId,
+      liste.map((participant) => ({
+        ...participant,
+        profileUrl: ficheUrl(participant.ghid),
+      })),
+    ]),
+  );
 
   const dbUser = userInfosToModel(
     await getUserInfos({
@@ -169,22 +269,6 @@ export default async function Page(props: Readonly<Props>) {
                   )}
                   {!formation.isELearning && (
                     <>
-                      {formation.maxSeats !== undefined &&
-                        formation.availableSeats !== undefined && (
-                          <span
-                            style={{
-                              display: "block",
-                              marginBottom: 5,
-                              marginTop: 5,
-                            }}
-                          >
-                            Inscription: {}
-                            {formation.availableSeats > 0
-                              ? formation.maxSeats - formation.availableSeats
-                              : formation.maxSeats}
-                            /{formation.maxSeats}
-                          </span>
-                        )}
                       <span
                         style={{
                           display: "block",
@@ -192,32 +276,34 @@ export default async function Page(props: Readonly<Props>) {
                           marginTop: 5,
                         }}
                       >
-                        {!isMemberRegistered ? (
-                          <Button
-                            linkProps={{
-                              href: buildInscriptionLink(
-                                formation.inscriptionLink,
-                                {
-                                  fullname: dbUser.fullname,
-                                  email,
-                                  username: dbUser.username,
-                                  domaine: dbUser.domaine,
-                                },
+                        {formation.maxSeats
+                          ? `Inscription : ${libelleInscriptions(
+                              Math.max(
+                                0,
+                                formation.maxSeats -
+                                  (formation.availableSeats ?? 0),
                               ),
-                              target: "_blank",
-                            }}
-                          >
-                            {formation.availableSeats <= 0
-                              ? `M'inscrire sur liste d'attente`
-                              : `M'inscrire`}
-                          </Button>
-                        ) : isInWaitingList ? (
-                          <Badge as="span">Inscrit sur liste d'attente</Badge>
-                        ) : (
-                          <Badge severity="success" as="span">
-                            Inscrit
-                          </Badge>
-                        )}
+                              formation.maxSeats,
+                            )}`
+                          : // Sans limite, le décompte remplace la fraction.
+                            libelleInscriptions(
+                              formation.sessions?.[0]?.inscrits ?? 0,
+                            )}
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          marginBottom: 5,
+                          marginTop: 5,
+                        }}
+                      >
+                        <FormationRegisterButton
+                          sessionId={formation.sessionId}
+                          isRegistered={!!gristInscription}
+                          isOnWaitingList={!!gristInscription?.onWaitingList}
+                          seatsLeft={formation.availableSeats}
+                          isAnimator={isAnimator}
+                        />
                       </span>
                     </>
                   )}
@@ -225,9 +311,14 @@ export default async function Page(props: Readonly<Props>) {
               }
               title={
                 formation.startDate
-                  ? format(formation.startDate, "d MMMM à HH'h'mm", {
-                      locale: fr,
-                    })
+                  ? // Fuseau explicite : sans lui le serveur en UTC et le
+                    // navigateur affichent deux heures différentes.
+                    formatInTimeZone(
+                      formation.startDate,
+                      "Europe/Paris",
+                      "d MMMM à HH'h'mm",
+                      { locale: fr },
+                    )
                   : "Formation en ligne"
               }
               titleAs="h2"
@@ -259,6 +350,47 @@ export default async function Page(props: Readonly<Props>) {
             </p>
           </div>
         </div>
+        {!formation.isELearning && (
+          <FormationOtherDates
+            // La première date est déjà celle de la carte ci-dessus.
+            sessions={(formation.sessions ?? []).slice(1)}
+            inscriptions={inscriptions}
+            isAnimator={isAnimator}
+          />
+        )}
+        {canManage && (
+          <FormationManagePanel
+            statut={formation.statut}
+            canValidate={isAnimation}
+            sessions={formation.sessions ?? []}
+            participantsBySession={participantsAvecFiche}
+            defaultValues={{
+              formationId: formation.id,
+              titre: formation.name,
+              description: formation.description,
+              modalite: (formation.modalite ??
+                "") as formationUpdateSchemaType["modalite"],
+              thematiques: formation.category ?? [],
+              audience: formation.audience ?? [],
+              // La limite du format, pas celle de la date la plus proche :
+              // `maxSeats` écraserait le modèle par la valeur d'une séance.
+              // Sans limite, le champ reste vide — 1 par défaut ferait passer
+              // « aucune limite » pour « une place ».
+              capacite: formation.capaciteParDefaut,
+              // La durée est requise : à défaut de correspondance, on propose
+              // la plus courte plutôt qu'un champ vide qui bloquerait l'envoi.
+              duree:
+                FORMATION_DUREES.find((d) => d.hours === formation.duree)
+                  ?.label ?? FORMATION_DUREES[0].label,
+              lienVisioAdmin: formation.lienAdmin ?? "",
+              lienSupport: formation.lienSupport ?? "",
+              lienFeedback: formation.lienFeedback ?? "",
+              animateur: formation.animator ?? "",
+              emailOrganisateur: formation.animatorEmail ?? "",
+            }}
+          />
+        )}
+
         <div className="fr-my-4w">
           <Link
             href="/formations"

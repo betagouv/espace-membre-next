@@ -34,6 +34,7 @@ export function BreadCrumbs() {
   const serviceLink = "/services";
   const formationLink = routes["formationList"]();
   const eventsLink = routes["eventsList"]();
+  const formationProposalLink = routes["formationProposal"]();
   const formationDetailLink = routes["formationDetails"]();
   const verifyLink = routes["verifyMember"]();
 
@@ -260,6 +261,16 @@ export function BreadCrumbs() {
       text: routeTitles.formationList(),
       isActive: isCurrentPath(pathname, formationLink),
       items: [
+        // Avant la page de détail : « /formations/proposer » satisfait aussi
+        // son motif fourre-tout, qui l'étiquetterait alors avec le titre de la
+        // formation précédemment consultée.
+        {
+          href: formationProposalLink,
+          // Le titre dépend de qui dépose (créer ou proposer) : la page le
+          // pousse dans le contexte, le libellé de route sert de repli.
+          text: currentPage || routeTitles.formationProposal(),
+          isActive: hasPathnameThisMatch(pathname, formationProposalLink),
+        },
         {
           href: pathname,
           text: currentPage || pathname,
