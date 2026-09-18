@@ -74,8 +74,19 @@ export default function customPostgresAdapter(): Adapter {
         .selectAll()
         .where((eb) =>
           eb.or([
-            eb(sql`LOWER(users.secondary_email)`, "=", email),
-            eb(sql`LOWER(users.primary_email)`, "=", email),
+            eb("primary_email", "ilike", email),
+            eb("secondary_email", "ilike", email),
+            eb(
+              "users.uuid",
+              "in",
+              eb
+                .selectFrom("dinum_emails")
+                .select("user_id")
+                .distinct()
+                .where((eb) =>
+                  eb("email", "ilike", email).and("user_id", "is not", null),
+                ),
+            ),
           ]),
         )
         .executeTakeFirst();
