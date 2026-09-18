@@ -15,11 +15,39 @@ L'espace membre de l’incubateur
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 
-## API en lecture
+## API v1
 
-La doc OPENAPI est dispo sur `/api/protected/openapi.json`.
+La documentation interactive est publique sur
+[`/api/docs`](https://espace-membre.incubateur.net/api/docs), et le document
+OpenAPI 3.1 qui l'alimente sur
+[`/api/v1/openapi.json`](https://espace-membre.incubateur.net/api/v1/openapi.json).
 
-Vous pouvez y accéder avec un header `X-Api-Key` à demander à l'équipe animation
+Les appels s'authentifient par clef d'API, avec un en-tête
+`Authorization: Bearer em1_<...>`. Une clef se crée depuis l'Espace Membre :
+onglet « Clefs d'API » de sa fiche membre pour une clef personnelle, page
+`/incubators/{uuid}/api-keys` pour une clef d'application. Le jeton n'est affiché
+qu'une seule fois, à la création.
+
+Chaque clef porte des portées (`members:read`, `startups:read`,
+`incubators:read`, `startups:write`, `incubators:write`) et deux périmètres
+indépendants, un en lecture et un en écriture. Aucune portée n'en implique une
+autre : une écriture répond `204` sans corps si la clef ne porte pas la lecture
+correspondante.
+
+Le périmètre de lecture s'applique aussi aux sous-ressources : sur
+`/api/v1/incubators/{id}/members`, une clef de périmètre `startup/S` atteint bien
+les incubateurs de `S`, mais n'y énumère que les membres de `S`. Le chemin ouvre
+l'incubateur, il n'élargit pas le périmètre.
+
+Le fonctionnement détaillé, portées, périmètres, cycle de vie et dépannage, est
+dans [`docs/api-keys.md`](./docs/api-keys.md).
+
+Une clef sans date d'expiration reçoit deux rappels par courriel, à 90 puis à
+180 jours. Ces deux paliers se comptent depuis la dernière confirmation quand il
+y en a eu une, sinon depuis la création : confirmer qu'une clef sert toujours
+redonne donc réellement deux paliers. La confirmation ne prolonge rien d'autre,
+et ne repousse pas la révocation automatique pour inactivité, qui se compte sur
+un usage réel.
 
 ## Dev de l'app Espace Membre
 
@@ -96,11 +124,26 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 > `[[ "$APP" = "espace-membre-cron" ]]`), planifiée via [`cron.json`](./cron.json)
 > (Scalingo Scheduler).
 
+> ⚠️ **Scalingo plafonne le nombre d'entrées de `cron.json` à cinq.** Une sixième
+> fait échouer le déploiement, avec un `400 Bad Request → You exceeded the max
+> amount of cron tasks possible (max is 5)`. Le fichier est à ce plafond : pour
+> ajouter un job, il faut soit l'enchaîner dans une entrée existante, comme le
+> couple de 8h ci-dessous, soit demander un relèvement au support Scalingo.
+
+Enchaîner deux commandes dans une seule entrée n'est pas qu'un contournement du
+plafond : quand l'ordre compte, c'est plus sûr que deux entrées rapprochées. Les
+clefs d'API doivent résoudre les destinataires de leurs rappels **avant** que
+`clean-teams-members` ne vide `users_teams` des membres expirés, sinon les
+rappels partent à un ensemble vide. Deux entrées à des heures voisines ne rendent
+cet ordre que probable, une exécution longue pouvant les croiser ; le
+chaînage l'impose. Le séparateur est `;` et non `&&`, les deux jobs étant
+indépendants : l'échec du premier ne doit pas empêcher le second.
+
 | fréquence (UTC)    | commande                                    | description                                                              |
 | ------------------ | ------------------------------------------- | ------------------------------------------------------------------------ |
 | `0 18 * * MON-FRI` | `npm run export-to-www`                     | Exporte les données vers le site beta.gouv.fr                            |
 | `0 3 * * *`        | `npm run job:sync-matrix-accounts`          | Indexe les comptes Matrix (Tchap) des utilisateurs                       |
-| `0 8 * * *`        | `npm run job:clean-teams-members`           | Supprime les membres expirés des équipes incubateurs                     |
+| `0 8 * * *`        | `npm run job:api-keys-maintenance` **puis** `npm run job:clean-teams-members` | Révoque les clefs d'API inactives, orphelines ou bloquées et envoie leurs rappels, **puis** supprime les membres expirés des équipes incubateurs |
 | `0 8-18 * * *`     | `npm run job:sync-dinum-emails`             | Met à jour la table `dinum_emails` depuis l'API Dimail                   |
 | `0 * * * *`        | `npm run job:recreate-email-if-user-active` | Recrée/réactive l'email des comptes actifs repassés en `EMAIL_SUSPENDED` |
 
@@ -185,19 +228,58 @@ Les permissions sont vérifiées côté serveur (routes sous
   s'il appartient à une équipe incubateur en commun avec ce membre (via ses
   produits ou ses équipes), ou s'il partage un produit avec lui et a un statut
   légal `contractuel` ou `fonctionnaire`. Logique implémentée dans
-  [`src/lib/canEditMember.ts`](./src/lib/canEditMember.ts) (fonction `canEditMember`).
-- **Member** : peut modifier son propre compte et éditer les fiches produit, mais
-  pas la fiche d'un autre membre en dehors du cas ci-dessus.
+  [`src/lib/authorization/member.ts`](./src/lib/authorization/member.ts) (fonction `canEditMember`).
+- **Member** : peut modifier son propre compte. L'édition d'une fiche produit est
+  conditionnée à l'appartenance à une équipe d'un des incubateurs liés au produit,
+  ou au statut d'agent public actif sur ce produit. Il ne peut pas modifier la
+  fiche d'un autre membre en dehors du cas ci-dessus.
 - **Anonymous** : aucun accès aux pages privées (redirection vers `/login`).
 
 ### Matrice des droits
 
-| Rôle      | Inviter un membre | Modifier mon compte | Modifier un membre | Editer une fiche produit |
-| --------- | :---------------: | :-----------------: | :----------------: | :----------------------: |
-| Admin     |        ✅         |         ✅          |         ✅         |            ✅            |
-| Teams     |        ✅         |         ✅          |         ✅         |            ✅            |
-| Member    |        ✅         |         ✅          |         ❌         |            ✅            |
-| Anonymous |        ❌         |         ❌          |         ❌         |            ❌            |
+Le rôle ne suffit pas à décrire les droits : un membre ordinaire en tire du
+**rattachement au produit**, par son équipe d'incubateur ou par sa mission. Les
+deux dernières lignes ne sont donc pas des rôles mais des situations, qui
+s'ajoutent à « Member ».
+
+| Situation | Inviter un membre | Modifier mon compte | Modifier un membre | Éditer une fiche produit | Clef perso. lecture | Clef perso. écriture | Clef d'application |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Admin | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ global inclus | ✅ |
+| Équipe d'un incubateur lié | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ incubateur et ses produits | ✅ son incubateur, si vivant |
+| Agent public en mission sur le produit | ✅ | ✅ | ✅ un membre du même produit | ✅ ce produit | ✅ | ✅ ce produit seulement | ❌ |
+| Member sans rattachement | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Anonymous | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+Trois précisions qui évitent les mauvaises surprises.
+
+**La lecture est libre.** N'importe quel membre peut créer une clef de périmètre
+global en lecture, c'est une décision assumée : l'espace membre n'a pas de donnée
+dont la lecture soit réservée entre membres. La liste de périmètres proposée au
+formulaire ne décrit donc pas un droit, seulement les rattachements vivants de la
+personne, pour l'aider à se restreindre.
+
+**« Agent public en mission »** veut dire trois conditions cumulées : une mission
+commencée et non terminée sur ce produit, une mission sans date de fin comptant
+comme ouverte donc vivante, et un `legal_status` valant `fonctionnaire` ou
+`contractuel`. Un membre sans statut déclaré, cas de tout compte jamais vérifié,
+ne remplit jamais cette ligne.
+
+**L'écriture sur un incubateur passe uniquement par l'équipe**, jamais par une
+mission, et un périmètre de clef de nature produit ne l'ouvre pas non plus : la
+portée `incubators:write` exige un périmètre global ou incubateur. Créer une clef
+d'application demande en plus de porter une mission non expirée : siéger dans
+l'équipe ne suffit pas si toutes les missions sont terminées.
+
+Toutes les décisions d'accès vivent dans
+[`src/lib/authorization/`](./src/lib/authorization/) : les prédicats `can*`
+décident quoi afficher, les gardes `assertCan*` jettent une `AuthorizationError`
+et sont appelées par les server actions.
+
+Trois variables d'environnement pilotent les clefs d'API, à côté de
+`ESPACE_MEMBRE_ADMIN` : `API_KEYS_CREATION_DISABLED` (bloque la création),
+`API_KEYS_AUTH_DISABLED` (coupe-circuit d'incident, répond 503 sur toute
+l'API v1) et `API_KEYS_BLOCKED_USERS` (liste d'usernames dont les clefs
+personnelles sont refusées, relue à chaque requête).
 
 ## Diagramme de flux
 

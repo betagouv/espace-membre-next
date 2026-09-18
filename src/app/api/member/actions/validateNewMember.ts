@@ -21,7 +21,7 @@ import {
 } from "@/lib/error";
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
 import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
-import { canEditMember } from "@/lib/canEditMember";
+import { canEditMember } from "@/lib/authorization/member";
 
 export async function validateNewMember({
   memberUuid,

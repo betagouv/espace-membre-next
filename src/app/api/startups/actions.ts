@@ -29,7 +29,9 @@ import {
 } from "@/lib/error";
 import { addMonths, differenceInDays } from "date-fns";
 import { ca } from "date-fns/locale";
-import { canEditStartup } from "@/lib/canEditStartup";
+import { canEditStartup } from "@/lib/authorization/startup";
+import { assertCanEditStartup } from "@/lib/authorization/startup";
+import { toAuthSubject } from "@/lib/authorization/subject";
 
 export async function getStartup({ uuid }: { uuid: string }) {
   return db
@@ -259,12 +261,9 @@ export async function updateStartup({
   };
   startupUuid: string;
 }): Promise<{ uuid: string; ghid: string }> {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new AuthorizationError(
-      `You don't have the right to access this function`,
-    );
-  }
+  // Le role Member perd l'edition de fiche produit : il reste editeur s'il est
+  // agent public actif sur le produit (isStartupAgent).
+  const subject = await assertCanEditStartup(startupUuid);
 
   // The form schema is the only place holding the invariants (at least one
   // incubator, contact normalization); it has to be enforced server-side too.
@@ -443,7 +442,7 @@ export async function updateStartup({
     );
     await addEvent({
       action_code: EventCode.STARTUP_INFO_UPDATED,
-      created_by_username: session.user.id,
+      created_by_username: subject.username,
       action_on_startup: startupUuid,
       action_metadata: {
         value: {
@@ -514,7 +513,7 @@ export const removeMember = async (
     );
   }
 
-  const canEdit = await canEditStartup(session, startupUuid);
+  const canEdit = await canEditStartup(toAuthSubject(session)!, startupUuid);
   if (!canEdit) {
     throw new AuthorizationError(
       `You don't have the right to access this function`,
@@ -603,7 +602,7 @@ export const addMember = async (
       `You don't have the right to access this function`,
     );
   }
-  const canEdit = await canEditStartup(session, startupUuid);
+  const canEdit = await canEditStartup(toAuthSubject(session)!, startupUuid);
   if (!canEdit) {
     throw new AuthorizationError(
       `You don't have the right to access this function`,

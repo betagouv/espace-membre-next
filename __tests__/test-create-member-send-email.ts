@@ -46,6 +46,7 @@ describe("Test creating new user flow : sending email", () => {
       .insertInto("incubators")
       .values({
         title: "un super incubator",
+        ghid: `un-super-incubator-${Math.random().toString(36).slice(2, 8)}`,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -53,6 +54,7 @@ describe("Test creating new user flow : sending email", () => {
       .insertInto("incubators")
       .values({
         title: "un autre incubator",
+        ghid: `un-autre-incubator-${Math.random().toString(36).slice(2, 8)}`,
       })
       .returningAll()
       .executeTakeFirstOrThrow();

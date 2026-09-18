@@ -38,6 +38,12 @@ export const routes = {
   serviceList: () => `/services`,
   opsRequest: () => `/services/ops`,
   segurAccessRequest: () => `/demandes/segur`,
+  incubatorApiKeys: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}/api-keys`,
+  adminApiKeys: () => `/admin/api-keys`,
+  accountApiKeyDetails: ({ apiKeyId }: { apiKeyId: string }) =>
+    `/account/api-keys/${apiKeyId}`,
+  admin: () => `/admin`,
 } as const;
 
 // Route title generators
@@ -47,6 +53,10 @@ export const routeTitles: {
     | ((id?: string) => string);
 } = {
   account: () => "Compte",
+  incubatorApiKeys: () => "Clefs d'API de l'incubateur",
+  adminApiKeys: () => "Clefs d'API",
+  accountApiKeyDetails: () => "Clef d'API",
+  admin: () => "Administration",
   accountEditBaseInfo: () => "Mise à jour de mes informations",
   accountEditPrivateInfo: () => "Mise à jour de mes informations privées",
   community: () => "Rechercher un ou une membre",

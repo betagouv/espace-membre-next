@@ -1,0 +1,44 @@
+<% if (event === "created") { %>
+<mj-text>Bonjour 👋</mj-text>
+<mj-text>
+  Une <%= kindLabel %> vient d'être créée sur l'espace membre :
+  <strong><%= keyName %></strong> (préfixe <code><%= tokenPrefix %></code>).
+</mj-text>
+<mj-text>
+  <ul>
+    <li>Portées : <%= locals.scopesLabel %></li>
+    <li>Périmètre : <%= locals.perimeterLabel %></li>
+    <li>Créée le <%= createdAt %> par <%= locals.createdByFullname %></li>
+  </ul>
+</mj-text>
+<mj-text>
+  Si cette clef ne correspond à rien de connu, ouvre l'écran de gestion pour la
+  révoquer.
+</mj-text>
+<mj-button href="<%= manageUrl %>">Gérer les clefs d'API</mj-button>
+<% } else { %>
+<mj-text>Bonjour 👋</mj-text>
+<% if (locals.confirmedAt) { %>
+<mj-text>
+  La <%= kindLabel %> <strong><%= keyName %></strong> (préfixe
+  <code><%= tokenPrefix %></code>), créée le <%= createdAt %>, a été confirmée le
+  <%= locals.confirmedAt %>, il y a <%= locals.ageInDays %> jours, et n'a
+  toujours pas de date d'expiration.
+</mj-text>
+<% } else { %>
+<mj-text>
+  La <%= kindLabel %> <strong><%= keyName %></strong> (préfixe
+  <code><%= tokenPrefix %></code>) a été créée le <%= createdAt %>, il y a
+  <%= locals.ageInDays %> jours, et n'a pas de date d'expiration.
+</mj-text>
+<% } %>
+<mj-text>Sert-elle toujours ?</mj-text>
+<mj-button href="<%= locals.confirmUrl %>">Oui, elle sert toujours</mj-button>
+<mj-button href="<%= locals.revokeUrl %>">Non, la révoquer</mj-button>
+<mj-text>
+  Tu peux aussi ouvrir <a href="<%= manageUrl %>">l'écran de gestion</a> pour
+  voir ce que cette clef peut faire avant de décider. Ces liens n'agissent pas
+  au chargement : ils mènent à une page où le geste reste à confirmer.
+</mj-text>
+<% } %>
+<mj-text>Bonne journée</mj-text>

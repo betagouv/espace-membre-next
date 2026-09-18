@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 import { z } from "zod";
 
-import { canEditMember } from "@/lib/canEditMember";
+import { canEditMember } from "@/lib/authorization/member";
 import { canValidateRestrictedChecklistItem } from "@/lib/canValidateRestrictedChecklistItem";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";

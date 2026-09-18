@@ -189,6 +189,18 @@ const MainHeader = () => {
             text: "Infolettre",
             isActive: false,
           },
+          ...(session.user.isAdmin
+            ? [
+                {
+                  linkProps: {
+                    href: routes.adminApiKeys(),
+                    target: "_self" as const,
+                  },
+                  text: routeTitles.adminApiKeys(),
+                  isActive: isCurrentPath(pathname, routes.adminApiKeys()),
+                },
+              ]
+            : []),
         ]
       : [];
 

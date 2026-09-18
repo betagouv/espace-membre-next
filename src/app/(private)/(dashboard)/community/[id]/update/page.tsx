@@ -10,7 +10,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
 
-import { canEditMember } from "@/lib/canEditMember";
+import { canEditMember } from "@/lib/authorization/member";
 
 export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,

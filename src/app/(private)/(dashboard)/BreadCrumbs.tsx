@@ -1,6 +1,7 @@
 "use client";
 import { routes, routeTitles } from "@/lib/routes";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
@@ -11,6 +12,7 @@ const isCurrentPath = (pathname, rootPath) => pathname.startsWith(rootPath);
 
 export function BreadCrumbs() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const { currentPage, currentItemId } = useInfoContext();
 
@@ -136,11 +138,20 @@ export function BreadCrumbs() {
           text: "Incubateurs",
           isActive: hasPathnameThisMatch(pathname, incubatorListLink),
           items: [
-            {
-              href: incubatorCreateLink,
-              text: routeTitles.incubatorCreate(),
-              isActive: hasPathnameThisMatch(pathname, incubatorCreateLink),
-            },
+            // La creation d'incubateur est reservee aux admins : proposer le
+            // lien a tout le monde menerait a une page qui redirige.
+            ...(session?.user?.isAdmin
+              ? [
+                  {
+                    href: incubatorCreateLink,
+                    text: routeTitles.incubatorCreate(),
+                    isActive: hasPathnameThisMatch(
+                      pathname,
+                      incubatorCreateLink,
+                    ),
+                  },
+                ]
+              : []),
             {
               href: () =>
                 routes["incubatorDetails"]({
@@ -160,10 +171,40 @@ export function BreadCrumbs() {
                     "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$",
                   ),
                 },
+                {
+                  href: pathname,
+                  text: routeTitles.incubatorApiKeys(),
+                  isActive: hasPathnameThisRegex(
+                    pathname,
+                    "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/api-keys$",
+                  ),
+                },
               ],
             },
           ],
         },
+        // Les pages /admin redirigent un non-admin : leur proposer l'entree
+        // serait la meme impasse que le lien de creation d'incubateur, masque
+        // plus haut pour cette raison.
+        ...(session?.user?.isAdmin
+          ? [
+              {
+                href: routes.adminApiKeys(),
+                text: routeTitles.admin(),
+                isActive: hasPathnameThisMatch(pathname, "/admin"),
+                items: [
+                  {
+                    href: routes.adminApiKeys(),
+                    text: routeTitles.adminApiKeys(),
+                    isActive: hasPathnameThisMatch(
+                      pathname,
+                      routes.adminApiKeys(),
+                    ),
+                  },
+                ],
+              },
+            ]
+          : []),
         {
           href: organizationListLink,
           text: "Sponsors",

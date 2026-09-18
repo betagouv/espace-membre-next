@@ -1,7 +1,15 @@
 import { MemberPageProps } from "@/components/MemberPage/MemberPage";
 import { userInfos } from "@/lib/utils";
-import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import {
+  canEditMember as _canEditMember,
+  canViewMemberApiKeys,
+} from "@/lib/authorization/member";
 import { canValidateRestrictedChecklistItem } from "@/lib/canValidateRestrictedChecklistItem";
+import { toAuthSubject } from "@/lib/authorization/subject";
+import { isApiKeyCreationDisabled } from "@/server/config/apiKeys.config";
+import { toApiKeyRow } from "@/lib/api-keys/listItem";
+import { apiKeyPerimeterOptions } from "@/lib/api-keys/perimeterOptions";
+import { listPersonalApiKeys } from "@/lib/kysely/queries/apiKeys";
 import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 import {
   getUserStartups,
@@ -59,6 +67,20 @@ export async function buildMemberPageProps({
   ]);
 
   const isAdmin = !!session.user.isAdmin;
+  // Visibilite isCurrentUser || isAdmin, PAS canEditMember : un membre d'equipe
+  // qui peut editer une fiche n'a aucune raison de voir les clefs personnelles
+  // de ce membre.
+  const subject = toAuthSubject(session)!;
+  const canSeeApiKeys = canViewMemberApiKeys(subject, dbUser.uuid);
+  const apiKeys = canSeeApiKeys
+    ? (await listPersonalApiKeys(dbUser.uuid)).map(toApiKeyRow)
+    : [];
+  // Candidats decrivant le PORTEUR, droits d'ecriture evalues sur le SUJET :
+  // c'est ce que fait assertPerimetersAllowed, un admin creant une clef pour
+  // quelqu'un d'autre agit avec ses propres droits.
+  const perimeterOptions = canSeeApiKeys
+    ? await apiKeyPerimeterOptions(subject, dbUser.uuid)
+    : { read: { incubators: [], startups: [] }, write: { incubators: [], startups: [] } };
   const canEditMember = isCurrentUser
     ? true
     : await _canEditMember({
@@ -91,5 +113,9 @@ export async function buildMemberPageProps({
     onboarding,
     offboarding,
     incubators,
+    canSeeApiKeys,
+    apiKeys,
+    perimeterOptions,
+    apiKeyCreationDisabled: isApiKeyCreationDisabled(),
   };
 }

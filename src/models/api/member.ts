@@ -1,11 +1,7 @@
 import { z } from "zod";
 
-import { incubatorApiResponseSchema } from "./incubator";
-import {
-  CommunicationEmailCode,
-  EmailStatusCode,
-  MemberType,
-} from "@/models/member";
+import { incubatorRefSchema } from "./incubator";
+
 import { teamSchema } from "@/models/team";
 
 // Chemin de rattachement d'un membre a un incubateur.
@@ -15,62 +11,60 @@ export enum IncubatorMemberAttachment {
   BOTH = "both",
 }
 
-// Startup telle qu'exposee dans une mission de l'API protegee : couple
+// Startup telle qu'exposee dans une mission de l'API v1 : couple
 // { uuid, ghid }. Le ghid est l'identifiant public reutilisable en entree des
 // routes ; l'uuid n'est present que pour la correlation et n'est jamais accepte
 // en entree.
-export const protectedMissionStartupSchema = z.object({
+export const apiMissionStartupSchema = z.object({
   uuid: z.string(),
   ghid: z.string(),
 });
-export type protectedMissionStartupSchemaType = z.infer<
-  typeof protectedMissionStartupSchema
+export type apiMissionStartupSchemaType = z.infer<
+  typeof apiMissionStartupSchema
 >;
 
-// Mission telle qu'exposee par l'API protegee.
-export const protectedApiMissionSchema = z.object({
+// Mission telle qu'exposee par l'API v1.
+export const apiMissionSchema = z.object({
   start: z.coerce.date(),
   end: z.coerce.date().nullable().optional(),
   status: z.string().nullable().optional(),
   employer: z.string().nullable().optional(),
-  startups: z.array(protectedMissionStartupSchema),
+  startups: z.array(apiMissionStartupSchema),
 });
-export type protectedApiMissionSchemaType = z.infer<
-  typeof protectedApiMissionSchema
+export type apiMissionSchemaType = z.infer<
+  typeof apiMissionSchema
 >;
 
-// Champs communs des membres exposes par l'API protegee. Volontairement reduit :
+// Champs communs des membres exposes par l'API v1. Volontairement reduit :
 // un registre d'acces n'a pas besoin de la bio, du domaine, du statut legal, etc.
-export const protectedMemberSchema = z.object({
+export const apiMemberSchema = z.object({
   uuid: z.string(),
   username: z.string(),
   fullname: z.string(),
   github: z.string().nullable(),
   primary_email: z.string().nullable(),
+  // secondary_email reste expose sans portee ni masquage : c'est une decision.
   secondary_email: z.string().nullable(),
-  communication_email: z.nativeEnum(CommunicationEmailCode),
-  primary_email_status: z.nativeEnum(EmailStatusCode),
-  missions: z.array(protectedApiMissionSchema),
+  missions: z.array(apiMissionSchema),
 });
-export type protectedMemberSchemaType = z.infer<typeof protectedMemberSchema>;
+export type apiMemberSchemaType = z.infer<typeof apiMemberSchema>;
 
-// Membre d'un incubateur : membre protege + discriminant de rattachement et
+// Membre d'un incubateur : membre + discriminant de rattachement et
 // GHID des equipes de l'incubateur auxquelles il appartient.
-export const incubatorMemberSchema = protectedMemberSchema.extend({
+export const incubatorMemberSchema = apiMemberSchema.extend({
   attachment: z.nativeEnum(IncubatorMemberAttachment),
   teams: z.array(z.string()),
 });
 export type incubatorMemberSchemaType = z.infer<typeof incubatorMemberSchema>;
 
-// Sous-schemas pour la fiche membre detaillee /api/protected/members/{username},
-// successeur formalise de l'ancienne route /member/{username}.
+// Sous-schemas pour la fiche membre detaillee /api/v1/members/{id}.
 export const memberDetailMissionSchema = z.object({
   uuid: z.string().optional(),
   start: z.coerce.date(),
   end: z.coerce.date().nullable().optional(),
   status: z.string().nullable().optional(),
   employer: z.string().nullable().optional(),
-  startups: z.array(protectedMissionStartupSchema).optional(),
+  startups: z.array(apiMissionStartupSchema).optional(),
 });
 
 // incubator_id est omis : une équipe n'a qu'un incubateur, l'objet incubator
@@ -78,7 +72,7 @@ export const memberDetailMissionSchema = z.object({
 export const memberDetailTeamSchema = teamSchema
   .omit({ incubator_id: true })
   .extend({
-    incubator: incubatorApiResponseSchema.nullable(),
+    incubator: incubatorRefSchema.nullable(),
   });
 
 export const memberDetailStartupSchema = z.object({
@@ -87,12 +81,11 @@ export const memberDetailStartupSchema = z.object({
   name: z.string().nullable(),
   start: z.coerce.date().nullable(),
   end: z.coerce.date().nullable(),
-  mailing_list: z.string().nullable(),
   // incubator_id / incubator ne portent que l'incubateur principal. Un produit
   // co-incube expose la liste complete dans incubators.
   incubator_id: z.string().nullable(),
-  incubator: incubatorApiResponseSchema.nullable(),
-  incubators: z.array(incubatorApiResponseSchema),
+  incubator: incubatorRefSchema.nullable(),
+  incubators: z.array(incubatorRefSchema),
   isCurrent: z.boolean(),
 });
 
@@ -107,14 +100,7 @@ export const memberDetailApiResponseSchema = z.object({
   github: z.string().nullable().optional(),
   primary_email: z.string().nullable(),
   secondary_email: z.string().nullable(),
-  communication_email: z.nativeEnum(CommunicationEmailCode),
-  primary_email_status: z.nativeEnum(EmailStatusCode),
-  primary_email_status_updated_at: z.coerce.date().nullable().optional(),
-  memberType: z.nativeEnum(MemberType).nullable().optional(),
-  email_is_redirection: z.boolean().optional(),
   competences: z.array(z.string()).nullable().optional(),
-  legal_status: z.string().nullable().optional(),
-  workplace_insee_code: z.string().nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
   updated_at: z.coerce.date().nullable().optional(),
   missions: z.array(memberDetailMissionSchema),
