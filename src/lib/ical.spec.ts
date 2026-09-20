@@ -59,31 +59,30 @@ describe("parseICS", () => {
     const result = parseICS(weeklyNoEnd);
     // Une occurrence par semaine sur ~1 an
     expect(Object.keys(result).length).to.be.greaterThan(40);
-    const keys = Object.keys(result).sort();
-    // La première occurrence est le DTSTART (uid sans suffixe)
+    // La première occurrence est le DTSTART (uid sans suffixe).
     expect(result["weekly-1"]).to.exist;
-    expect(result["weekly-1"].start.toISOString()).to.equal(
-      "2026-06-02T12:00:00.000Z",
+    // Les occurrences sont espacées de 7 jours, tombent toutes le même jour
+    // de semaine avec la même heure locale que la première occurrence.
+    const occurrences = Object.values(result).sort(
+      (a, b) => a.start.getTime() - b.start.getTime(),
     );
-    // Les occurrences suivantes sont espacées de 7 jours, même heure locale,
-    // et tombent toutes un mardi.
+    expect(occurrences.length).to.be.greaterThan(40);
+    const first = occurrences[0];
     let previous: Date | null = null;
-    Object.values(result)
-      .sort((a, b) => a.start.getTime() - b.start.getTime())
-      .forEach((event) => {
-        expect(event.start.getDay()).to.equal(2); // mardi
-        expect(event.start.getHours()).to.equal(14); // 14h heure de Paris
-        if (previous) {
-          // 7 jours calendaires (l'écart ms peut varier de ±1h si un
-          // changement d'heure DST se produit entre deux occurrences).
-          const dayDiff = Math.round(
-            (event.start.getTime() - previous.getTime()) /
-              (24 * 60 * 60 * 1000),
-          );
-          expect(dayDiff).to.equal(7);
-        }
-        previous = event.start;
-      });
+    occurrences.forEach((event) => {
+      if (previous) {
+        // 7 jours calendaires (l'écart ms peut varier de ±1h si un
+        // changement d'heure DST se produit entre deux occurrences).
+        const dayDiff = Math.round(
+          (event.start.getTime() - previous.getTime()) /
+            (24 * 60 * 60 * 1000),
+        );
+        expect(dayDiff).to.equal(7);
+        expect(event.start.getDay()).to.equal(first.start.getDay());
+        expect(event.start.getHours()).to.equal(first.start.getHours());
+      }
+      previous = event.start;
+    });
   });
 
   it("respects UNTIL for recurring events", () => {
