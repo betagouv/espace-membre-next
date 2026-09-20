@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 const fetchCalendar = (url) => {
-  return fetch(url)
+  return fetch(url, { next: { revalidate: 60 * 60 } }) // cache 1 hour
     .then((r) => r.text())
     .then((r) => parseICS(r));
 };

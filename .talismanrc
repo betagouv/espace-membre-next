@@ -34,7 +34,7 @@ fileignoreconfig:
 - filename: src/components/Dashboard/DashboardPage.tsx
   checksum: dfc48cd5f31f77c398122550d69825293afaff1894a8a1b19d5a1c1cee152fba
 - filename: src/components/EventsList/EventsList.tsx
-  checksum: 01f943fd703c4c5d4e3298bb73487c482b8aa789be160f0ba9421b29102f7a00
+  checksum: 5baad270138cdb0825c3724968104e8df84141fd2fd1e1e6a5343a46e49e803a
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: 54cbe163b4cc0d9b5d2a21e965d7d1e0da48237af6b95dfc46e74acabb41ea15
 - filename: src/components/MemberPage/MemberWaitingValidationNotice.tsx
@@ -65,6 +65,8 @@ fileignoreconfig:
   checksum: 377e7b189f651cf4dcf61143c10ab325a83f273569297170685be2615201cd8f
 - filename: src/lib/hstore.ts
   checksum: 4875c83d95ffdac95c1b9847f3d27d2ffdf0b1cbbc0a6c83ccb6ae9abf25a81d
+- filename: src/lib/ical.spec.ts
+  checksum: fba460db18a31e2d6383d485a112eacaf45d51c20260f5fac92ead3c66f8cc59
 - filename: src/lib/rateLimit.spec.ts
   checksum: b5be0a794c32b06c418507136408f0e8c78e388979a59f83bd1000dcef8958ae
 - filename: src/lib/rateLimit.ts
