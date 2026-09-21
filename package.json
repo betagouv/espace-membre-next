@@ -107,7 +107,7 @@
     "chai-http": "^4.4.0",
     "dotenv": "^17.4.2",
     "eslint": "^9",
-    "eslint-config-next": "^15.5.23",
+    "eslint-config-next": "^16.3.5",
     "eslint-config-prettier": "^10",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5",
