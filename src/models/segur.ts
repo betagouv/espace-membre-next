@@ -1,17 +1,8 @@
-// Shared definitions for the "Demandes Ségur" form (accès aux bureaux et
-// réservation de salle de réunion). Used by the zod schema, the form UI, the
-// server action and the Grist table-setup script so they all agree on choices
-// and column ids.
+// Shared definitions for the "Demandes Ségur" form (accès aux bureaux). Used by
+// the zod schema, the form UI, the server action and the Grist table-setup
+// script so they all agree on choices and column ids.
 
-export enum SEGUR_DEMANDE_TYPE {
-  ACCES = "Demande d'accès aux bureaux Ségur",
-  SALLE_REUNION = "Demande de salle de réunion à Ségur",
-}
-
-export const SEGUR_DEMANDE_CHOICES: SEGUR_DEMANDE_TYPE[] = [
-  SEGUR_DEMANDE_TYPE.ACCES,
-  SEGUR_DEMANDE_TYPE.SALLE_REUNION,
-];
+import { addHours, addMonths, format, parseISO } from "date-fns";
 
 // Days that can be picked for a recurring access request.
 export const SEGUR_JOURS: string[] = [
@@ -48,6 +39,52 @@ export const SEGUR_STATUT_CHOICES: SEGUR_STATUT[] = [
   SEGUR_STATUT.REFUSE,
 ];
 
+// Le service qui instruit les badges a besoin de 48 h : une demande déposée
+// pour le lendemain n'a pas le temps d'être traitée. En dessous de ce délai, le
+// formulaire renvoie vers le contact ci-dessous plutôt que d'accepter une
+// demande qui n'aboutira pas.
+export const SEGUR_DELAI_MINIMUM_HEURES = 48;
+
+// Une même demande ne couvre pas plus de trois mois : au-delà, il faut repasser
+// par le formulaire, ce qui redonne au service l'occasion de revalider le
+// besoin.
+export const SEGUR_DUREE_MAXIMUM_MOIS = 3;
+
+// Personne à qui écrire pour une venue à moins de 48 h : le formulaire pointe
+// vers sa fiche membre, qui porte ses coordonnées à jour.
+// TODO: remplacer par le username exact de la fiche membre d'Amel.
+export const SEGUR_CONTACT_DELAI_COURT = {
+  prenom: "Amel",
+  username: "A_RENSEIGNER",
+};
+
+const FORMAT_DATE_INPUT = "yyyy-MM-dd";
+
+/**
+ * Première date de venue acceptée, délai de 48 h compris.
+ *
+ * Les champs du formulaire sont des `<input type="date">` : ils ne portent pas
+ * d'heure, la comparaison se fait donc au jour. Ajouter 48 h à maintenant puis
+ * ne garder que le jour revient au surlendemain, quelle que soit l'heure de
+ * dépôt.
+ */
+export const premiereDateVenue = (maintenant: Date = new Date()): string =>
+  format(addHours(maintenant, SEGUR_DELAI_MINIMUM_HEURES), FORMAT_DATE_INPUT);
+
+/**
+ * Dernière date de fin acceptée pour une venue commençant à `dateDebut`.
+ *
+ * Renvoie `null` si la date de début n'est pas exploitable : l'appelant décide
+ * alors quoi signaler, plutôt que de recevoir une date inventée.
+ */
+export const derniereDateFin = (dateDebut: string): string | null => {
+  const debut = parseISO(dateDebut);
+  if (Number.isNaN(debut.getTime())) {
+    return null;
+  }
+  return format(addMonths(debut, SEGUR_DUREE_MAXIMUM_MOIS), FORMAT_DATE_INPUT);
+};
+
 // Grist column ids for the Ségur table. Keep in sync with the setup script
 // (src/scripts/setup-grist-segur-table.ts).
 export const GRIST_SEGUR_COLUMNS = {
@@ -55,20 +92,11 @@ export const GRIST_SEGUR_COLUMNS = {
   prenomNom: "Prenom_Nom",
   email: "Email",
   startupName: "Startup",
-  emailsEquipe: "Emails_equipe",
-  nbPersonnes: "Nombre_personnes",
-  // Demande d'accès.
   dateDebut: "Date_debut",
   dateFin: "Date_fin",
   joursRecurrents: "Jours_recurrents",
   periodeRecurrente: "Periode_recurrente",
   engagement: "Engagement",
-  // Demande de salle de réunion.
-  datesReunion: "Dates_reunion",
-  heureDebut: "Heure_debut",
-  heureFin: "Heure_fin",
-  materiel: "Materiel",
-  // Commun.
   precisions: "Precisions",
   statut: "Statut",
   // Automation: idempotency flag for the n8n confirmation-email workflow.
@@ -82,40 +110,16 @@ export const GRIST_SEGUR_COLUMNS = {
   username: "Username",
 } as const;
 
-// Chaque type de demande a sa propre table Grist : la table porte le type, il
-// n'y a donc pas de colonne « Type_demande », et aucune colonne de l'autre type
-// n'est écrite à vide.
 export const SEGUR_ACCES_COLUMN_IDS: string[] = [
   GRIST_SEGUR_COLUMNS.date,
   GRIST_SEGUR_COLUMNS.prenomNom,
   GRIST_SEGUR_COLUMNS.email,
   GRIST_SEGUR_COLUMNS.startupName,
-  GRIST_SEGUR_COLUMNS.emailsEquipe,
-  GRIST_SEGUR_COLUMNS.nbPersonnes,
   GRIST_SEGUR_COLUMNS.dateDebut,
   GRIST_SEGUR_COLUMNS.dateFin,
   GRIST_SEGUR_COLUMNS.joursRecurrents,
   GRIST_SEGUR_COLUMNS.periodeRecurrente,
   GRIST_SEGUR_COLUMNS.engagement,
-  GRIST_SEGUR_COLUMNS.precisions,
-  GRIST_SEGUR_COLUMNS.statut,
-  GRIST_SEGUR_COLUMNS.mailEnvoye,
-  GRIST_SEGUR_COLUMNS.statutNotifie,
-  GRIST_SEGUR_COLUMNS.userUuid,
-  GRIST_SEGUR_COLUMNS.username,
-];
-
-export const SEGUR_REUNION_COLUMN_IDS: string[] = [
-  GRIST_SEGUR_COLUMNS.date,
-  GRIST_SEGUR_COLUMNS.prenomNom,
-  GRIST_SEGUR_COLUMNS.email,
-  GRIST_SEGUR_COLUMNS.startupName,
-  GRIST_SEGUR_COLUMNS.emailsEquipe,
-  GRIST_SEGUR_COLUMNS.nbPersonnes,
-  GRIST_SEGUR_COLUMNS.datesReunion,
-  GRIST_SEGUR_COLUMNS.heureDebut,
-  GRIST_SEGUR_COLUMNS.heureFin,
-  GRIST_SEGUR_COLUMNS.materiel,
   GRIST_SEGUR_COLUMNS.precisions,
   GRIST_SEGUR_COLUMNS.statut,
   GRIST_SEGUR_COLUMNS.mailEnvoye,

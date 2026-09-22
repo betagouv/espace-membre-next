@@ -1,6 +1,6 @@
 // One-off script: creates the "Demandes_Segur" table (and its columns) in the
-// configured Grist document so the Ségur request forms (accès aux bureaux et
-// salle de réunion) can write to it.
+// configured Grist document so the Ségur request form (accès aux bureaux) can
+// write to it.
 //
 // Usage (once GRIST_API_KEY / GRIST_SEGUR_DOC_ID are set in .env):
 //   npm run grist:setup-segur
@@ -12,7 +12,6 @@ import {
   GRIST_SEGUR_COLUMNS,
   SEGUR_ACCES_COLUMN_IDS,
   SEGUR_PERIODE_CHOICES,
-  SEGUR_REUNION_COLUMN_IDS,
   SEGUR_STATUT_CHOICES,
 } from "@/models/segur";
 
@@ -29,7 +28,7 @@ function choiceWidget(choices: string[]): string {
   return JSON.stringify({ choices });
 }
 
-// Catalogue de toutes les colonnes ; chaque table en prend un sous-ensemble.
+// Catalogue des colonnes de la table des demandes d'accès.
 const allColumns: GristColumn[] = [
   {
     id: GRIST_SEGUR_COLUMNS.date,
@@ -48,14 +47,6 @@ const allColumns: GristColumn[] = [
     fields: { label: "Nom de la Startup", type: "Text" },
   },
   {
-    id: GRIST_SEGUR_COLUMNS.emailsEquipe,
-    fields: { label: "Mails des autres membres", type: "Text" },
-  },
-  {
-    id: GRIST_SEGUR_COLUMNS.nbPersonnes,
-    fields: { label: "Nombre de personnes", type: "Int" },
-  },
-  {
     id: GRIST_SEGUR_COLUMNS.dateDebut,
     fields: { label: "Date souhaitée de venue", type: "Text" },
   },
@@ -66,22 +57,6 @@ const allColumns: GristColumn[] = [
   {
     id: GRIST_SEGUR_COLUMNS.precisions,
     fields: { label: "Précisions", type: "Text" },
-  },
-  {
-    id: GRIST_SEGUR_COLUMNS.datesReunion,
-    fields: { label: "Date(s) de la réunion", type: "Text" },
-  },
-  {
-    id: GRIST_SEGUR_COLUMNS.heureDebut,
-    fields: { label: "Heure de début", type: "Text" },
-  },
-  {
-    id: GRIST_SEGUR_COLUMNS.heureFin,
-    fields: { label: "Heure de fin", type: "Text" },
-  },
-  {
-    id: GRIST_SEGUR_COLUMNS.materiel,
-    fields: { label: "Matériel nécessaire", type: "Text" },
   },
   {
     id: GRIST_SEGUR_COLUMNS.joursRecurrents,
@@ -228,21 +203,12 @@ async function main() {
   const { tables } = (await listRes.json()) as { tables: { id: string }[] };
   const existingTableIds = new Set(tables.map((t) => t.id));
 
-  // Une table par type de demande.
   await setupTable(
     apiUrl,
     authHeaders,
     docId,
     config.GRIST_SEGUR_TABLE_ID,
     SEGUR_ACCES_COLUMN_IDS,
-    existingTableIds,
-  );
-  await setupTable(
-    apiUrl,
-    authHeaders,
-    docId,
-    config.GRIST_SEGUR_REUNION_TABLE_ID,
-    SEGUR_REUNION_COLUMN_IDS,
     existingTableIds,
   );
 }
