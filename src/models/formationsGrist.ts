@@ -25,11 +25,15 @@ export const FORMATION_THEMATIQUES: string[] = [
   "Tech",
   "Accessibilité",
   "Université d'été",
+  // Repère les formations du parcours d'embarquement : sans elle, les journées
+  // d'embarquement se rangeaient dans « Divers », où personne ne les cherche.
+  "Parcours d'embarquement",
 ];
 
 // Alignées sur les Choice de la colonne Grist Formats.Audience.
 export const FORMATION_AUDIENCES: string[] = [
   "Tout public",
+  "Nouveaux membres",
   "Dev",
   "Designer",
   "PO-PM",
