@@ -85,5 +85,5 @@ export const routeTitles: {
   teamDetails: () => "Fiche équipe",
   serviceList: () => "Mes outils",
   opsRequest: () => "Demandes OPS",
-  segurAccessRequest: () => "Demandes Ségur",
+  segurAccessRequest: () => "Demande d'accès aux bureaux Ségur",
 };

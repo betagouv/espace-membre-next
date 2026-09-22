@@ -35,6 +35,12 @@ interface SegurRequestFormProps {
   defaultValues?: Partial<segurRequestSchemaType>;
 }
 
+const ChampCourt = ({ children }: { children: React.ReactNode }) => (
+  <div className={fr.cx("fr-grid-row")}>
+    <div className={fr.cx("fr-col-12", "fr-col-md-6")}>{children}</div>
+  </div>
+);
+
 export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
   const {
     register,
@@ -114,55 +120,63 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
         />
       )}
       <p className="fr-text--sm">
-        👋 Les membres de la communauté beta.gouv.fr ont la possibilité de
-        travailler ponctuellement dans l'open space situé à la DINUM - 20 avenue
-        de Ségur, Paris. Ce formulaire ne permet pas d'obtenir un badge
-        permanent.
+        Les membres de la communauté beta.gouv.fr peuvent travailler
+        ponctuellement dans l'open space de la DINUM (20 avenue de Ségur,
+        Paris). Ce formulaire permet de faire une demande d'accès à ces bureaux.
+        Il ne permet pas d'obtenir un badge permanent.
       </p>
       <Alert
         className="fr-mb-4v"
         severity="info"
         small
-        description="Toutes les informations demandées ci-dessous sont obligatoires pour assurer le bon traitement de ta demande."
+        description="Toutes les informations sont obligatoires."
       />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Prénom et Nom"
-          state={errors.prenomNom ? "error" : undefined}
-          stateRelatedMessage={errors.prenomNom?.message}
-          nativeInputProps={{ ...register("prenomNom") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Prénom et Nom"
+            state={errors.prenomNom ? "error" : undefined}
+            stateRelatedMessage={errors.prenomNom?.message}
+            nativeInputProps={{ ...register("prenomNom") }}
+          />
+        </ChampCourt>
 
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Adresse mail professionnelle"
-          hintText="@beta.gouv.fr ou @xxx.gouv.fr"
-          state={errors.email ? "error" : undefined}
-          stateRelatedMessage={errors.email?.message}
-          nativeInputProps={{ type: "email", ...register("email") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Adresse mail professionnelle"
+            hintText="@beta.gouv.fr ou @xxx.gouv.fr"
+            state={errors.email ? "error" : undefined}
+            stateRelatedMessage={errors.email?.message}
+            nativeInputProps={{ type: "email", ...register("email") }}
+          />
+        </ChampCourt>
 
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Nom de ta Startup"
-          state={errors.startupName ? "error" : undefined}
-          stateRelatedMessage={errors.startupName?.message}
-          nativeInputProps={{ ...register("startupName") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Nom de ta Startup"
+            state={errors.startupName ? "error" : undefined}
+            stateRelatedMessage={errors.startupName?.message}
+            nativeInputProps={{ ...register("startupName") }}
+          />
+        </ChampCourt>
 
-        <Input
-          className={fr.cx("fr-mb-2w")}
-          label="Date souhaitée de venue"
-          hintText={`Au moins ${SEGUR_DELAI_MINIMUM_HEURES} h après le dépôt de la demande.`}
-          state={errors.dateDebut ? "error" : undefined}
-          stateRelatedMessage={errors.dateDebut?.message}
-          nativeInputProps={{
-            type: "date",
-            min: dateMinimum,
-            ...register("dateDebut"),
-          }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-2w")}
+            label="Date souhaitée de venue"
+            hintText={`Au moins ${SEGUR_DELAI_MINIMUM_HEURES} h après le dépôt de la demande.`}
+            state={errors.dateDebut ? "error" : undefined}
+            stateRelatedMessage={errors.dateDebut?.message}
+            nativeInputProps={{
+              type: "date",
+              min: dateMinimum,
+              ...register("dateDebut"),
+            }}
+          />
+        </ChampCourt>
 
         <p className={fr.cx("fr-text--sm", "fr-mb-4w")}>
           Besoin de venir dans moins de {SEGUR_DELAI_MINIMUM_HEURES} h ? Ce
@@ -178,19 +192,21 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
           .
         </p>
 
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Date de fin de la venue"
-          hintText={`Au plus ${SEGUR_DUREE_MAXIMUM_MOIS} mois après la date de venue.`}
-          state={errors.dateFin ? "error" : undefined}
-          stateRelatedMessage={errors.dateFin?.message}
-          nativeInputProps={{
-            type: "date",
-            min: dateDebut || dateMinimum,
-            ...(dateFinMaximum ? { max: dateFinMaximum } : {}),
-            ...register("dateFin"),
-          }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Date de fin de la venue"
+            hintText={`Au plus ${SEGUR_DUREE_MAXIMUM_MOIS} mois après la date de venue.`}
+            state={errors.dateFin ? "error" : undefined}
+            stateRelatedMessage={errors.dateFin?.message}
+            nativeInputProps={{
+              type: "date",
+              min: dateDebut || dateMinimum,
+              ...(dateFinMaximum ? { max: dateFinMaximum } : {}),
+              ...register("dateFin"),
+            }}
+          />
+        </ChampCourt>
 
         <Input
           className={fr.cx("fr-mb-4w")}
@@ -201,9 +217,14 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
           nativeTextAreaProps={{ ...register("precisions") }}
         />
 
+        <h2 className={fr.cx("fr-h4", "fr-mt-4w")}>Demande récurrente</h2>
+        <p className={fr.cx("fr-text--sm", "fr-mb-2w")}>
+          À remplir seulement si tu viens plusieurs fois sur la période.
+        </p>
+
         <Checkbox
           className={fr.cx("fr-mb-4w")}
-          legend="Si tu souhaites faire une demande récurrente, merci de préciser les jours concernés"
+          legend="Jours concernés"
           options={SEGUR_JOURS.map((jour) => ({
             label: jour,
             nativeInputProps: {
