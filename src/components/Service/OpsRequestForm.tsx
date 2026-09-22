@@ -188,7 +188,7 @@ export const OpsRequestForm = ({
             className="fr-mb-4v"
             severity="error"
             small
-            description="Attention si votre startup fait partie de la fabrique de l'écologie, ou que votre incubateur dispose de son propre compte scalingo, merci de contacter directement votre référent.e tech."
+            description={<div>Attention si votre startup fait partie de la fabrique de l'écologie, ou que votre incubateur dispose de son propre compte scalingo, merci de contacter directement <Link href="https://doc.incubateur.net/communaute/gerer-son-produit/gestion-au-quotidien/tech/to-do-liens-avec-les-referents-techs">votre référent.e tech</Link>.</div>}
           />
         )}
 
