@@ -311,8 +311,12 @@ export function BreadCrumbs() {
 
   const tree = findActiveItem(MenuItems);
 
+  // Une page hors du menu donne un arbre vide : le fil se réduirait à
+  // « Accueil », sans rien indiquer de la position courante. On n'en affiche
+  // pas plutôt que d'en afficher un tronqué.
   return (
-    pathname !== "/dashboard" && (
+    pathname !== "/dashboard" &&
+    tree.length > 0 && (
       <Breadcrumb
         currentPageLabel={tree[tree.length - 1]?.text}
         homeLinkProps={{

@@ -1,13 +1,19 @@
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { SegurRequestForm } from "@/components/Service/SegurRequestForm";
+import { routeTitles } from "@/lib/routes";
 import {
   getUserBasicInfo,
   getUserStartupsActive,
 } from "@/lib/kysely/queries/users";
 import { userStartupToModel } from "@/models/mapper/startupMapper";
 import { authOptions } from "@/lib/authoptions";
+
+export const metadata: Metadata = {
+  title: `${routeTitles.segurAccessRequest()} / Espace Membre`,
+};
 
 export default async function SegurAccessRequestPage() {
   const session = await getServerSession(authOptions);
@@ -26,7 +32,7 @@ export default async function SegurAccessRequestPage() {
 
   return (
     <div>
-      <h1>Demandes Ségur</h1>
+      <h1>{routeTitles.segurAccessRequest()}</h1>
       <SegurRequestForm
         defaultValues={{
           prenomNom: user?.fullname || "",
