@@ -66,7 +66,7 @@ export interface OpsField {
   type?: "text" | "email" | "textarea" | "select" | "startup";
   // Options for the "select" type (rendered as radio buttons). Each option
   // carries its own description, shown under its label.
-  options?: { value: string; hint?: string }[];
+  options?: { value: string; label?: string; hint?: string }[];
   // Default-checked option for the "select" type.
   defaultValue?: string;
   required?: boolean;
@@ -105,11 +105,12 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     options: [
       {
         value: "osc-secnum-fr1",
-        hint: "Zone SecNumCloud, plus sécurisée. Recommandée.",
+        label: "osc-secnum-fr1 (recommandé)",
+        hint: "Zone SecNumCloud, plus sécurisée.",
       },
       {
         value: "osc-fr1",
-        hint: "Uniquement en dev ou preprod, sans données sensibles.",
+        hint: "Uniquement pour les environnements qui n'exploitent pas de données sensibles (dev, preprod...)",
       },
     ],
     defaultValue: "osc-secnum-fr1",
@@ -117,7 +118,7 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   },
   emailCollaborateur: {
     key: "emailCollaborateur",
-    label: "Email à indiquer en collaborateur",
+    label: "Email collaborateur",
     type: "email",
     required: true,
   },
@@ -169,10 +170,8 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   },
   projetRattachement: {
     key: "projetRattachement",
-    // Même raison que startupId : le libellé dit ce que le champ relie, pour
-    // ne pas se lire comme une seconde version du « Projet concerné ».
-    label: "Produit auquel relier l'app (optionnel)",
-    hint: "Nom du produit ou de la startup qui hébergera cette app Scalingo.",
+    label: "Projet à relier (optionnel)",
+    hint: "Projet/produit auquel rattacher cette app",
     required: false,
     warnOnInput:
       "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",

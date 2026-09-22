@@ -214,7 +214,7 @@ export const OpsRequestForm = ({
         <Champ pleineLargeur>
           <RadioButtons
             className={fr.cx("fr-mb-0")}
-            legend="De quelle ressource as-tu besoin ?"
+            legend="Ressource demandée"
             state={errors.demande ? "error" : undefined}
             stateRelatedMessage={errors.demande?.message}
             options={OPS_DEMANDE_CHOICES.map((choice) => ({
@@ -232,7 +232,16 @@ export const OpsRequestForm = ({
             className="fr-mb-4v"
             severity="error"
             small
-            description={<div>Attention si votre startup fait partie de la fabrique de l'écologie, ou que votre incubateur dispose de son propre compte scalingo, merci de contacter directement <Link href="https://doc.incubateur.net/communaute/gerer-son-produit/gestion-au-quotidien/tech/to-do-liens-avec-les-referents-techs">votre référent.e tech</Link>.</div>}
+            description={
+              <div>
+                Si votre incubateur dispose de son propre Scalingo (par ex : la
+                Fabrique de l'Écologie), contactez directement{" "}
+                <Link href="https://doc.incubateur.net/communaute/gerer-son-produit/gestion-au-quotidien/tech/to-do-liens-avec-les-referents-techs">
+                  votre référent.e tech
+                </Link>
+                .
+              </div>
+            }
           />
         )}
 
@@ -284,7 +293,7 @@ export const OpsRequestForm = ({
                   state={error ? "error" : undefined}
                   stateRelatedMessage={error?.message}
                   options={(field.options ?? []).map((option) => ({
-                    label: option.value,
+                    label: option.label ?? option.value,
                     hintText: option.hint,
                     nativeInputProps: {
                       value: option.value,
@@ -343,7 +352,7 @@ export const OpsRequestForm = ({
           disabled={isSaving}
           nativeButtonProps={{ type: "submit", disabled: isSubmitting }}
         >
-          {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+          {isSubmitting ? "Envoi en cours..." : "Envoyer la demande"}
         </Button>
       </form>
     </>
