@@ -28,14 +28,14 @@ if [[ `git status --porcelain content` ]]; then
 
     # make PR from fork
     FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY" )";
-    curl --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
+    curl -s --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
         --data-raw "{
             \"base\": \"master\",
             \"head\": \"$FORK_USER:$BRANCH\",
             \"title\": \"$COMMIT\"
-        }"
+        }" | grep -o ' "html_url": "[^"]*' | cut -d '"' -f 4
 
 else    
     echo "No changes detected"
