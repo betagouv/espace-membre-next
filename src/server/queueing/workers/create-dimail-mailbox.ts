@@ -34,15 +34,19 @@ créé un email dimail pour un utilisateur
 export async function createDimailMailboxForUser(userUuid: string) {
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
+    console.log(`createDimailMailboxForUser error: User ${userUuid} not found`);
     throw new Error(`User ${userUuid} not found`);
   }
   if (!dbUser.secondary_email) {
+    console.log(
+      `createDimailMailboxForUser error: User ${userUuid} has no secondary_email`,
+    );
     throw new Error(`User ${userUuid} has no secondary_email`);
   }
 
   const userName = getDimailUsernameForUser(
     dbUser.username,
-    dbUser.legal_status || "",
+    dbUser.legal_status || ``,
   );
 
   console.log(
