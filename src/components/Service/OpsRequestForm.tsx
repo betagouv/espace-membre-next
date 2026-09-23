@@ -29,6 +29,7 @@ import Link from "next/link";
 
 // Doc de l'embarquement dev : prérequis obligatoire avant toute commande de
 // ressources.
+// TODO: remove airtable
 const EMBARQUEMENT_DEV_DOC_URL = "https://airtable.com/shrUCbUT72KtKefsu";
 
 // Canal Tchap où l'équipe ops traite les demandes : lien de suivi donné à la
