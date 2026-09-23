@@ -21,6 +21,7 @@ import { AlertMessageType } from "@/models/common";
 import {
   OPS_DEMANDE_CHOICES,
   OPS_DEMANDE_FIELDS,
+  OPS_DEMANDE_LABELS,
   OPS_DEMANDE_TYPE,
   OPS_FIELDS,
 } from "@/models/ops";
@@ -28,13 +29,39 @@ import Link from "next/link";
 
 // Doc de l'embarquement dev : prérequis obligatoire avant toute commande de
 // ressources.
-const EMBARQUEMENT_DEV_DOC_URL =
-  "https://airtable.com/shrUCbUT72KtKefsu";
+// TODO: remove airtable
+const EMBARQUEMENT_DEV_DOC_URL = "https://airtable.com/shrUCbUT72KtKefsu";
 
 // Canal Tchap où l'équipe ops traite les demandes : lien de suivi donné à la
 // soumission du formulaire.
 const OPS_TCHAP_CHANNEL_URL =
   "https://tchap.gouv.fr/#/room/!VxFWdbcSlumKPvpVRP:agent.dinum.tchap.gouv.fr";
+
+// Chaque champ passe par ce conteneur : il porte à la fois la largeur et
+// l'espacement. Laissés aux marges par défaut de chaque composant DSFR, les
+// écarts variaient d'un champ à l'autre selon la ressource choisie.
+//
+// Les champs texte s'arrêtent à la moitié de la largeur : à pleine largeur,
+// l'œil balaye tout l'écran pour saisir quelques mots. Les boutons radio et
+// les commentaires gardent la pleine largeur, leur contenu la remplit.
+const Champ = ({
+  children,
+  pleineLargeur = false,
+}: {
+  children: React.ReactNode;
+  pleineLargeur?: boolean;
+}) => (
+  <div className={fr.cx("fr-grid-row", "fr-mb-4w")}>
+    <div
+      className={fr.cx(
+        "fr-col-12",
+        ...(pleineLargeur ? [] : (["fr-col-md-6"] as const)),
+      )}
+    >
+      {children}
+    </div>
+  </div>
+);
 
 interface OpsRequestFormProps {
   defaultValues?: Partial<opsRequestSchemaType>;
@@ -133,31 +160,33 @@ export const OpsRequestForm = ({
           description={alertMessage.message}
         />
       )}
+      {/* Les deux conditions d'accès en liste : en paragraphe, elles se lisaient
+          comme un avertissement à survoler, et le lien d'inscription — la seule
+          action possible quand on ne les remplit pas — s'y perdait. */}
       <Alert
         className="fr-mb-4v"
         severity="warning"
-        small
+        closable={false}
+        title="Les ressources OPS sont réservées :"
         description={
-          <>
-            Attention, pour pouvoir commander des ressources, tu dois{" "}
-            <strong>obligatoirement</strong> avoir suivi{" "}
-            <a
-              className={fr.cx(
-                "fr-link",
-                "fr-link--icon-right",
-                "fr-icon-external-link-line",
-              )}
-              href={EMBARQUEMENT_DEV_DOC_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              l&apos;embarquement dev
-            </a>
-            . Si ce n&apos;est pas le cas, merci de prendre connaissance de la
-            doc indiquée et de t&apos;inscrire à la prochaine session avant de
-            faire ta demande. Ton produit doit également avoir sa fiche produit
-            publiée pour bénéficier de ces services.
-          </>
+          <ul className={fr.cx("fr-mb-0")}>
+            <li>aux services numériques ayant une fiche produit</li>
+            <li>
+              aux personnes ayant suivi un{" "}
+              <a
+                className={fr.cx(
+                  "fr-link",
+                  "fr-link--icon-right",
+                  "fr-icon-external-link-line",
+                )}
+                href={EMBARQUEMENT_DEV_DOC_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                embarquement dev
+              </a>
+            </li>
+          </ul>
         }
       />
       <p className="fr-text--sm">
@@ -170,26 +199,60 @@ export const OpsRequestForm = ({
         <input type="hidden" {...register("tchapId")} />
         <input type="hidden" {...register("email")} />
 
-        <RadioButtons
-          legend="Quelle est ta demande ?"
-          state={errors.demande ? "error" : undefined}
-          stateRelatedMessage={errors.demande?.message}
-          options={OPS_DEMANDE_CHOICES.map((choice) => ({
-            label: choice,
-            nativeInputProps: {
-              value: choice,
-              ...register("demande"),
-            },
-          }))}
-        />
+        {/* Le projet vaut pour toutes les demandes : il ouvre le formulaire au
+            lieu de le clore, où il se lisait comme une question annexe. */}
+        <Champ>
+          <Input
+            className={fr.cx("fr-mb-0")}
+            label="Projet concerné"
+            hintText="Pré-rempli avec ton produit. Remplace-le si la demande concerne autre chose."
+            state={errors.projet ? "error" : undefined}
+            stateRelatedMessage={errors.projet?.message}
+            nativeInputProps={{ ...register("projet") }}
+          />
+        </Champ>
+
+        <Champ pleineLargeur>
+          <RadioButtons
+            className={fr.cx("fr-mb-0")}
+            legend="Ressource demandée"
+            state={errors.demande ? "error" : undefined}
+            stateRelatedMessage={errors.demande?.message}
+            options={OPS_DEMANDE_CHOICES.map((choice) => ({
+              label: OPS_DEMANDE_LABELS[choice],
+              nativeInputProps: {
+                value: choice,
+                ...register("demande"),
+              },
+            }))}
+          />
+        </Champ>
 
         {demande === OPS_DEMANDE_TYPE.SCALINGO_APP && (
           <Alert
             className="fr-mb-4v"
             severity="error"
             small
-            description={<div>Attention si votre startup fait partie de la fabrique de l'écologie, ou que votre incubateur dispose de son propre compte scalingo, merci de contacter directement <Link href="https://doc.incubateur.net/communaute/gerer-son-produit/gestion-au-quotidien/tech/to-do-liens-avec-les-referents-techs">votre référent.e tech</Link>.</div>}
+            description={
+              <div>
+                Si votre incubateur dispose de son propre Scalingo (par ex : la
+                Fabrique de l'Écologie), contactez directement{" "}
+                <Link href="https://doc.incubateur.net/communaute/gerer-son-produit/gestion-au-quotidien/tech/to-do-liens-avec-les-referents-techs">
+                  votre référent.e tech
+                </Link>
+                .
+              </div>
+            }
           />
+        )}
+
+        {/* Les champs surgissent au choix de la ressource : un titre annonce
+            qu'une nouvelle section apparaît, au lieu de les laisser pousser
+            sans prévenir sous les boutons radio. */}
+        {fields.length > 0 && (
+          <h2 className={fr.cx("fr-h4", "fr-mt-4w", "fr-mb-2w")}>
+            Informations complémentaires
+          </h2>
         )}
 
         {fields.map((key) => {
@@ -197,7 +260,7 @@ export const OpsRequestForm = ({
           const error = errors[key];
           if (field.type === "startup") {
             return (
-              <div key={key} className={fr.cx("fr-mb-3w")}>
+              <Champ key={key}>
                 <SESelect
                   label={field.label}
                   hint={field.hint}
@@ -218,47 +281,50 @@ export const OpsRequestForm = ({
                   }}
                 />
                 <input type="hidden" {...register("startupName")} />
-              </div>
+              </Champ>
             );
           }
           if (field.type === "select") {
             return (
-              <RadioButtons
-                key={key}
-                legend={field.label}
-                hintText={field.hint}
-                state={error ? "error" : undefined}
-                stateRelatedMessage={error?.message}
-                options={(field.options ?? []).map((option) => ({
-                  label:
-                    option === field.defaultValue
-                      ? `${option} (recommandé)`
-                      : option,
-                  nativeInputProps: {
-                    value: option,
-                    defaultChecked: option === field.defaultValue,
-                    ...register(key),
-                  },
-                }))}
-              />
+              <Champ key={key} pleineLargeur>
+                <RadioButtons
+                  className={fr.cx("fr-mb-0")}
+                  legend={field.label}
+                  hintText={field.hint}
+                  state={error ? "error" : undefined}
+                  stateRelatedMessage={error?.message}
+                  options={(field.options ?? []).map((option) => ({
+                    label: option.label ?? option.value,
+                    hintText: option.hint,
+                    nativeInputProps: {
+                      value: option.value,
+                      defaultChecked: option.value === field.defaultValue,
+                      ...register(key),
+                    },
+                  }))}
+                />
+              </Champ>
             );
           }
           if (field.type === "textarea") {
             return (
-              <Input
-                key={key}
-                label={field.label}
-                hintText={field.hint}
-                textArea
-                state={error ? "error" : undefined}
-                stateRelatedMessage={error?.message}
-                nativeTextAreaProps={{ ...register(key) }}
-              />
+              <Champ key={key} pleineLargeur>
+                <Input
+                  className={fr.cx("fr-mb-0")}
+                  label={field.label}
+                  hintText={field.hint}
+                  textArea
+                  state={error ? "error" : undefined}
+                  stateRelatedMessage={error?.message}
+                  nativeTextAreaProps={{ ...register(key) }}
+                />
+              </Champ>
             );
           }
           return (
-            <div key={key}>
+            <Champ key={key}>
               <Input
+                className={fr.cx("fr-mb-0")}
                 label={field.label}
                 hintText={field.hint}
                 state={error ? "error" : undefined}
@@ -270,22 +336,15 @@ export const OpsRequestForm = ({
               />
               {!!field.warnOnInput && !!watch(key) && (
                 <Alert
-                  className={fr.cx("fr-mt-1v", "fr-mb-2v")}
+                  className={fr.cx("fr-mt-1v")}
                   severity="warning"
                   small
                   description={field.warnOnInput}
                 />
               )}
-            </div>
+            </Champ>
           );
         })}
-
-        <Input
-          label="Si ta demande ne concerne pas une SE, merci de préciser le projet pour lequel tu réalises cette demande."
-          state={errors.projet ? "error" : undefined}
-          stateRelatedMessage={errors.projet?.message}
-          nativeInputProps={{ ...register("projet") }}
-        />
 
         <input type="hidden" {...register("prenomNom")} />
 
@@ -294,7 +353,7 @@ export const OpsRequestForm = ({
           disabled={isSaving}
           nativeButtonProps={{ type: "submit", disabled: isSubmitting }}
         >
-          {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+          {isSubmitting ? "Envoi en cours..." : "Envoyer la demande"}
         </Button>
       </form>
     </>
