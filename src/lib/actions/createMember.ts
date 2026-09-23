@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
+import { getUserTeamIncubatorIds } from "@/lib/kysely/queries/authorization";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { EventCode } from "@/models/actionEvent";
 import {
@@ -52,9 +52,7 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
   incubator_id: createMemberSchemaType["incubator_id"],
 ): Promise<boolean> {
   const sessionUserIncubatorIds = new Set(
-    (await getUserTeamsIncubators(sessionUserUuid)).map(
-      (incubator) => incubator.uuid,
-    ),
+    await getUserTeamIncubatorIds(sessionUserUuid),
   );
   const userStartups = userMissions.flatMap((m) => m.startups || []);
   const startupIncubatorIds = await getIncubatorIdsOfStartups(userStartups);

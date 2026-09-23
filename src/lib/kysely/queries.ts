@@ -35,7 +35,18 @@ export const isStartupAgent = async (memberId: string, startupId: string) => {
     .where("users.uuid", "=", memberId)
     .where("missions_startups.startup_id", "=", startupId)
     .where("missions.start", "<=", new Date())
-    .where("missions.end", ">", new Date())
+    // Une fin nulle est une mission OUVERTE, donc vivante : `end > now` rend
+    // NULL sur ces lignes et les rejetait. Le formulaire ne laisse justement
+    // une mission sans terme qu'au statut « Agent Public »
+    // (models/actions/member.ts:11-13), c'est-a-dire exactement la population
+    // que ce predicat est cense reconnaitre. Meme lecture du NULL que
+    // liveMission, getActiveUsers, incubatorMembersBase et checkUserIsExpired.
+    .where((eb) =>
+      eb.or([
+        eb("missions.end", "is", null),
+        eb("missions.end", ">", new Date()),
+      ]),
+    )
     .where("users.legal_status", "in", ["fonctionnaire", "contractuel"]);
 
   const result = await isStartupAgentQuery.execute();

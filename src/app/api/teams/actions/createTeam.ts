@@ -3,25 +3,23 @@
 import slugify from "@sindresorhus/slugify";
 import _ from "lodash";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
-import { authOptions } from "@/lib/authoptions";
+import { assertCanCreateTeam } from "@/lib/authorization/team";
 
 export async function createTeam({
-  teamWrapper: { team, members },
+  teamWrapper,
 }: {
   teamWrapper: teamUpdateSchemaType;
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
-  }
-  teamUpdateSchema.parse({ team, members });
+  // Le parse passe avant la garde : on n'autorise jamais sur une valeur non
+  // validee, la garde lit incubator_id.
+  const { team, members } = teamUpdateSchema.parse(teamWrapper);
+  const subject = await assertCanCreateTeam(team.incubator_id);
   await db.transaction().execute(async (trx) => {
     // update team data
     const incubator = await trx
@@ -61,7 +59,7 @@ export async function createTeam({
 
     await addEvent({
       action_code: EventCode.TEAM_CREATED,
-      created_by_username: session.user.id,
+      created_by_username: subject.username,
       action_metadata: {
         value: {
           uuid: res.uuid,

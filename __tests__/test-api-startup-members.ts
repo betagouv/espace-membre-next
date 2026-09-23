@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import { addDays, subDays } from "date-fns";
 
+import { apiRequest, createTestApiKey, deleteTestApiKey } from "./utils/apiKey";
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
-import { GET } from "@/app/api/protected/startups/[ghid]/members/route";
+import { GET } from "@/app/api/v1/startups/[id]/members/route";
 
 const now = new Date();
 
@@ -30,28 +31,37 @@ const testData: FakeDataInterface = {
   ],
 };
 
-const makeReq = () => ({}) as unknown as Request;
+// Les routes v1 passent par withApiV1 : une VRAIE clef est inseree en base et
+// le jeton voyage en Bearer, donc le test traverse aussi le perimetre.
+let apiKey: { token: string; uuid: string };
+const makeReq = (search = "") =>
+  apiRequest(
+    apiKey.token,
+    `http://localhost:3000/api/v1/resource${search ? `?${search}` : ""}`,
+  );
 
-describe("GET /api/protected/startups/[ghid]/members", () => {
+describe("GET /api/v1/startups/[ghid]/members", () => {
   before(async () => {
+    apiKey = await createTestApiKey({ scopes: ["members:read"] });
     await createData(testData);
   });
 
   after(async () => {
+    await deleteTestApiKey(apiKey.uuid);
     await deleteData(testData);
   });
 
   it("renvoie 404 pour une startup inconnue", async () => {
     const res = await GET(makeReq(), {
-      params: Promise.resolve({ ghid: "startup-inexistante" }),
+      params: Promise.resolve({ id: "startup-inexistante" }),
     });
     expect(res.status).to.equal(404);
   });
 
   it("renvoie les membres de la startup avec missions[].startups en { uuid, ghid }", async () => {
-    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-sm-startup" }) });
+    const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-sm-startup" }) });
     expect(res.status).to.equal(200);
-    const body = await res.json();
+    const body = (await res.json()).data;
 
     const member = body.find(
       (m: { username: string }) => m.username === "test-sm-member",
@@ -65,8 +75,8 @@ describe("GET /api/protected/startups/[ghid]/members", () => {
   });
 
   it("n'expose pas les champs exclus (bio, domaine, role, etc.)", async () => {
-    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-sm-startup" }) });
-    const body = await res.json();
+    const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-sm-startup" }) });
+    const body = (await res.json()).data;
     const member = body[0];
 
     for (const excluded of [

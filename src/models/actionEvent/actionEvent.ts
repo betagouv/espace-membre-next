@@ -47,6 +47,15 @@ export enum EventCode {
   MEMBER_VERIFIED = "MEMBER_VERIFIED",
   MEMBER_USER_EVENTS_UPDATED = "MEMBER_UPDATE_USER_EVENTS",
   DIMAIL_MAILBOX_CREATED = "DIMAIL_MAILBOX_CREATED",
+  INCUBATOR_CREATED = "INCUBATOR_CREATED",
+  INCUBATOR_UPDATED = "INCUBATOR_UPDATED",
+  API_KEY_CREATED = "API_KEY_CREATED",
+  API_KEY_REVOKED = "API_KEY_REVOKED",
+  API_KEY_CONFIRMED = "API_KEY_CONFIRMED",
+  API_KEY_AUTO_REVOKED = "API_KEY_AUTO_REVOKED",
+  STARTUP_STANDARDS_UPDATED = "STARTUP_STANDARDS_UPDATED",
+  STARTUP_API_UPDATED = "STARTUP_API_UPDATED",
+  INCUBATOR_API_UPDATED = "INCUBATOR_API_UPDATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -92,6 +101,16 @@ export const EventCodeToReadable: Record<EventCode, string> = {
   [EventCode.MEMBER_VERIFIED]: "Membre vérifié",
   [EventCode.MEMBER_USER_EVENTS_UPDATED]: "Evénement du membre mis à jour",
   [EventCode.DIMAIL_MAILBOX_CREATED]: "Boite mail Dimail créée",
+  [EventCode.INCUBATOR_CREATED]: "Incubateur créé",
+  [EventCode.INCUBATOR_UPDATED]: "Incubateur mis à jour",
+  [EventCode.API_KEY_CREATED]: "Clef d'API créée",
+  [EventCode.API_KEY_REVOKED]: "Clef d'API révoquée",
+  [EventCode.API_KEY_CONFIRMED]: "Clef d'API confirmée",
+  [EventCode.API_KEY_AUTO_REVOKED]: "Clef d'API révoquée automatiquement",
+  [EventCode.STARTUP_STANDARDS_UPDATED]:
+    "Standards de produit mis à jour par l'API",
+  [EventCode.STARTUP_API_UPDATED]: "Fiche produit mise à jour par l'API",
+  [EventCode.INCUBATOR_API_UPDATED]: "Fiche incubateur mise à jour par l'API",
 };
 
 export const SYSTEM_NAME = "system";
@@ -365,6 +384,102 @@ export const EventMemberUserEventUpdatedPayload = z.object({
   }),
 });
 
+export const EventIncubatorCreatedPayload = z.object({
+  action_code: z.literal(EventCode.INCUBATOR_CREATED),
+  action_metadata: z.object({
+    uuid: z.string(),
+    ghid: z.string(),
+    title: z.string(),
+  }),
+});
+
+// La table events ne porte pas de colonne action_on_incubator
+// (src/@types/db.d.ts) : l'uuid de l'incubateur passe en metadonnees.
+export const EventIncubatorUpdatedPayload = z.object({
+  action_code: z.literal(EventCode.INCUBATOR_UPDATED),
+  action_metadata: z.object({
+    uuid: z.string(),
+    value: z.record(z.string(), z.string()),
+    old_value: z.record(z.string(), z.string()),
+  }),
+});
+
+// hstore aplatit tout en chaines : ces charges utiles restent plates, et le
+// jeton clair n'y figure jamais, seulement token_prefix.
+export const EventApiKeyCreatedPayload = z.object({
+  action_code: z.literal(EventCode.API_KEY_CREATED),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+    kind: z.enum(["personal", "service"]),
+    name: z.string(),
+    scopes: z.string(),
+    read_perimeter: z.string(),
+    write_perimeter: z.string().optional(),
+    expires_at: z.string().optional(),
+    owner_incubator_ghid: z.string().optional(),
+  }),
+});
+
+export const EventApiKeyRevokedPayload = z.object({
+  action_code: z.literal(EventCode.API_KEY_REVOKED),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+    reason: z.string(),
+  }),
+});
+
+export const EventApiKeyConfirmedPayload = z.object({
+  action_code: z.literal(EventCode.API_KEY_CONFIRMED),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+  }),
+});
+
+export const EventApiKeyAutoRevokedPayload = z.object({
+  action_code: z.literal(EventCode.API_KEY_AUTO_REVOKED),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+    reason: z.enum(["unused", "blocked_owner", "perimeter_gone"]),
+  }),
+});
+
+// STARTUP_INFO_UPDATED impose action_metadata en { value, old_value } sur les
+// quatre sous-objets de startupInfoUpdateSchema : incompatible avec les
+// metadonnees plates d'une ecriture par clef.
+export const EventStartupStandardsUpdatedPayload = z.object({
+  action_code: z.literal(EventCode.STARTUP_STANDARDS_UPDATED),
+  action_on_startup: z.string(),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+    fields: z.string(),
+  }),
+});
+
+export const EventStartupApiUpdatedPayload = z.object({
+  action_code: z.literal(EventCode.STARTUP_API_UPDATED),
+  action_on_startup: z.string(),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+    fields: z.string(),
+  }),
+});
+
+export const EventIncubatorApiUpdatedPayload = z.object({
+  action_code: z.literal(EventCode.INCUBATOR_API_UPDATED),
+  action_metadata: z.object({
+    key_uuid: z.string(),
+    token_prefix: z.string(),
+    incubator_uuid: z.string(),
+    fields: z.string(),
+  }),
+});
+
 export type EventPayloads =
   | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
   | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -394,7 +509,16 @@ export type EventPayloads =
   | z.infer<typeof EventMemberCreatedPayload>
   | z.infer<typeof EventMemberValidatedPayload>
   | z.infer<typeof EventMemberVerifiedPayload>
-  | z.infer<typeof EventMemberUserEventUpdatedPayload>;
+  | z.infer<typeof EventMemberUserEventUpdatedPayload>
+  | z.infer<typeof EventIncubatorCreatedPayload>
+  | z.infer<typeof EventIncubatorUpdatedPayload>
+  | z.infer<typeof EventApiKeyCreatedPayload>
+  | z.infer<typeof EventApiKeyRevokedPayload>
+  | z.infer<typeof EventApiKeyConfirmedPayload>
+  | z.infer<typeof EventApiKeyAutoRevokedPayload>
+  | z.infer<typeof EventStartupStandardsUpdatedPayload>
+  | z.infer<typeof EventStartupApiUpdatedPayload>
+  | z.infer<typeof EventIncubatorApiUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

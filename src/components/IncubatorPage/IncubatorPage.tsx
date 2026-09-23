@@ -65,6 +65,11 @@ export default function IncubatorPage({
           ],
         ].filter((a) => !!a)}
       ></Table>
+      <p>
+        <Link href={`/incubators/${incubatorInfos.uuid}/api-keys`}>
+          Clefs d&apos;API de cet incubateur
+        </Link>
+      </p>
       {(teams.length && (
         <>
           <h2>Équipes</h2>

@@ -374,7 +374,7 @@ export async function getUserStartupsActive(
 export const getUserIncubators = (uuid: string, db: Kysely<DB> = database) =>
   db
     .selectFrom("incubators")
-    .select(["incubators.uuid", "incubators.title"])
+    .select(["incubators.uuid", "incubators.title", "incubators.ghid"])
     .distinct()
     .where((eb) =>
       eb.or([
@@ -389,16 +389,18 @@ export const getUserIncubators = (uuid: string, db: Kysely<DB> = database) =>
             .where("users_teams.user_id", "=", uuid),
         ),
         // select user startup incubators
+        // startups_incubators est la source de verite : passer par
+        // startups.incubator_id perdrait les incubateurs co-incubants.
         eb(
           "incubators.uuid",
           "in",
           eb
-            .selectFrom("startups")
-            .select("startups.incubator_id")
+            .selectFrom("startups_incubators")
+            .select("startups_incubators.incubator_id")
             .innerJoin(
               "missions_startups",
               "missions_startups.startup_id",
-              "startups.uuid",
+              "startups_incubators.startup_id",
             )
             .innerJoin(
               "missions",
