@@ -79,6 +79,7 @@ export const FORMATION_DUREES: { label: string; hours: number }[] = [
   { label: "2h", hours: 2 },
   { label: "2h30", hours: 2.5 },
   { label: "2h45", hours: 2.75 },
+  { label: "3h", hours: 3 },
   { label: "Une demi-journée", hours: 4 },
   { label: "Une journée", hours: 8 },
 ];
