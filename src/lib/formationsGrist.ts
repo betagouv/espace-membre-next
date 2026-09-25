@@ -209,6 +209,26 @@ function formatToFormation(
   }
 }
 
+/**
+ * Une formation telle qu'on peut l'envoyer au navigateur de n'importe quel
+ * membre.
+ *
+ * Le lien de visioconférence ne part qu'aux inscrit·es, dans leur invitation :
+ * l'agenda de la communauté l'omet exprès, sinon on rejoindrait sans
+ * s'inscrire — ou sans place. Or tout ce qu'on passe à un composant client est
+ * sérialisé dans la page, qu'il l'affiche ou non : il faut le retirer avant.
+ * Le panneau de gestion, réservé à qui gère la formation, garde la version
+ * complète.
+ */
+export const sansLiensDeVisio = (formation: Formation): Formation => ({
+  ...formation,
+  lienAdmin: undefined,
+  sessions: formation.sessions?.map((session) => ({
+    ...session,
+    lienVisioAdmin: undefined,
+  })),
+});
+
 export type GristInscription = {
   sessionId: string;
   onWaitingList: boolean;

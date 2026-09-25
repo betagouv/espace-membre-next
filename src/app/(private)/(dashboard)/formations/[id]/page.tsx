@@ -16,6 +16,7 @@ import {
   fetchGristFormationById,
   fetchGristInscriptions,
   fetchGristParticipantsForSessions,
+  sansLiensDeVisio,
 } from "@/lib/formationsGrist";
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
 import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
@@ -83,13 +84,20 @@ export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  // fetch data
   const params = await props.params;
   const formation = await fetchGristFormationById(params.id, {
     statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
   });
+  // Même règle que la page : une proposition n'existe que pour qui la gère.
+  // Sans elle, son titre s'afficherait dans l'onglet de n'importe quel
+  // membre, alors que la page répond 404.
+  const session = await getServerSession(authOptions);
+  const visible =
+    !!formation &&
+    (formation.statut === FORMATION_STATUT.VALIDEE ||
+      (await canManageFormation(session?.user, formation)));
   return {
-    title: `${formation?.name ?? "Formation"} / Espace Membre`,
+    title: `${visible ? formation.name : "Formation"} / Espace Membre`,
   };
 }
 
@@ -351,7 +359,9 @@ export default async function Page(props: Readonly<Props>) {
         {!formation.isELearning && (
           <FormationOtherDates
             // La première date est déjà celle de la carte ci-dessus.
-            sessions={(formation.sessions ?? []).slice(1)}
+            // Composant client : ses données partent dans la page, sans les
+            // liens de visio, réservés aux inscrit·es.
+            sessions={(sansLiensDeVisio(formation).sessions ?? []).slice(1)}
             inscriptions={inscriptions}
             isAnimator={isAnimator}
           />

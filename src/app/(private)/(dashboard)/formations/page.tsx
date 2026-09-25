@@ -10,6 +10,7 @@ import {
   fetchGristFormations,
   fetchGristInscriptions,
   fetchGristPendingFormations,
+  sansLiensDeVisio,
 } from "@/lib/formationsGrist";
 import { authOptions } from "@/lib/authoptions";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
@@ -126,7 +127,9 @@ export default async function Page() {
       )}
       <FormationUpcomingBanner formations={mesProchaines} />
       <FormationList
-        formations={formations}
+        // Le catalogue est un composant client : tout ce qu'il reçoit part
+        // dans la page, liens de visio compris.
+        formations={formations.map(sansLiensDeVisio)}
         inscriptions={mesInscriptions}
       ></FormationList>
     </div>
