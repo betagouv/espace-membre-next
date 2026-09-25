@@ -47,6 +47,7 @@ import {
   GRIST_SESSIONS_COLUMNS,
   uidEvenementAnimation,
   uidEvenementInscription,
+  uidEvenementPublic,
 } from "@/models/formationsGrist";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
@@ -733,8 +734,16 @@ export const updateFormationSession = withErrorHandling(
  * orphelines, rattachées à une session qui n'existe plus, qui gonfleraient les
  * compteurs sans correspondre à rien.
  *
- * Rien n'est prévenu automatiquement : c'est à la personne qui annule de
- * prévenir les inscrits, d'où le décompte renvoyé.
+ * Les inscrit·es sont prévenu·es sans intervention : avant toute suppression,
+ * une ligne est écrite dans la table Annulations (titre, horaire, adresses de
+ * toutes les inscriptions, liste d'attente comprise), que le workflow n8n lit
+ * pour envoyer le mail d'annulation. Sans aucune adresse, pas de ligne. Les
+ * événements d'agenda à retirer sont notés de la même façon dans
+ * Suppressions_agenda : l'invitation de chaque inscrit·e, l'événement
+ * d'animation et l'annonce à l'agenda de la communauté.
+ *
+ * Un échec d'écriture dans Annulations interrompt la suppression ; côté
+ * agenda, il est ignoré (voir noterSuppressionsAgenda).
  *
  * @returns le nombre d'inscriptions supprimées avec la date.
  */
@@ -824,6 +833,10 @@ export const deleteFormationSession = withErrorHandling(
       {
         uid: uidEvenementAnimation(sessionRowId),
         contexte: `Date supprimée : ${formation.name} (animation)`,
+      },
+      {
+        uid: uidEvenementPublic(sessionRowId),
+        contexte: `Date supprimée : ${formation.name} (agenda communauté)`,
       },
     ]);
 

@@ -213,3 +213,13 @@ export const uidEvenementInscription = (
 
 export const uidEvenementAnimation = (sessionId: number | string) =>
   `formation-${sessionId}-animation@beta.gouv.fr`;
+
+/**
+ * Événement annoncé à l'agenda de la communauté, un par date.
+ *
+ * Distinct des invitations nominatives : celles-ci s'adressent à une personne,
+ * celui-ci annonce la séance à qui consulte l'agenda. Supprimer la date doit
+ * retirer les deux.
+ */
+export const uidEvenementPublic = (sessionId: number | string) =>
+  `formation-${sessionId}-public@beta.gouv.fr`;
