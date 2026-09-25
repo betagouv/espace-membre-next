@@ -6,13 +6,11 @@ import { getServerSession } from "next-auth";
 import FormationList from "@/components/Formation/FormationList";
 import { FormationPendingMenu } from "@/components/Formation/FormationPendingMenu";
 import { FormationUpcomingBanner } from "@/components/Formation/FormationUpcomingBanner";
-import { fetchAirtableInscription } from "@/lib/airtable";
 import {
   fetchGristFormations,
   fetchGristInscriptions,
   fetchGristPendingFormations,
 } from "@/lib/formationsGrist";
-import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -28,30 +26,24 @@ export default async function Page() {
   if (!session) {
     redirect("/login");
   }
-  // Le catalogue vient de Grist. Les inscriptions restent sur Airtable le temps
-  // que la migration soit terminée : une panne de l'un ne doit pas emporter
-  // l'autre, ni toute la page.
+  // Catalogue et inscriptions viennent tous deux de Grist, mais de lectures
+  // distinctes : une panne de l'une ne doit pas emporter l'autre, ni toute la
+  // page.
   let formations: Awaited<ReturnType<typeof fetchGristFormations>> = [];
-  let inscriptions: Awaited<ReturnType<typeof fetchAirtableInscription>> = [];
   let catalogueError = false;
   try {
     formations = await fetchGristFormations();
   } catch {
     catalogueError = true;
   }
-  try {
-    inscriptions = await fetchAirtableInscription(session.user.id);
-  } catch {
-    // Sans inscriptions, le catalogue s'affiche : on perd seulement les
-    // pastilles « Inscrit ».
-  }
-  // Ses propres inscriptions, pour le bandeau de rappel. Une panne de lecture
-  // le fait disparaître, elle n'emporte pas le catalogue.
+  // Ses propres inscriptions, pour le bandeau de rappel et les pastilles
+  // « Inscrit » du catalogue. Une panne de lecture les fait disparaître, elle
+  // n'emporte pas le catalogue.
   let mesInscriptions: Awaited<ReturnType<typeof fetchGristInscriptions>> = [];
   try {
     mesInscriptions = await fetchGristInscriptions(session.user.id);
   } catch {
-    // Sans elles, le bandeau ne s'affiche pas.
+    // Sans elles, ni bandeau ni pastilles : le catalogue s'affiche quand même.
   }
   // `formation.sessions` ne contient que les dates à venir : une séance passée
   // ne remonte donc jamais dans le bandeau.
@@ -135,7 +127,7 @@ export default async function Page() {
       <FormationUpcomingBanner formations={mesProchaines} />
       <FormationList
         formations={formations}
-        inscriptions={inscriptions}
+        inscriptions={mesInscriptions}
       ></FormationList>
     </div>
   );
