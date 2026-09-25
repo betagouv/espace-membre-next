@@ -39,6 +39,7 @@ import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode } from "@/models/member";
 import {
   FORMATION_DUREES,
+  FORMATION_MODALITE,
   FORMATION_STATUT,
   GRIST_ANNULATIONS_COLUMNS,
   GRIST_FORMATIONS_COLUMNS,
@@ -151,6 +152,10 @@ export const submitFormationProposal = withErrorHandling(
         : [];
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+    // Un e-learning est ouvert en continu : ni date, ni limite de places, ni
+    // visioconférence. Le formulaire masque ces champs, mais une valeur saisie
+    // avant de choisir « E-learning » peut encore arriver jusqu'ici.
+    const isELearning = parsed.modalite === FORMATION_MODALITE.E_LEARNING;
 
     const fields: GristRecordFields = {
       [GRIST_FORMATIONS_COLUMNS.titre]: parsed.titre,
@@ -159,11 +164,16 @@ export const submitFormationProposal = withErrorHandling(
       // Les ChoiceList passent par l'API records au format ["L", ...valeurs].
       [GRIST_FORMATIONS_COLUMNS.thematiques]: ["L", ...parsed.thematiques],
       [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
-      [GRIST_FORMATIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+      [GRIST_FORMATIONS_COLUMNS.capacite]: isELearning
+        ? null
+        : (parsed.capacite ?? null),
       [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
       [GRIST_FORMATIONS_COLUMNS.referent]: referentRowId,
       [GRIST_FORMATIONS_COLUMNS.statut]: statut,
-      [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
+      [GRIST_FORMATIONS_COLUMNS.lienAdmin]: isELearning
+        ? ""
+        : (parsed.lienVisioAdmin ?? ""),
+      // Pour un e-learning, l'adresse où le suivre.
       [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
       [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
       [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
@@ -185,8 +195,8 @@ export const submitFormationProposal = withErrorHandling(
     // Date déjà fixée : on crée aussi la session. L'animateur·ice est relié·e à
     // la table Membres via la partie locale de son adresse Tchap, qui vaut le
     // ghid ; introuvable, la session reste sans référence, le texte du Format
-    // fait foi.
-    if (parsed.dateDebut) {
+    // fait foi. Jamais pour un e-learning, qui n'a pas de date.
+    if (!isELearning && parsed.dateDebut) {
       const animateurRowId = await findMembreRowId(session.user.id);
       const sessionFields: GristRecordFields = {
         [GRIST_SESSIONS_COLUMNS.format]: formatRowId,
@@ -592,6 +602,14 @@ export const scheduleFormationSessions = withErrorHandling(
         "Seule l'équipe animation ou la personne qui anime peut programmer des dates.",
       );
     }
+    // Une date n'a pas de sens pour un e-learning, ouvert en continu : elle
+    // ferait apparaître au catalogue une séance qui n'existe pas.
+    if (formation.isELearning) {
+      throw new BusinessError(
+        "ELearningSansDate",
+        "Un e-learning est ouvert en continu : il n'a pas de date à programmer.",
+      );
+    }
 
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
@@ -890,6 +908,10 @@ export const updateFormation = withErrorHandling(
 
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+    // Passer en e-learning retire la limite et la visioconférence, que le
+    // formulaire ne montre plus : les garder laisserait des valeurs que
+    // personne ne voit ni ne peut corriger.
+    const isELearning = parsed.modalite === FORMATION_MODALITE.E_LEARNING;
 
     await updateGristRecords(
       config.GRIST_FORMATIONS_DOC_ID,
@@ -906,9 +928,13 @@ export const updateFormation = withErrorHandling(
               ...parsed.thematiques,
             ],
             [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
-            [GRIST_FORMATIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+            [GRIST_FORMATIONS_COLUMNS.capacite]: isELearning
+              ? null
+              : (parsed.capacite ?? null),
             [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
-            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
+            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: isELearning
+              ? ""
+              : (parsed.lienVisioAdmin ?? ""),
             [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
             [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
             [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,

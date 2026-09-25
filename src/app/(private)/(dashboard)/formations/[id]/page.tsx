@@ -178,6 +178,14 @@ export default async function Page(props: Readonly<Props>) {
     formation.sessions?.[0]?.dureeHeures ?? formation.duree,
   );
 
+  // Un e-learning n'a ni date ni inscription : son lien est ce qui en tient
+  // lieu. Il devient un bouton, donc seul du http(s) passe — le formulaire
+  // l'exige déjà, mais la colonne se modifie aussi à la main dans Grist.
+  const lienFormation =
+    formation.isELearning && /^https?:\/\//i.test(formation.lienSupport ?? "")
+      ? formation.lienSupport
+      : undefined;
+
   return (
     <>
       <BreadCrumbFiller
@@ -215,6 +223,30 @@ export default async function Page(props: Readonly<Props>) {
                       }}
                     >
                       Durée : {duree}
+                    </span>
+                  )}
+                  {lienFormation && (
+                    <span
+                      style={{
+                        display: "block",
+                        marginBottom: 5,
+                        marginTop: 5,
+                      }}
+                    >
+                      <Button
+                        iconId="fr-icon-external-link-line"
+                        iconPosition="right"
+                        linkProps={{
+                          href: lienFormation,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          // Un lien qui ouvre une nouvelle fenêtre doit le
+                          // dire (RGAA 13.2).
+                          title: "Accéder à la formation - nouvelle fenêtre",
+                        }}
+                      >
+                        Accéder à la formation
+                      </Button>
                     </span>
                   )}
                   {!formation.isELearning && (
