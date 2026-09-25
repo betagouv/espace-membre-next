@@ -145,8 +145,9 @@ function formatToFormation(
     const placesRestantes = s["Places_restantes"];
 
     return {
-      // Le modèle vient d'Airtable : `airtable_id` sert d'identifiant d'URL,
-      // on y met l'id de ligne Grist le temps que les deux sources coexistent.
+      // Le nom `airtable_id` est un héritage du modèle Airtable : il sert
+      // toujours d'identifiant d'URL à la carte du catalogue, et porte l'id de
+      // ligne Grist du format — Airtable n'est plus lu nulle part.
       id: String(format.id),
       airtable_id: String(format.id),
       name: String(f[GRIST_FORMATIONS_COLUMNS.titre] ?? ""),
