@@ -63,8 +63,17 @@ export const libelleAudience = (audience: string): string =>
 
 // Durées proposées par le formulaire (reprises d'Airtable), convertie en
 // heures pour la colonne numérique Grist Formats.Duree.
+//
+// Les plus courtes servent aux e-learning, souvent des modules de quelques
+// minutes. Une durée absente de cette liste ne peut pas être reprise par le
+// formulaire de modification, qui la remplacerait sans prévenir : chaque durée
+// enregistrée doit donc y figurer.
 export const FORMATION_DUREES: { label: string; hours: number }[] = [
+  { label: "10 min", hours: 10 / 60 },
+  { label: "15 min", hours: 15 / 60 },
+  { label: "20 min", hours: 20 / 60 },
   { label: "30 min", hours: 0.5 },
+  { label: "40 min", hours: 40 / 60 },
   { label: "1h", hours: 1 },
   { label: "1h30", hours: 1.5 },
   { label: "2h", hours: 2 },
