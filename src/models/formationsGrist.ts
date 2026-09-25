@@ -33,6 +33,8 @@ export const FORMATION_THEMATIQUES: string[] = [
 // Alignées sur les Choice de la colonne Grist Formats.Audience.
 export const FORMATION_AUDIENCES: string[] = [
   "Tout public",
+  // Sert au rappel bimensuel envoyé aux personnes arrivées depuis moins de
+  // six mois : c'est ce tag qui décide qu'une formation leur est destinée.
   "Nouveaux membres",
   "Dev",
   "Designer",
@@ -43,6 +45,21 @@ export const FORMATION_AUDIENCES: string[] = [
   "Chargé·e de support",
   "Autres",
 ];
+
+/**
+ * Libellé affiché d'une audience, quand il diffère de sa valeur Grist.
+ *
+ * « Nouveaux membres » s'affiche « Nouveaux arrivants », comme le filtre du
+ * catalogue : le même tag portait deux noms selon l'écran. La valeur, elle,
+ * ne change pas — n8n filtre dessus pour le rappel aux nouveaux arrivants, et
+ * la renommer dans Grist le priverait de ses destinataires.
+ */
+const FORMATION_AUDIENCE_LIBELLES: Record<string, string> = {
+  "Nouveaux membres": "Nouveaux arrivants",
+};
+
+export const libelleAudience = (audience: string): string =>
+  FORMATION_AUDIENCE_LIBELLES[audience] ?? audience;
 
 // Durées proposées par le formulaire (reprises d'Airtable), convertie en
 // heures pour la colonne numérique Grist Formats.Duree.

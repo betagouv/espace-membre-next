@@ -26,6 +26,7 @@ import {
   FORMATION_DUREES,
   FORMATION_MODALITE_CHOICES,
   FORMATION_THEMATIQUES,
+  libelleAudience,
 } from "@/models/formationsGrist";
 import { routes } from "@/lib/routes";
 import { FormationDateTimeFields } from "@/components/Formation/FormationDateTimeFields";
@@ -138,7 +139,7 @@ export const FormationProposalForm = ({
         state={errors.audience ? "error" : "default"}
         stateRelatedMessage={errors.audience?.message}
         options={FORMATION_AUDIENCES.map((audience) => ({
-          label: audience,
+          label: libelleAudience(audience),
           nativeInputProps: { value: audience, ...register("audience") },
         }))}
       />

@@ -39,6 +39,7 @@ import {
   FORMATION_MODALITE_CHOICES,
   FORMATION_STATUT,
   FORMATION_THEMATIQUES,
+  libelleAudience,
 } from "@/models/formationsGrist";
 
 const emptyAsUndefined = (value: unknown) =>
@@ -223,7 +224,7 @@ export const FormationManagePanel = ({
               />
               <Detail
                 label="Audience"
-                value={defaultValues.audience?.join(", ")}
+                value={defaultValues.audience?.map(libelleAudience).join(", ")}
               />
               <Detail label="Animateur·ice" value={defaultValues.animateur} />
               <Detail
@@ -330,7 +331,7 @@ export const FormationManagePanel = ({
               state={errors.audience ? "error" : "default"}
               stateRelatedMessage={errors.audience?.message}
               options={FORMATION_AUDIENCES.map((audience) => ({
-                label: audience,
+                label: libelleAudience(audience),
                 nativeInputProps: { value: audience, ...register("audience") },
               }))}
             />
