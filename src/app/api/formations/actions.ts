@@ -342,31 +342,6 @@ export const registerToFormationSession = withErrorHandling(
 );
 
 /**
- * Modifie une formation.
- *
- * Réservé à l'équipe d'animation et à la personne qui l'anime : le droit est
- * recalculé ici à partir de la formation enregistrée, jamais reçu du client.
- * Le statut n'est pas modifiable par ce chemin — une proposition ne se valide
- * pas elle-même.
- */
-/**
- * Désinscription d'une session.
- *
- * La ligne d'inscription est supprimée, puis la liste d'attente est recalculée :
- * une place qui se libère doit profiter à la personne qui attend depuis le plus
- * longtemps, sans intervention manuelle.
- */
-/**
- * Note les événements d'agenda à retirer.
- *
- * Écrit avant la suppression des lignes qu'ils concernent : une fois celles-ci
- * effacées, plus rien ne dirait quoi enlever de l'agenda. Le workflow n8n lit
- * cette table et fait le ménage.
- *
- * Un échec ici ne doit pas empêcher la suppression demandée : l'utilisateur a
- * cliqué, l'action doit aboutir. On perd le nettoyage de l'agenda, pas plus.
- */
-/**
  * Adresse à laquelle écrire à un membre.
  *
  * `session.user.email` est celle du fournisseur d'identité — primaire, ou
@@ -395,6 +370,16 @@ async function adresseDeContact(user: {
   return user.email ?? "";
 }
 
+/**
+ * Note les événements d'agenda à retirer.
+ *
+ * Écrit avant la suppression des lignes qu'ils concernent : une fois celles-ci
+ * effacées, plus rien ne dirait quoi enlever de l'agenda. Le workflow n8n lit
+ * cette table et fait le ménage.
+ *
+ * Un échec ici ne doit pas empêcher la suppression demandée : l'utilisateur a
+ * cliqué, l'action doit aboutir. On perd le nettoyage de l'agenda, pas plus.
+ */
 async function noterSuppressionsAgenda(
   docId: string,
   entrees: { uid: string; contexte: string }[],
@@ -416,6 +401,13 @@ async function noterSuppressionsAgenda(
   }
 }
 
+/**
+ * Désinscription d'une session.
+ *
+ * La ligne d'inscription est supprimée, puis la liste d'attente est recalculée :
+ * une place qui se libère doit profiter à la personne qui attend depuis le plus
+ * longtemps, sans intervention manuelle.
+ */
 export const unregisterFromFormationSession = withErrorHandling(
   async (sessionId: string) => {
     const session = await getServerSession(authOptions);
@@ -857,6 +849,14 @@ export const deleteFormationSession = withErrorHandling(
   },
 );
 
+/**
+ * Modifie une formation.
+ *
+ * Réservé à l'équipe d'animation et à la personne qui l'anime : le droit est
+ * recalculé ici à partir de la formation enregistrée, jamais reçu du client.
+ * Le statut n'est pas modifiable par ce chemin — une proposition ne se valide
+ * pas elle-même.
+ */
 export const updateFormation = withErrorHandling(
   async (data: formationUpdateSchemaType) => {
     const session = await getServerSession(authOptions);

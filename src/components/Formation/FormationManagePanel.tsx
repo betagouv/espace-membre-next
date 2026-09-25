@@ -272,7 +272,13 @@ export const FormationManagePanel = ({
                 setScheduling((was) => !was);
               }}
             >
-              {scheduling ? "Annuler" : "Programmer une autre session"}
+              {/* « Autre » n'a de sens qu'à côté d'une session existante : sans
+                  aucune date, c'est la première qu'on programme. */}
+              {scheduling
+                ? "Annuler"
+                : sessions.length
+                  ? "Programmer une autre session"
+                  : "Programmer une session"}
             </Button>
 
             {!scheduling && dateProgrammee && (

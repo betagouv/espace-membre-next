@@ -78,7 +78,7 @@ export const FormationProposalForm = ({
       setAlertMessage({
         title: isAnimation ? "Formation créée" : "Proposition envoyée",
         message: isAnimation
-          ? "La formation est ajoutée au catalogue. Tu peux maintenant planifier des sessions dans Grist."
+          ? "La formation est ajoutée au catalogue. Tu peux programmer ses sessions depuis sa fiche, dans « Gestion de la formation »."
           : "Merci ! L'équipe animation va examiner ta proposition et revenir vers toi.",
         type: "success",
       });
