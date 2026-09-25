@@ -17,12 +17,13 @@ import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import {
   updateFormation,
   validateFormation,
 } from "@/app/api/formations/actions";
+import { FormationAdresseField } from "@/components/Formation/FormationAdresseField";
 import { FormationScheduleForm } from "@/components/Formation/FormationScheduleForm";
 import {
   FormationSessionsParticipants,
@@ -102,6 +103,7 @@ export const FormationManagePanel = ({
   const router = useRouter();
 
   const {
+    control,
     register,
     handleSubmit,
     watch,
@@ -117,6 +119,10 @@ export const FormationManagePanel = ({
   // la modalité enregistrée, le formulaire celle qu'on est en train de choisir.
   const estELearning = defaultValues.modalite === FORMATION_MODALITE.E_LEARNING;
   const devientELearning = watch("modalite") === FORMATION_MODALITE.E_LEARNING;
+  // En présentiel, c'est une adresse qui dit où se retrouver, pas une visio.
+  const estPresentiel =
+    defaultValues.modalite === FORMATION_MODALITE.PRESENTIEL;
+  const devientPresentiel = watch("modalite") === FORMATION_MODALITE.PRESENTIEL;
 
   const [validating, setValidating] = React.useState(false);
   const onValidate = async () => {
@@ -241,11 +247,15 @@ export const FormationManagePanel = ({
                 label="Email organisateur·trice"
                 value={defaultValues.emailOrganisateur}
               />
-              {!estELearning && (
-                <Detail
-                  label="Lien visio admin"
-                  value={defaultValues.lienVisioAdmin}
-                />
+              {estPresentiel ? (
+                <Detail label="Adresse" value={defaultValues.adresse} />
+              ) : (
+                !estELearning && (
+                  <Detail
+                    label="Lien visio admin"
+                    value={defaultValues.lienVisioAdmin}
+                  />
+                )
               )}
               <Detail
                 label={estELearning ? "Lien de la formation" : "Support"}
@@ -475,19 +485,35 @@ export const FormationManagePanel = ({
               />
             ) : (
               <>
-                <Input
-                  label="Lien de visioconférence administrateur"
-                  state={errors.lienVisioAdmin ? "error" : "default"}
-                  stateRelatedMessage={errors.lienVisioAdmin?.message}
-                  nativeInputProps={{
-                    type: "url",
-                    placeholder: "https://",
-                    ...register("lienVisioAdmin", {
-                      setValueAs: emptyAsUndefined,
-                      shouldUnregister: true,
-                    }),
-                  }}
-                />
+                {devientPresentiel ? (
+                  <Controller
+                    control={control}
+                    name="adresse"
+                    shouldUnregister
+                    render={({ field }) => (
+                      <FormationAdresseField
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        error={errors.adresse?.message}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Input
+                    label="Lien de visioconférence administrateur"
+                    state={errors.lienVisioAdmin ? "error" : "default"}
+                    stateRelatedMessage={errors.lienVisioAdmin?.message}
+                    nativeInputProps={{
+                      type: "url",
+                      placeholder: "https://",
+                      ...register("lienVisioAdmin", {
+                        setValueAs: emptyAsUndefined,
+                        shouldUnregister: true,
+                      }),
+                    }}
+                  />
+                )}
                 {/* Le support est retiré du formulaire pour l'instant, sauf
                     pour un e-learning où il porte le lien de la formation. La
                     valeur reste enregistrée : sans ce champ caché, la moindre

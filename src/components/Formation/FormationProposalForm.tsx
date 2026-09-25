@@ -30,6 +30,7 @@ import {
   libelleAudience,
 } from "@/models/formationsGrist";
 import { routes } from "@/lib/routes";
+import { FormationAdresseField } from "@/components/Formation/FormationAdresseField";
 import { FormationDateTimeFields } from "@/components/Formation/FormationDateTimeFields";
 import { FormationImagePicker } from "@/components/Formation/FormationImagePicker";
 import { FormationImage } from "@/lib/formationsGrist";
@@ -66,6 +67,8 @@ export const FormationProposalForm = ({
   // Un e-learning est ouvert en continu : ni date, ni limite de places, ni
   // visioconférence, mais un lien vers la formation elle-même.
   const isELearning = watch("modalite") === FORMATION_MODALITE.E_LEARNING;
+  // En présentiel, on se retrouve à une adresse, pas dans une visio.
+  const isPresentiel = watch("modalite") === FORMATION_MODALITE.PRESENTIEL;
   const router = useRouter();
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>(null);
@@ -293,21 +296,38 @@ export const FormationProposalForm = ({
             />
           </div>
           <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-            <Input
-              className={fr.cx("fr-mb-0")}
-              label="Lien de visioconférence administrateur"
-              hintText="Requis pour une formation en distanciel."
-              state={errors.lienVisioAdmin ? "error" : "default"}
-              stateRelatedMessage={errors.lienVisioAdmin?.message}
-              nativeInputProps={{
-                type: "url",
-                placeholder: "https://",
-                ...register("lienVisioAdmin", {
-                  setValueAs: emptyAsUndefined,
-                  shouldUnregister: true,
-                }),
-              }}
-            />
+            {isPresentiel ? (
+              <Controller
+                control={control}
+                name="adresse"
+                shouldUnregister
+                render={({ field }) => (
+                  <FormationAdresseField
+                    className={fr.cx("fr-mb-0")}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    error={errors.adresse?.message}
+                  />
+                )}
+              />
+            ) : (
+              <Input
+                className={fr.cx("fr-mb-0")}
+                label="Lien de visioconférence administrateur"
+                hintText="Requis pour une formation en distanciel."
+                state={errors.lienVisioAdmin ? "error" : "default"}
+                stateRelatedMessage={errors.lienVisioAdmin?.message}
+                nativeInputProps={{
+                  type: "url",
+                  placeholder: "https://",
+                  ...register("lienVisioAdmin", {
+                    setValueAs: emptyAsUndefined,
+                    shouldUnregister: true,
+                  }),
+                }}
+              />
+            )}
           </div>
         </div>
       )}

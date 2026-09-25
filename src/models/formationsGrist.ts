@@ -93,6 +93,8 @@ export const GRIST_FORMATIONS_COLUMNS = {
   duree: "Duree",
   statut: "Statut",
   lienAdmin: "Lien_admin",
+  // Lieu d'une formation en présentiel, comme Lien_admin l'est à distance.
+  adresse: "Adresse",
   lienSupport: "Lien_support",
   lienFeedback: "Lien_feedback",
   animateur: "Animateur",

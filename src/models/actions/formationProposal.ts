@@ -86,6 +86,8 @@ export const formationProposalSchema = z
     // parce qu'un e-learning n'en a pas : la règle est dans le superRefine.
     dateDebut: z.string().trim().optional(),
     lienVisioAdmin: optionalUrl,
+    // Lieu d'une formation en présentiel : adresse, bâtiment, salle.
+    adresse: z.string().trim().max(300, "300 caractères maximum").optional(),
     duree: z.enum(
       FORMATION_DUREES.map((d) => d.label) as [string, ...string[]],
       {
@@ -122,6 +124,7 @@ export const formationProposalSchema = z
   })
   .superRefine((data, ctx) => {
     requireVisioWhenRemote(data, ctx);
+    requireAdresseWhenPresentiel(data, ctx);
     requireLienWhenELearning(data, ctx);
 
     // Un e-learning est ouvert en continu : pas de date, donc pas de session.
@@ -189,6 +192,26 @@ const requireVisioWhenRemote = (
 };
 
 /**
+ * En présentiel, l'adresse tient le rôle du lien de visioconférence : sans
+ * elle, personne ne sait où aller.
+ */
+const requireAdresseWhenPresentiel = (
+  data: { modalite?: FORMATION_MODALITE; adresse?: string },
+  ctx: z.RefinementCtx,
+) => {
+  if (
+    data.modalite === FORMATION_MODALITE.PRESENTIEL &&
+    !data.adresse?.trim()
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["adresse"],
+      message: "L'adresse est requise pour une formation en présentiel",
+    });
+  }
+};
+
+/**
  * Un e-learning n'a ni date ni salle : son lien est le seul moyen d'y
  * accéder, sans lui la fiche ne mène nulle part.
  */
@@ -224,6 +247,7 @@ export const formationUpdateSchema = formationProposalSchema
   // s'appliqueraient qu'à la création.
   .superRefine((data, ctx) => {
     requireVisioWhenRemote(data, ctx);
+    requireAdresseWhenPresentiel(data, ctx);
     requireLienWhenELearning(data, ctx);
   });
 

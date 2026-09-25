@@ -27,6 +27,7 @@ import {
 import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
+  FORMATION_MODALITE,
   FORMATION_STATUT,
   FORMATION_THEMATIQUES,
   libelleAudience,
@@ -225,6 +226,21 @@ export default async function Page(props: Readonly<Props>) {
                       Durée : {duree}
                     </span>
                   )}
+                  {/* En présentiel, l'adresse est ce qu'il faut savoir avant
+                      de venir. Elle suit la modalité : une adresse restée d'un
+                      ancien présentiel ne doit pas s'afficher à distance. */}
+                  {formation.modalite === FORMATION_MODALITE.PRESENTIEL &&
+                    !!formation.adresse && (
+                      <span
+                        style={{
+                          display: "block",
+                          marginBottom: 5,
+                          marginTop: 5,
+                        }}
+                      >
+                        Lieu : {formation.adresse}
+                      </span>
+                    )}
                   {lienFormation && (
                     <span
                       style={{
@@ -376,6 +392,7 @@ export default async function Page(props: Readonly<Props>) {
                 FORMATION_DUREES.find((d) => d.hours === formation.duree)
                   ?.label ?? FORMATION_DUREES[0].label,
               lienVisioAdmin: formation.lienAdmin ?? "",
+              adresse: formation.adresse ?? "",
               lienSupport: formation.lienSupport ?? "",
               lienFeedback: formation.lienFeedback ?? "",
               animateur: formation.animator ?? "",

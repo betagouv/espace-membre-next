@@ -181,6 +181,7 @@ function formatToFormation(
         String(f[GRIST_FORMATIONS_COLUMNS.lienAdmin] ?? "") || undefined,
       lienSupport:
         String(f[GRIST_FORMATIONS_COLUMNS.lienSupport] ?? "") || undefined,
+      adresse: String(f[GRIST_FORMATIONS_COLUMNS.adresse] ?? "") || undefined,
       lienFeedback:
         String(f[GRIST_FORMATIONS_COLUMNS.lienFeedback] ?? "") || undefined,
       duree: Number(f[GRIST_FORMATIONS_COLUMNS.duree] ?? 0) || undefined,

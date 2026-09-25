@@ -50,6 +50,8 @@ export const formationSchema = z.object({
   // d'animation.
   statut: z.string().optional(),
   lienAdmin: z.string().optional(),
+  // Où se tient une formation en présentiel.
+  adresse: z.string().optional(),
   lienSupport: z.string().optional(),
   lienFeedback: z.string().optional(),
   duree: z.number().optional(),

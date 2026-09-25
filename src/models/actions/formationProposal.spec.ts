@@ -15,6 +15,7 @@ const proposition = {
   thematiques: ["Design"],
   audience: ["Tout public"],
   dateDebut: "2026-10-01T14:00",
+  adresse: "20 avenue de Ségur, 75007 Paris",
   duree: "1h",
   animateur: "Camille",
   emailOrganisateur: "camille@beta.gouv.fr",
@@ -40,6 +41,23 @@ describe("formationProposalSchema", () => {
       dateDebut: undefined,
     });
     expect(erreursSur(result)).to.deep.equal(["dateDebut"]);
+  });
+
+  it("exige l'adresse en présentiel", () => {
+    const result = formationProposalSchema.safeParse({
+      ...proposition,
+      adresse: "  ",
+    });
+    expect(erreursSur(result)).to.deep.equal(["adresse"]);
+  });
+
+  it("n'exige pas d'adresse à distance, mais le lien de visio", () => {
+    const result = formationProposalSchema.safeParse({
+      ...proposition,
+      modalite: FORMATION_MODALITE.DISTANCIEL,
+      adresse: undefined,
+    });
+    expect(erreursSur(result)).to.deep.equal(["lienVisioAdmin"]);
   });
 
   it("accepte un e-learning sans date, avec son lien", () => {
@@ -81,6 +99,14 @@ describe("formationUpdateSchema", () => {
     dateDebut: undefined,
     imageId: undefined,
   };
+
+  it("exige aussi l'adresse en présentiel à la modification", () => {
+    const result = formationUpdateSchema.safeParse({
+      ...modification,
+      adresse: undefined,
+    });
+    expect(erreursSur(result)).to.deep.equal(["adresse"]);
+  });
 
   it("exige aussi le lien d'un e-learning à la modification", () => {
     const result = formationUpdateSchema.safeParse({

@@ -66,6 +66,35 @@ const PARIS_TZ = "Europe/Paris";
 const parisDateToEpochSeconds = (value: string): number =>
   Math.floor(fromZonedTime(value, PARIS_TZ).getTime() / 1000);
 
+/**
+ * Ce qui, selon la modalité, dit où se tient la formation.
+ *
+ * Chaque modalité n'a qu'une réponse : la visio à distance, l'adresse en
+ * présentiel, le lien de la formation en e-learning — qui n'a pas non plus de
+ * limite de places. Les formulaires masquent le reste, mais une valeur saisie
+ * avant de changer de modalité peut encore arriver : on ne l'enregistre pas,
+ * elle resterait là sans que personne la voie ni puisse la corriger.
+ */
+const selonModalite = (parsed: {
+  modalite: FORMATION_MODALITE;
+  lienVisioAdmin?: string;
+  adresse?: string;
+  capacite?: number;
+}) => ({
+  lienVisioAdmin:
+    parsed.modalite === FORMATION_MODALITE.DISTANCIEL
+      ? (parsed.lienVisioAdmin ?? "")
+      : "",
+  adresse:
+    parsed.modalite === FORMATION_MODALITE.PRESENTIEL
+      ? (parsed.adresse ?? "")
+      : "",
+  capacite:
+    parsed.modalite === FORMATION_MODALITE.E_LEARNING
+      ? null
+      : (parsed.capacite ?? null),
+});
+
 // La table Membres est indexée sur le ghid (= username). Renvoie l'id de ligne,
 // ou 0 (référence vide côté Grist) si la personne n'y est pas. Simple lecture :
 // à réserver aux ghid devinés (partie locale d'une adresse Tchap saisie à la
@@ -152,10 +181,9 @@ export const submitFormationProposal = withErrorHandling(
         : [];
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
-    // Un e-learning est ouvert en continu : ni date, ni limite de places, ni
-    // visioconférence. Le formulaire masque ces champs, mais une valeur saisie
-    // avant de choisir « E-learning » peut encore arriver jusqu'ici.
+    // Un e-learning est ouvert en continu : il n'a pas de date.
     const isELearning = parsed.modalite === FORMATION_MODALITE.E_LEARNING;
+    const lieu = selonModalite(parsed);
 
     const fields: GristRecordFields = {
       [GRIST_FORMATIONS_COLUMNS.titre]: parsed.titre,
@@ -164,15 +192,12 @@ export const submitFormationProposal = withErrorHandling(
       // Les ChoiceList passent par l'API records au format ["L", ...valeurs].
       [GRIST_FORMATIONS_COLUMNS.thematiques]: ["L", ...parsed.thematiques],
       [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
-      [GRIST_FORMATIONS_COLUMNS.capacite]: isELearning
-        ? null
-        : (parsed.capacite ?? null),
+      [GRIST_FORMATIONS_COLUMNS.capacite]: lieu.capacite,
       [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
       [GRIST_FORMATIONS_COLUMNS.referent]: referentRowId,
       [GRIST_FORMATIONS_COLUMNS.statut]: statut,
-      [GRIST_FORMATIONS_COLUMNS.lienAdmin]: isELearning
-        ? ""
-        : (parsed.lienVisioAdmin ?? ""),
+      [GRIST_FORMATIONS_COLUMNS.lienAdmin]: lieu.lienVisioAdmin,
+      [GRIST_FORMATIONS_COLUMNS.adresse]: lieu.adresse,
       // Pour un e-learning, l'adresse où le suivre.
       [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
       [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
@@ -208,8 +233,8 @@ export const submitFormationProposal = withErrorHandling(
         // et de la durée. La durée choisie dans la liste en est la seule
         // source, il n'y a pas de date de fin à saisir.
         [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
-        [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
-        [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+        [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: lieu.lienVisioAdmin,
+        [GRIST_SESSIONS_COLUMNS.capacite]: lieu.capacite,
         [GRIST_SESSIONS_COLUMNS.organisateur]: referentRowId,
         [GRIST_SESSIONS_COLUMNS.animateurIce]: animateurRowId
           ? ["L", animateurRowId]
@@ -908,10 +933,8 @@ export const updateFormation = withErrorHandling(
 
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
-    // Passer en e-learning retire la limite et la visioconférence, que le
-    // formulaire ne montre plus : les garder laisserait des valeurs que
-    // personne ne voit ni ne peut corriger.
-    const isELearning = parsed.modalite === FORMATION_MODALITE.E_LEARNING;
+    // Changer de modalité change aussi ce qui dit où se tient la formation.
+    const lieu = selonModalite(parsed);
 
     await updateGristRecords(
       config.GRIST_FORMATIONS_DOC_ID,
@@ -928,13 +951,10 @@ export const updateFormation = withErrorHandling(
               ...parsed.thematiques,
             ],
             [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
-            [GRIST_FORMATIONS_COLUMNS.capacite]: isELearning
-              ? null
-              : (parsed.capacite ?? null),
+            [GRIST_FORMATIONS_COLUMNS.capacite]: lieu.capacite,
             [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
-            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: isELearning
-              ? ""
-              : (parsed.lienVisioAdmin ?? ""),
+            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: lieu.lienVisioAdmin,
+            [GRIST_FORMATIONS_COLUMNS.adresse]: lieu.adresse,
             [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
             [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
             [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
