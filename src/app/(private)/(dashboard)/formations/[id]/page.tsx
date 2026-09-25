@@ -16,6 +16,7 @@ import {
   fetchGristFormationById,
   fetchGristInscriptions,
   fetchGristParticipantsForSessions,
+  sansLiensDeVisio,
 } from "@/lib/formationsGrist";
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
 import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
@@ -24,15 +25,18 @@ import {
   canManageFormation,
   isFormationAnimator,
 } from "@/lib/canManageFormation";
-import { FORMATION_DUREES, FORMATION_STATUT } from "@/models/formationsGrist";
+import {
+  FORMATION_AUDIENCES,
+  FORMATION_DUREES,
+  FORMATION_MODALITE,
+  FORMATION_STATUT,
+  FORMATION_THEMATIQUES,
+  libelleAudience,
+} from "@/models/formationsGrist";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import { formationUpdateSchemaType } from "@/models/actions/formationProposal";
 import { notFound } from "next/navigation";
-import { getUserInfos } from "@/lib/kysely/queries/users";
-import { userInfosToModel } from "@/models/mapper";
-import { CommunicationEmailCode, Domaine } from "@/models/member";
 import { authOptions } from "@/lib/authoptions";
-import { durationBetweenDate } from "@/lib/date";
 import { libelleInscriptions } from "@/lib/formationSeats";
 
 /**
@@ -53,51 +57,52 @@ const mdParser = new MarkdownIt({
   html: false,
 });
 
+/**
+ * Libellé d'une durée exprimée en heures, telle que Grist la stocke.
+ *
+ * On reprend d'abord le libellé du choix proposé dans les formulaires : la
+ * fiche dit alors « Une demi-journée » là où la personne qui a déposé la
+ * formation a choisi « Une demi-journée », et non « 4h ». Une valeur saisie à
+ * la main dans Grist n'a pas de libellé : on la met en forme au même format
+ * que la liste (« 45 min », « 3h », « 3h15 »).
+ *
+ * Pas d'`intervalToDuration` de date-fns : il omet les champs nuls, si bien
+ * qu'une demi-heure y donnait « 30 » sans unité, et 24 heures une chaîne vide.
+ */
+const libelleDuree = (heures?: number): string | undefined => {
+  if (!heures || heures <= 0) return undefined;
+  const choix = FORMATION_DUREES.find((d) => d.hours === heures);
+  if (choix) return choix.label;
+  const totalMinutes = Math.round(heures * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const min = totalMinutes % 60;
+  if (!h) return `${min} min`;
+  return min ? `${h}h${String(min).padStart(2, "0")}` : `${h}h`;
+};
+
 export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  // fetch data
   const params = await props.params;
   const formation = await fetchGristFormationById(params.id, {
     statuts: [FORMATION_STATUT.VALIDEE, FORMATION_STATUT.PROPOSEE],
   });
+  // Même règle que la page : une proposition n'existe que pour qui la gère.
+  // Sans elle, son titre s'afficherait dans l'onglet de n'importe quel
+  // membre, alors que la page répond 404.
+  const session = await getServerSession(authOptions);
+  const visible =
+    !!formation &&
+    (formation.statut === FORMATION_STATUT.VALIDEE ||
+      (await canManageFormation(session?.user, formation)));
   return {
-    title: `${formation?.name ?? "Formation"} / Espace Membre`,
+    title: `${visible ? formation.name : "Formation"} / Espace Membre`,
   };
 }
 
 type Props = {
   params: Promise<{ id: string }>;
-};
-
-enum AirtableDomaine {
-  Intrapreneur = "Intrapreneur.e",
-  "Chargé.e de déploiement" = "Chargé.e de déploiement",
-  "Chargé.e de Support usagers" = "Chargé.e de Support usagers",
-  "Développpeur.euse" = "Développeur.euse",
-  "UX Designer" = "UX Designer",
-  Coach = "Coach",
-  "Animateur.ice" = "Animateur.ice",
-  "Product Owner" = "Product Owner",
-  "Growth Hacker" = "Growth Hacker",
-  Data = "Data",
-  Attributaire = "Attributaire",
-  Support = "Support",
-}
-
-const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
-  [Domaine.INTRAPRENARIAT]: AirtableDomaine.Intrapreneur,
-  [Domaine.SUPPORT]: AirtableDomaine.Support,
-  [Domaine.ATTRIBUTAIRE]: AirtableDomaine.Attributaire,
-  [Domaine.ANIMATION]: AirtableDomaine["Animateur.ice"],
-  [Domaine.COACHING]: AirtableDomaine.Coach,
-  [Domaine.DEPLOIEMENT]: AirtableDomaine["Chargé.e de déploiement"],
-  [Domaine.DESIGN]: AirtableDomaine["UX Designer"],
-  [Domaine.DEVELOPPEMENT]: AirtableDomaine["Développpeur.euse"],
-  [Domaine.PRODUIT]: AirtableDomaine["Product Owner"],
-  [Domaine.AUTRE]: AirtableDomaine[""],
-  [Domaine.DATA]: AirtableDomaine["Data"],
 };
 
 export default async function Page(props: Readonly<Props>) {
@@ -107,35 +112,6 @@ export default async function Page(props: Readonly<Props>) {
   if (!session) {
     redirect("/login");
   }
-  const buildInscriptionLink = (
-    originalUrl: string,
-    user: {
-      fullname: string;
-      email: string;
-      username: string;
-      domaine: Domaine;
-    },
-  ) => {
-    const url = new URL(originalUrl);
-    const newParams = {
-      prefill_Nom: user.fullname,
-      prefill_Email: user.email,
-      prefill_Domaine: DomaineToAirtableDomaine[user.domaine],
-      prefill_username: user.username,
-    };
-    // Access the current search parameters
-    const searchParams = new URLSearchParams(url.search);
-
-    // Add new query parameters from the newParams object
-    Object.keys(newParams).forEach((key) => {
-      searchParams.set(key, newParams[key]);
-    });
-    // Set the modified search parameters back to the URL object
-    url.search = searchParams.toString();
-
-    // Return the modified URL as a string
-    return url.toString();
-  };
   // Les propositions ne sont pas au catalogue, mais l'équipe d'animation et la
   // personne qui anime doivent pouvoir les ouvrir pour les examiner. On les
   // charge donc, quitte à refermer la porte juste après.
@@ -204,28 +180,20 @@ export default async function Page(props: Readonly<Props>) {
     ]),
   );
 
-  const dbUser = userInfosToModel(
-    await getUserInfos({
-      uuid: session.user.uuid,
-    }),
+  // Durée de la date affichée sur la carte : chaque date peut avoir la sienne.
+  // Celle du format ne sert que de repli, quand la date n'en précise pas ou
+  // qu'aucune date n'est programmée (e-learning, formation à reprogrammer).
+  const duree = libelleDuree(
+    formation.sessions?.[0]?.dureeHeures ?? formation.duree,
   );
-  if (!dbUser) {
-    redirect("/");
-    return;
-  }
-  let email;
-  if (dbUser) {
-    email =
-      dbUser.communication_email === CommunicationEmailCode.PRIMARY
-        ? dbUser.primary_email
-        : dbUser.secondary_email;
-  }
-  const isMemberRegistered = formation.registeredMembers?.includes(
-    dbUser.username,
-  );
-  const isInWaitingList = formation.waitingListUsernames?.includes(
-    dbUser.username,
-  );
+
+  // Un e-learning n'a ni date ni inscription : son lien est ce qui en tient
+  // lieu. Il devient un bouton, donc seul du http(s) passe — le formulaire
+  // l'exige déjà, mais la colonne se modifie aussi à la main dans Grist.
+  const lienFormation =
+    formation.isELearning && /^https?:\/\//i.test(formation.lienSupport ?? "")
+      ? formation.lienSupport
+      : undefined;
 
   return (
     <>
@@ -255,7 +223,7 @@ export default async function Page(props: Readonly<Props>) {
               desc={
                 <>
                   Animateur : {formation.animator || formation.animatorEmail}
-                  {!!(formation.end && formation.start) && (
+                  {duree && (
                     <span
                       style={{
                         display: "block",
@@ -263,8 +231,46 @@ export default async function Page(props: Readonly<Props>) {
                         marginTop: 5,
                       }}
                     >
-                      Durée :{" "}
-                      {durationBetweenDate(formation.end, formation.start)}
+                      Durée : {duree}
+                    </span>
+                  )}
+                  {/* En présentiel, l'adresse est ce qu'il faut savoir avant
+                      de venir. Elle suit la modalité : une adresse restée d'un
+                      ancien présentiel ne doit pas s'afficher à distance. */}
+                  {formation.modalite === FORMATION_MODALITE.PRESENTIEL &&
+                    !!formation.adresse && (
+                      <span
+                        style={{
+                          display: "block",
+                          marginBottom: 5,
+                          marginTop: 5,
+                        }}
+                      >
+                        Lieu : {formation.adresse}
+                      </span>
+                    )}
+                  {lienFormation && (
+                    <span
+                      style={{
+                        display: "block",
+                        marginBottom: 5,
+                        marginTop: 5,
+                      }}
+                    >
+                      <Button
+                        iconId="fr-icon-external-link-line"
+                        iconPosition="right"
+                        linkProps={{
+                          href: lienFormation,
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                          // Un lien qui ouvre une nouvelle fenêtre doit le
+                          // dire (RGAA 13.2).
+                          title: "Accéder à la formation - nouvelle fenêtre",
+                        }}
+                      >
+                        Accéder à la formation
+                      </Button>
                     </span>
                   )}
                   {!formation.isELearning && (
@@ -343,7 +349,7 @@ export default async function Page(props: Readonly<Props>) {
                         severity="info"
                         style={{ marginRight: 5 }}
                       >
-                        {audience}
+                        {libelleAudience(audience)}
                       </Badge>
                     ))
                 : "Tous"}
@@ -353,7 +359,9 @@ export default async function Page(props: Readonly<Props>) {
         {!formation.isELearning && (
           <FormationOtherDates
             // La première date est déjà celle de la carte ci-dessus.
-            sessions={(formation.sessions ?? []).slice(1)}
+            // Composant client : ses données partent dans la page, sans les
+            // liens de visio, réservés aux inscrit·es.
+            sessions={(sansLiensDeVisio(formation).sessions ?? []).slice(1)}
             inscriptions={inscriptions}
             isAnimator={isAnimator}
           />
@@ -370,8 +378,19 @@ export default async function Page(props: Readonly<Props>) {
               description: formation.description,
               modalite: (formation.modalite ??
                 "") as formationUpdateSchemaType["modalite"],
-              thematiques: formation.category ?? [],
-              audience: formation.audience ?? [],
+              // Seules les valeurs que le formulaire sait cocher : une valeur
+              // reprise de l'existant hors de la liste (« Développement »,
+              // « Déploiement ») n'a pas de case, ne peut donc pas être
+              // décochée, et faisait échouer la validation sans message — la
+              // formation devenait impossible à modifier. Elle disparaît à
+              // l'enregistrement, ce qui est juste : Grist ne la connaît pas
+              // non plus parmi ses choix.
+              thematiques: (formation.category ?? []).filter((thematique) =>
+                FORMATION_THEMATIQUES.includes(thematique),
+              ),
+              audience: (formation.audience ?? []).filter((audience) =>
+                FORMATION_AUDIENCES.includes(audience),
+              ),
               // La limite du format, pas celle de la date la plus proche :
               // `maxSeats` écraserait le modèle par la valeur d'une séance.
               // Sans limite, le champ reste vide — 1 par défaut ferait passer
@@ -383,6 +402,7 @@ export default async function Page(props: Readonly<Props>) {
                 FORMATION_DUREES.find((d) => d.hours === formation.duree)
                   ?.label ?? FORMATION_DUREES[0].label,
               lienVisioAdmin: formation.lienAdmin ?? "",
+              adresse: formation.adresse ?? "",
               lienSupport: formation.lienSupport ?? "",
               lienFeedback: formation.lienFeedback ?? "",
               animateur: formation.animator ?? "",

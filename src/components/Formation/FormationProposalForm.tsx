@@ -24,10 +24,13 @@ import {
 import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
+  FORMATION_MODALITE,
   FORMATION_MODALITE_CHOICES,
   FORMATION_THEMATIQUES,
+  libelleAudience,
 } from "@/models/formationsGrist";
 import { routes } from "@/lib/routes";
+import { FormationAdresseField } from "@/components/Formation/FormationAdresseField";
 import { FormationDateTimeFields } from "@/components/Formation/FormationDateTimeFields";
 import { FormationImagePicker } from "@/components/Formation/FormationImagePicker";
 import { FormationImage } from "@/lib/formationsGrist";
@@ -61,6 +64,11 @@ export const FormationProposalForm = ({
     defaultValues: { thematiques: [], audience: [], ...defaultValues },
   });
   const imageId = watch("imageId");
+  // Un e-learning est ouvert en continu : ni date, ni limite de places, ni
+  // visioconférence, mais un lien vers la formation elle-même.
+  const isELearning = watch("modalite") === FORMATION_MODALITE.E_LEARNING;
+  // En présentiel, on se retrouve à une adresse, pas dans une visio.
+  const isPresentiel = watch("modalite") === FORMATION_MODALITE.PRESENTIEL;
   const router = useRouter();
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>(null);
@@ -76,9 +84,11 @@ export const FormationProposalForm = ({
     if (res.success) {
       setAlertMessage({
         title: isAnimation ? "Formation créée" : "Proposition envoyée",
-        message: isAnimation
-          ? "La formation est ajoutée au catalogue. Tu peux maintenant planifier des sessions dans Grist."
-          : "Merci ! L'équipe animation va examiner ta proposition et revenir vers toi.",
+        message: !isAnimation
+          ? "Merci ! L'équipe animation va examiner ta proposition et revenir vers toi."
+          : data.modalite === FORMATION_MODALITE.E_LEARNING
+            ? "L'e-learning est ajouté au catalogue."
+            : "La formation est ajoutée au catalogue. Tu peux programmer ses sessions depuis sa fiche, dans « Gestion de la formation ».",
         type: "success",
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -138,7 +148,7 @@ export const FormationProposalForm = ({
         state={errors.audience ? "error" : "default"}
         stateRelatedMessage={errors.audience?.message}
         options={FORMATION_AUDIENCES.map((audience) => ({
-          label: audience,
+          label: libelleAudience(audience),
           nativeInputProps: { value: audience, ...register("audience") },
         }))}
       />
@@ -189,24 +199,43 @@ export const FormationProposalForm = ({
         className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
         style={{ alignItems: "flex-start" }}
       >
-        <Controller
-          control={control}
-          name="dateDebut"
-          render={({ field }) => (
-            <FormationDateTimeFields
-              className={fr.cx("fr-mb-0")}
-              dateLabel="Date de la formation"
-              value={field.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              error={errors.dateDebut?.message}
-            />
+        {/* Les champs masqués en e-learning partent avec leur valeur
+            (shouldUnregister) : une date ou une limite saisie avant de changer
+            de modalité ne doit ni bloquer l'envoi sans qu'on la voie, ni
+            arriver jusqu'au serveur. */}
+        {!isELearning && (
+          <Controller
+            control={control}
+            name="dateDebut"
+            shouldUnregister
+            render={({ field }) => (
+              <FormationDateTimeFields
+                className={fr.cx("fr-mb-0")}
+                dateLabel="Date de la formation"
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                error={errors.dateDebut?.message}
+              />
+            )}
+          />
+        )}
+        <div
+          className={fr.cx(
+            "fr-col-12",
+            isELearning ? "fr-col-md-6" : "fr-col-md-5",
           )}
-        />
-        <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
+        >
           <Select
             className={fr.cx("fr-mb-0")}
             label="Durée"
+            // Sans date, « durée » se lirait comme une durée d'ouverture : on
+            // précise que c'est le temps qu'il faut pour la suivre. L'aide
+            // aligne aussi le champ sur « Lien de la formation », à côté, qui
+            // a la sienne.
+            hint={
+              isELearning ? "Le temps qu'il faut pour la suivre." : undefined
+            }
             state={errors.duree ? "error" : "default"}
             stateRelatedMessage={errors.duree?.message}
             nativeSelectProps={{
@@ -221,45 +250,87 @@ export const FormationProposalForm = ({
             ]}
           />
         </div>
+        {isELearning && (
+          <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+            <Input
+              className={fr.cx("fr-mb-0")}
+              label="Lien de la formation"
+              hintText="L'adresse où suivre l'e-learning."
+              state={errors.lienSupport ? "error" : "default"}
+              stateRelatedMessage={errors.lienSupport?.message}
+              nativeInputProps={{
+                type: "url",
+                placeholder: "https://",
+                ...register("lienSupport", {
+                  setValueAs: emptyAsUndefined,
+                  shouldUnregister: true,
+                }),
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      <div
-        className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
-        style={{ alignItems: "flex-start" }}
-      >
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            className={fr.cx("fr-mb-0")}
-            label="Limite de participants (facultatif)"
-            hintText="Sans limite, les inscriptions restent ouvertes."
-            state={errors.capacite ? "error" : "default"}
-            stateRelatedMessage={errors.capacite?.message}
-            nativeInputProps={{
-              type: "number",
-              min: 1,
-              step: 1,
-              ...register("capacite", {
-                setValueAs: (value) =>
-                  value === "" || value === null ? undefined : Number(value),
-              }),
-            }}
-          />
+      {!isELearning && (
+        <div
+          className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
+          style={{ alignItems: "flex-start" }}
+        >
+          <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+            <Input
+              className={fr.cx("fr-mb-0")}
+              label="Limite de participants (facultatif)"
+              hintText="Sans limite, les inscriptions restent ouvertes."
+              state={errors.capacite ? "error" : "default"}
+              stateRelatedMessage={errors.capacite?.message}
+              nativeInputProps={{
+                type: "number",
+                min: 1,
+                step: 1,
+                ...register("capacite", {
+                  setValueAs: (value) =>
+                    value === "" || value === null ? undefined : Number(value),
+                  shouldUnregister: true,
+                }),
+              }}
+            />
+          </div>
+          <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+            {isPresentiel ? (
+              <Controller
+                control={control}
+                name="adresse"
+                shouldUnregister
+                render={({ field }) => (
+                  <FormationAdresseField
+                    className={fr.cx("fr-mb-0")}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    error={errors.adresse?.message}
+                  />
+                )}
+              />
+            ) : (
+              <Input
+                className={fr.cx("fr-mb-0")}
+                label="Lien de visioconférence administrateur"
+                hintText="Requis pour une formation en distanciel."
+                state={errors.lienVisioAdmin ? "error" : "default"}
+                stateRelatedMessage={errors.lienVisioAdmin?.message}
+                nativeInputProps={{
+                  type: "url",
+                  placeholder: "https://",
+                  ...register("lienVisioAdmin", {
+                    setValueAs: emptyAsUndefined,
+                    shouldUnregister: true,
+                  }),
+                }}
+              />
+            )}
+          </div>
         </div>
-        <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-          <Input
-            className={fr.cx("fr-mb-0")}
-            label="Lien de visioconférence administrateur"
-            hintText="Requis pour une formation en distanciel."
-            state={errors.lienVisioAdmin ? "error" : "default"}
-            stateRelatedMessage={errors.lienVisioAdmin?.message}
-            nativeInputProps={{
-              type: "url",
-              placeholder: "https://",
-              ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
-            }}
-          />
-        </div>
-      </div>
+      )}
 
       <div className={fr.cx("fr-input-group")}>
         <p className={fr.cx("fr-label", "fr-mb-1v")}>
