@@ -302,6 +302,7 @@ export default async function Page(props: Readonly<Props>) {
                           isRegistered={!!gristInscription}
                           isOnWaitingList={!!gristInscription?.onWaitingList}
                           seatsLeft={formation.availableSeats}
+                          maxSeats={formation.maxSeats}
                           isAnimator={isAnimator}
                         />
                       </span>

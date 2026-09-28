@@ -94,6 +94,7 @@ export const FormationOtherDates = ({
                 isRegistered={!!inscription}
                 isOnWaitingList={!!inscription?.onWaitingList}
                 seatsLeft={seatsLeft}
+                maxSeats={session.maxSeats}
                 isAnimator={isAnimator}
               />
             </li>
