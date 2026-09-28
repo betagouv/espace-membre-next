@@ -25,12 +25,15 @@ export const FormationRegisterButton = ({
   isRegistered,
   isOnWaitingList,
   seatsLeft,
+  maxSeats,
   isAnimator = false,
 }: {
   sessionId?: string;
   isRegistered: boolean;
   isOnWaitingList: boolean;
   seatsLeft: number;
+  // Absente : pas de limite de participants, donc jamais de liste d'attente.
+  maxSeats?: number;
   isAnimator?: boolean;
 }) => {
   const [state, setState] = React.useState<State>(
@@ -117,6 +120,10 @@ export const FormationRegisterButton = ({
     router.refresh();
   };
 
+  // Même règle que le serveur : sans limite, `seatsLeft` vaut zéro sans que
+  // la session soit pleine, et l'inscription n'y part jamais en attente.
+  const isFull = !!maxSeats && seatsLeft <= 0;
+
   return (
     <>
       <Button
@@ -125,7 +132,7 @@ export const FormationRegisterButton = ({
       >
         {pending
           ? "Inscription en cours..."
-          : seatsLeft <= 0
+          : isFull
             ? "M'inscrire sur liste d'attente"
             : "M'inscrire"}
       </Button>
