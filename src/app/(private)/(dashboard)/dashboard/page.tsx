@@ -53,6 +53,7 @@ export default async function Page(props) {
   const checklists = await getUserChecklists(
     session.user.uuid,
     userInfos.domaine,
+    userInfos.created_at,
   );
   if (userInfos.created_at >= new Date("2025-01-01")) {
     onboarding = checklists.onboarding;

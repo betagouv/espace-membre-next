@@ -4,7 +4,12 @@ import yaml from "yaml";
 import { checklistSchema } from "../../src/models/checklist";
 
 const checklistsDir = path.resolve(__dirname, "../../src/lib/checklists");
-const files = ["onboarding.yml", "offboarding.yml"];
+// Tous les yml du dossier : une nouvelle checklist est validée sans qu'il
+// faille penser à l'ajouter ici.
+const files = fs
+  .readdirSync(checklistsDir)
+  .filter((file) => file.endsWith(".yml"))
+  .sort();
 
 let allPassed = true;
 
