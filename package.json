@@ -46,7 +46,7 @@
     "@socialgouv/matomo-next": "^1.9.1",
     "airtable": "^0.12.2",
     "aws-sdk": "^2.1664.0",
-    "axios": "^1.8.4",
+    "axios": "^1.20.0",
     "crisp-sdk-web": "^1.0.25",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
