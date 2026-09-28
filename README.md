@@ -34,9 +34,14 @@ copier [`.env.development`](./.env.development) en `.env`
 `ESPACE_MEMBRE_ADMIN` liste les administrateurs de l'espace membre, sous forme
 de `username` (`prenom.nom`) séparés par des virgules.
 
-Les items de checklist marqués `restricted: true` dans
-[`onboarding.yml`](./src/lib/checklists/onboarding.yml), par exemple la
-participation à l'atelier d'embarquement, ne sont pas auto-déclaratifs : seuls
+Les membres du domaine Intraprenariat arrivés depuis le 28 septembre 2026 ont
+leur propre checklist d'embarquement,
+[`onboarding-intrapreneur.yml`](./src/lib/checklists/onboarding-intrapreneur.yml),
+à la place de [`onboarding.yml`](./src/lib/checklists/onboarding.yml). Un item
+présent dans les deux garde le même id.
+
+Les items de checklist marqués `restricted: true` dans ces fichiers, par exemple
+la participation à l'atelier d'embarquement, ne sont pas auto-déclaratifs : seuls
 les administrateurs et les membres de l'équipe d'animation de la DINUM peuvent
 les cocher. Cette équipe est identifiée par son `ghid`
 `dinum-animation-beta-gouv-fr` dans la table `teams` — plusieurs incubateurs ont
