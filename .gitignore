@@ -41,3 +41,8 @@ dist
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Workflows n8n et sauvegardes Grist : contiennent l'identifiant du document
+# de production et le chemin CalDAV de l'agenda communauté. Jamais dans ce
+# dépôt public.
+.n8n-local/
