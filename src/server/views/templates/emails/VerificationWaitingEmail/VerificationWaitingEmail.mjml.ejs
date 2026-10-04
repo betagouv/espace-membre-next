@@ -8,13 +8,15 @@
   <ul>
     <li>
       Étape 1 : Connecte toi sur
-      <a href="<%= secretariatUrl %>">l'espace membre</a> avec ton email
-      <%= secondaryEmail %>
+      <a href="<%= loginUrl %>">l'espace membre</a> avec
+      <b>ProConnect</b>, en utilisant ton compte <b><%= loginEmail %></b>
+      (si c'est une nouvelle adresse @beta.gouv.fr, son mot de passe t'a été
+      envoyé dans un autre email)
     </li>
     <li>Étape 2 : Complète tes informations</li>
   </ul>
 </mj-text>
-<mj-button href="<%= secretariatUrl %>">
-  Me connecter à l'espace-membre
+<mj-button href="<%= loginUrl %>">
+  Me connecter avec ProConnect
 </mj-button>
 <mj-text>Bonne journée</mj-text>

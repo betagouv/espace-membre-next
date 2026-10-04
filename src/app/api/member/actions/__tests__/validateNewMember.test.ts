@@ -4,25 +4,27 @@ import * as nextAuth from "next-auth/next";
 import * as eventsLib from "@/lib/events";
 import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
-import * as mapperLib from "@/models/mapper";
 import * as canEditMemberLib from "@/lib/canEditMember";
-import * as bossClient from "@/server/queueing/client";
+import * as teamEmailLib from "@/lib/email/send-email-to-team-when-new-member";
+import * as onboardingLib from "@/lib/onboarding/startMemberOnboarding";
 import { validateNewMember } from "../validateNewMember";
 import { EmailStatusCode } from "@/models/member";
 import { EventCode } from "@/models/actionEvent";
 import { AuthorizationError, BusinessError } from "@/lib/error";
 
+const MEMBER_UUID = "6d2f8f4e-3c1a-4b8e-9f1d-2a7c5e9b0d13";
+
 describe("validateNewMember", () => {
   let getServerSessionStub: sinon.SinonStub;
   let getUserBasicInfoStub: sinon.SinonStub;
   let getLastEventStub: sinon.SinonStub;
-  let dbSelectFromStub: sinon.SinonStub;
   let dbUpdateTableStub: sinon.SinonStub;
-  let memberBaseInfoToModelStub: sinon.SinonStub;
+  let updateExecuteStub: sinon.SinonStub;
+  let updateWhereStub: sinon.SinonStub;
   let canEditMemberStub: sinon.SinonStub;
   let addEventStub: sinon.SinonStub;
-  let getBossClientInstanceStub: sinon.SinonStub;
-  let bossClientSendStub: sinon.SinonStub;
+  let sendEmailToTeamStub: sinon.SinonStub;
+  let startMemberOnboardingStub: sinon.SinonStub;
 
   const mockSession = {
     user: {
@@ -33,14 +35,9 @@ describe("validateNewMember", () => {
   };
 
   const mockUserData = {
-    uuid: "member-uuid",
+    uuid: MEMBER_UUID,
     username: "testmember",
     primary_email_status: EmailStatusCode.MEMBER_VALIDATION_WAITING,
-  };
-
-  const mockMember = {
-    ...mockUserData,
-    username: "testmember",
   };
 
   const mockEventMemberCreated = {
@@ -63,32 +60,28 @@ describe("validateNewMember", () => {
     getLastEventStub = sinon
       .stub(eventsLib, "getLastEvent")
       .resolves(mockEventMemberCreated as any);
-    memberBaseInfoToModelStub = sinon
-      .stub(mapperLib, "memberBaseInfoToModel")
-      .returns(mockMember as any);
     canEditMemberStub = sinon
       .stub(canEditMemberLib, "canEditMember")
       .resolves(true);
     addEventStub = sinon.stub(eventsLib, "addEvent").resolves();
+    sendEmailToTeamStub = sinon
+      .stub(teamEmailLib, "sendEmailToTeamWhenNewMember")
+      .resolves();
+    startMemberOnboardingStub = sinon
+      .stub(onboardingLib, "startMemberOnboarding")
+      .resolves();
 
-    bossClientSendStub = sinon.stub().resolves();
-    getBossClientInstanceStub = sinon
-      .stub(bossClient, "getBossClientInstance")
-      .resolves({ send: bossClientSendStub } as any);
-
-    // stub db chainable query builder
-    dbUpdateTableStub = sinon.stub(kyselyLib.db, "updateTable").returns({
-      where: sinon.stub().returnsThis(),
+    // stub db chainable update builder
+    updateExecuteStub = sinon.stub().resolves({ numUpdatedRows: BigInt(1) });
+    updateWhereStub = sinon.stub();
+    const updateBuilder = {
       set: sinon.stub().returnsThis(),
-      execute: sinon.stub().resolves(),
-    } as any);
-
-    dbSelectFromStub = sinon.stub(kyselyLib.db, "selectFrom").returns({
-      selectAll: sinon.stub().returnsThis(),
-      where: sinon.stub().returnsThis(),
-      orderBy: sinon.stub().returnsThis(),
-      executeTakeFirst: sinon.stub().resolves(null),
-    } as any);
+      where: updateWhereStub.returnsThis(),
+      executeTakeFirst: updateExecuteStub,
+    };
+    dbUpdateTableStub = sinon
+      .stub(kyselyLib.db, "updateTable")
+      .returns(updateBuilder as any);
   });
 
   afterEach(() => {
@@ -97,10 +90,9 @@ describe("validateNewMember", () => {
 
   it("should throw AuthorizationError if no session", async () => {
     getServerSessionStub.resolves(null);
-
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
-      expect.fail("Should have thrown AuthorizationError");
+      await validateNewMember({ memberUuid: MEMBER_UUID });
+      expect.fail("Should have thrown");
     } catch (e) {
       expect(e).to.be.instanceof(AuthorizationError);
     }
@@ -108,86 +100,88 @@ describe("validateNewMember", () => {
 
   it("should throw BusinessError if user not found", async () => {
     getUserBasicInfoStub.resolves(null);
-
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
-      expect.fail("Should have thrown BusinessError");
-    } catch (e) {
+      await validateNewMember({ memberUuid: MEMBER_UUID });
+      expect.fail("Should have thrown");
+    } catch (e: any) {
       expect(e).to.be.instanceof(BusinessError);
-      expect((e as BusinessError).code).to.eq("userNotFound");
+      expect(e.code).to.equal("userNotFound");
     }
   });
 
-  it("should throw BusinessError if MEMBER_CREATED event not found", async () => {
+  it("should pass the incubator from the MEMBER_CREATED event to canEditMember", async () => {
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+    expect(getLastEventStub.firstCall.args).to.deep.equal([
+      "testmember",
+      EventCode.MEMBER_CREATED,
+    ]);
+    expect(canEditMemberStub.firstCall.args[0].incubator_id).to.equal(
+      "incubator-1",
+    );
+  });
+
+  it("should not fail when the MEMBER_CREATED event is missing (admin can still validate)", async () => {
     getLastEventStub.resolves(null);
-
-    try {
-      await validateNewMember({ memberUuid: "member-uuid" });
-      expect.fail("Should have thrown BusinessError");
-    } catch (e) {
-      expect(e).to.be.instanceof(BusinessError);
-      expect((e as BusinessError).code).to.eq("userMemberCreatedEventNotFound");
-    }
+    getServerSessionStub.resolves({
+      user: { ...mockSession.user, isAdmin: true },
+    } as any);
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+    expect(canEditMemberStub.firstCall.args[0].incubator_id).to.be.undefined;
+    expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
   });
 
-  it("should throw BusinessError if member already validated", async () => {
-    dbSelectFromStub().executeTakeFirst.resolves({
-      created_by_username: "another-admin",
-    });
-
-    try {
-      await validateNewMember({ memberUuid: "member-uuid" });
-      expect.fail("Should have thrown BusinessError");
-    } catch (e) {
-      expect(e).to.be.instanceof(BusinessError);
-      expect((e as BusinessError).code).to.eq("userAlreadyValided");
-    }
-  });
-
-  it("should throw BusinessError if session user not authorized", async () => {
+  it("should check rights before anything else, even for an already validated member", async () => {
     canEditMemberStub.resolves(false);
-
+    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
-      expect.fail("Should have thrown BusinessError");
-    } catch (e) {
+      await validateNewMember({ memberUuid: MEMBER_UUID });
+      expect.fail("Should have thrown");
+    } catch (e: any) {
       expect(e).to.be.instanceof(BusinessError);
-      expect((e as BusinessError).code).to.eq(
+      expect(e.code).to.equal(
         "sessionUserNotAdminOrNotInRequiredIncubatorTeam",
       );
     }
+    expect(dbUpdateTableStub.called).to.be.false;
+    expect(startMemberOnboardingStub.called).to.be.false;
   });
 
-  it("should successfully validate a new member", async () => {
-    await validateNewMember({ memberUuid: "member-uuid" });
-
-    // verify db update was called
-    expect(dbUpdateTableStub.calledOnce).to.be.true;
-
-    // verify addEvent was called
-    expect(addEventStub.calledOnce).to.be.true;
-    expect(addEventStub.firstCall.args[0]).to.deep.include({
-      action_code: EventCode.MEMBER_VALIDATED,
-      action_on_username: mockMember.username,
-    });
-
-    // verify boss client send was called twice (for both jobs)
-    expect(bossClientSendStub.calledTwice).to.be.true;
+  it("should throw userAlreadyValided and not onboard twice when the status already changed", async () => {
+    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
+    try {
+      await validateNewMember({ memberUuid: MEMBER_UUID });
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e).to.be.instanceof(BusinessError);
+      expect(e.code).to.equal("userAlreadyValided");
+    }
+    expect(addEventStub.called).to.be.false;
+    expect(startMemberOnboardingStub.called).to.be.false;
   });
 
-  it("should use isAdmin flag when session user is admin", async () => {
-    const adminSession = {
-      user: {
-        id: "admin-user-id",
-        uuid: "admin-user-uuid",
-        isAdmin: true,
-      },
-    };
-    getServerSessionStub.resolves(adminSession as any);
+  it("should only update a member waiting for validation (atomic transition)", async () => {
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+    expect(
+      updateWhereStub.calledWith(
+        "primary_email_status",
+        "=",
+        EmailStatusCode.MEMBER_VALIDATION_WAITING,
+      ),
+    ).to.be.true;
+  });
 
-    await validateNewMember({ memberUuid: "member-uuid" });
+  it("should validate the member then start the onboarding", async () => {
+    await validateNewMember({ memberUuid: MEMBER_UUID });
 
-    // canEditMember is called but returns early for admins
-    expect(canEditMemberStub.calledOnce).to.be.true;
+    expect(
+      addEventStub.calledOnceWith({
+        created_by_username: "admin-user-id",
+        action_code: EventCode.MEMBER_VALIDATED,
+        action_on_username: "testmember",
+      }),
+    ).to.be.true;
+    expect(sendEmailToTeamStub.calledOnce).to.be.true;
+    expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
+    expect(startMemberOnboardingStub.calledAfter(addEventStub)).to.be.true;
   });
 });

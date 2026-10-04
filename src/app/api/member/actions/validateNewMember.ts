@@ -1,17 +1,14 @@
 "use server";
 
 import { getServerSession } from "next-auth/next";
+import { z } from "zod";
 
 import { addEvent, getLastEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
-import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
-import {
-  SendEmailToTeamWhenNewMemberSchema,
-  SendNewMemberVerificationEmailSchema,
-} from "@/models/jobs/member";
-import { memberBaseInfoToModel } from "@/models/mapper";
+import { SendEmailToTeamWhenNewMemberSchema } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { authOptions } from "@/lib/authoptions";
 import {
@@ -20,8 +17,14 @@ import {
   withErrorHandling,
 } from "@/lib/error";
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
-import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 import { canEditMember } from "@/lib/canEditMember";
+import { startMemberOnboarding } from "@/lib/onboarding/startMemberOnboarding";
+
+const MemberCreatedIncubatorSchema = z.object({
+  action_metadata: z.object({
+    incubator_id: z.string().nullish(),
+  }),
+});
 
 export async function validateNewMember({
   memberUuid,
@@ -38,51 +41,19 @@ export async function validateNewMember({
     );
   }
 
-  const eventMemberCreated = await getLastEvent(
-    rawData.username,
-    EventCode.MEMBER_CREATED,
+  // the incubator chosen at invitation is only stored in the MEMBER_CREATED event.
+  // it is optional : it only adds a way to be authorized (fail-closed).
+  // only parse incubator_id so an old event with outdated missions data still works
+  const eventMemberCreated = MemberCreatedIncubatorSchema.safeParse(
+    await getLastEvent(rawData.username, EventCode.MEMBER_CREATED),
   );
-  if (!eventMemberCreated) {
-    throw new BusinessError(
-      "userMemberCreatedEventNotFound",
-      `L'événement de création du membre n'as pas été trouvé pour ${memberUuid}.`,
-    );
-  }
-  const eventMemberCreatedData =
-    EventMemberCreatedPayload.safeParse(eventMemberCreated);
-  if (!eventMemberCreatedData.success) {
-    console.log(eventMemberCreatedData.error);
-    throw new BusinessError(
-      "eventMemberCreatedEventDoesNotHaveTheExpectedFormat",
-      `L'événement de création du membre ${memberUuid} n'as pas le format attendu.`,
-    );
-  }
-  const incubator_id = eventMemberCreatedData.data.action_metadata.incubator_id;
-  const event = await db
-    .selectFrom("events")
-    .selectAll()
-    .where("action_on_username", "=", rawData.username)
-    .where("action_code", "=", EventCode.MEMBER_VALIDATED)
-    .orderBy("created_at desc")
-    .executeTakeFirst();
+  const incubator_id = eventMemberCreated.success
+    ? eventMemberCreated.data.action_metadata.incubator_id
+    : undefined;
 
-  if (event) {
-    throw new BusinessError(
-      "userAlreadyValided",
-      `Le nouveau membre a déjà été validé par ${event.created_by_username}`,
-    );
-  }
-  if (
-    rawData.primary_email_status !== EmailStatusCode.MEMBER_VALIDATION_WAITING
-  ) {
-    throw new BusinessError(
-      "userAlreadyValided",
-      `Ce membre a déjà été validé`,
-    );
-  }
-  const newMember = memberBaseInfoToModel(rawData);
+  // check rights before revealing anything about the member status
   const canEdit = await canEditMember({
-    memberUuid: newMember.uuid,
+    memberUuid: rawData.uuid,
     sessionUser: session.user,
     incubator_id: incubator_id || undefined,
   });
@@ -93,30 +64,40 @@ export async function validateNewMember({
     );
   }
 
-  await db
+  // atomic transition : a second (concurrent) validation updates nothing
+  const result = await db
     .updateTable("users")
-    .where("uuid", "=", memberUuid)
     .set({
       primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email_status_updated_at: new Date(),
     })
-    .execute();
-
-    await addEvent({
-      created_by_username: session.user.id,
-      action_code: EventCode.MEMBER_VALIDATED,
-      action_on_username: newMember.username,
-    });
-
-    await sendEmailToTeamWhenNewMember(
-      SendEmailToTeamWhenNewMemberSchema.parse({
-        userId: newMember.uuid,
-      }),
+    .where("uuid", "=", memberUuid)
+    .where(
+      "primary_email_status",
+      "=",
+      EmailStatusCode.MEMBER_VALIDATION_WAITING,
+    )
+    .executeTakeFirst();
+  if (!Number(result.numUpdatedRows)) {
+    throw new BusinessError(
+      "userAlreadyValided",
+      `Ce membre a déjà été validé`,
     );
-    await sendNewMemberVerificationEmail(
-      SendNewMemberVerificationEmailSchema.parse({
-        userId: newMember.uuid,
-      }),
-    );
+  }
+
+  await addEvent({
+    created_by_username: session.user.id,
+    action_code: EventCode.MEMBER_VALIDATED,
+    action_on_username: rawData.username,
+  });
+
+  await sendEmailToTeamWhenNewMember(
+    SendEmailToTeamWhenNewMemberSchema.parse({
+      userId: rawData.uuid,
+    }),
+  );
+
+  await startMemberOnboarding(rawData.uuid);
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);

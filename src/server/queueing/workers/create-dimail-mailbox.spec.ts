@@ -16,6 +16,17 @@ const mockUpdateTable = sinon.stub().returns({ set: mockSet });
 const mockOnConflict = sinon.stub().returns({ execute: mockExecute });
 const mockValues = sinon.stub().returns({ onConflict: mockOnConflict });
 const mockInsertInto = sinon.stub().returns({ values: mockValues });
+// latest mission lookup (selectFrom missions)
+const mockLastMission = sinon.stub();
+const mockSelectBuilder: any = {
+  select: sinon.stub().returnsThis(),
+  where: sinon.stub().returnsThis(),
+  orderBy: sinon.stub().returnsThis(),
+  executeTakeFirst: mockLastMission,
+};
+const mockSelectFrom = sinon.stub().returns(mockSelectBuilder);
+const mockGetLastEvent = sinon.stub();
+const mockSendInvitation = sinon.stub();
 
 const userTestUuid = "9f58ae81-3580-4d37-9334-a979dcc2372f";
 
@@ -26,17 +37,25 @@ const DIMAIL_MAILBOX_DOMAIN =
 const mockDb = {
   updateTable: mockUpdateTable,
   insertInto: mockInsertInto,
+  selectFrom: mockSelectFrom,
 };
 
-const { createDimailMailboxForUser } = proxyquire("./create-dimail-mailbox", {
-  "@/lib/kysely/queries/users": { getUserBasicInfo: mockGetUserBasicInfo },
-  "@/lib/dimail/client": {
-    createMailbox: mockCreateMailbox,
-    createAlias: mockCreateAlias,
+const { createDimailMailboxForUser, onboardNewMemberMailbox } = proxyquire(
+  "./create-dimail-mailbox",
+  {
+    "@/lib/kysely/queries/users": { getUserBasicInfo: mockGetUserBasicInfo },
+    "@/lib/dimail/client": {
+      createMailbox: mockCreateMailbox,
+      createAlias: mockCreateAlias,
+    },
+    "@/server/config/email.config": { sendEmail: mockSendEmail },
+    "@/lib/kysely": { db: mockDb },
+    "@/lib/events": { getLastEvent: mockGetLastEvent },
+    "@/lib/email/send-verification-email": {
+      sendNewMemberVerificationEmail: mockSendInvitation,
+    },
   },
-  "@/server/config/email.config": { sendEmail: mockSendEmail },
-  "@/lib/kysely": { db: mockDb },
-});
+);
 
 describe("create-dimail-mail", () => {
   let consoleErrorStub: sinon.SinonStub;
@@ -44,6 +63,25 @@ describe("create-dimail-mail", () => {
   beforeEach(() => {
     // Reset all stubs
     sinon.resetHistory();
+    // module-level stubs are not reached by sinon.resetHistory() once
+    // sinon.restore() ran, so reset them explicitly
+    [
+      mockGetUserBasicInfo,
+      mockCreateMailbox,
+      mockSendEmail,
+      mockCreateAlias,
+      mockExecute,
+      mockWhere,
+      mockSet,
+      mockUpdateTable,
+      mockOnConflict,
+      mockValues,
+      mockInsertInto,
+      mockLastMission,
+      mockSelectFrom,
+      mockGetLastEvent,
+      mockSendInvitation,
+    ].forEach((stub) => stub.resetHistory());
 
     // Mock console methods
     consoleErrorStub = sinon.stub(console, "error");
@@ -70,6 +108,9 @@ describe("create-dimail-mail", () => {
     mockSendEmail.resolves();
     mockCreateAlias.resolves();
     mockExecute.resolves();
+    mockLastMission.resolves(undefined);
+    mockGetLastEvent.resolves(null);
+    mockSendInvitation.resolves();
   });
 
   afterEach(() => {
@@ -325,5 +366,120 @@ describe("create-dimail-mail", () => {
       mockCreateAlias.called,
       `Got ${JSON.stringify(mockCreateAlias.getCalls())}`,
     ).to.be.true;
+  });
+
+  it("should not add .ext for a new member (no legal_status) whose latest mission is admin", async () => {
+    mockGetUserBasicInfo.resolves({
+      uuid: userTestUuid,
+      username: "john.doe",
+      fullname: "John Doe",
+      secondary_email: "john.doe@example.com",
+      primary_email: null,
+      legal_status: null,
+      missions: [],
+    });
+    mockLastMission.resolves({ status: "admin" });
+    mockCreateMailbox.resolves({
+      email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
+      password: "generated-password",
+    });
+
+    await createDimailMailboxForUser(userTestUuid);
+
+    expect(mockSelectFrom.calledWith("missions")).to.be.true;
+    expect(mockCreateMailbox.firstCall.args[0].user_name).to.equal("john.doe");
+  });
+
+  it("should write the given status instead of EMAIL_ACTIVE", async () => {
+    await createDimailMailboxForUser(userTestUuid, {
+      status: "EMAIL_VERIFICATION_WAITING",
+    });
+    expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
+      "EMAIL_VERIFICATION_WAITING",
+    );
+  });
+
+  describe("onboardNewMemberMailbox", () => {
+    const onboardingUser = {
+      uuid: userTestUuid,
+      username: "john.doe",
+      fullname: "John Doe",
+      secondary_email: "john.doe@example.com",
+      primary_email: null,
+      primary_email_status: "EMAIL_CREATION_WAITING",
+      legal_status: null,
+      missions: [],
+    };
+
+    it("creates the mailbox, then sends the ProConnect invitation", async () => {
+      mockGetUserBasicInfo.resolves(onboardingUser);
+
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockCreateMailbox.calledOnce).to.be.true;
+      expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
+        "EMAIL_VERIFICATION_WAITING",
+      );
+      expect(mockSendInvitation.calledOnceWith({ userId: userTestUuid })).to.be
+        .true;
+      // the invitation is sent only once the mailbox is created and saved
+      expect(mockSendInvitation.calledAfter(mockCreateMailbox)).to.be.true;
+      expect(mockSendInvitation.calledAfter(mockSet)).to.be.true;
+    });
+
+    it("does not send the invitation when the mailbox creation fails", async () => {
+      mockGetUserBasicInfo.resolves(onboardingUser);
+      mockCreateMailbox.rejects(new Error("dimail down"));
+
+      try {
+        await onboardNewMemberMailbox(userTestUuid);
+        expect.fail("Should have thrown");
+      } catch (e: any) {
+        expect(e.message).to.equal("dimail down");
+      }
+      expect(mockSendInvitation.called).to.be.false;
+    });
+
+    it("on retry, does not recreate an existing mailbox and sends the invitation once", async () => {
+      mockCreateMailbox.resetHistory();
+      mockGetUserBasicInfo.resolves({
+        ...onboardingUser,
+        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email_status: "EMAIL_VERIFICATION_WAITING",
+      });
+
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockCreateMailbox.called).to.be.false;
+      expect(mockSendInvitation.calledOnce).to.be.true;
+    });
+
+    it("does not send the invitation twice", async () => {
+      mockGetUserBasicInfo.resolves({
+        ...onboardingUser,
+        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email_status: "EMAIL_VERIFICATION_WAITING",
+      });
+      mockGetLastEvent.resolves({
+        action_code: "EMAIL_VERIFICATION_WAITING_SENT",
+      });
+
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockSendInvitation.called).to.be.false;
+    });
+
+    it("skips members that are not onboarding anymore", async () => {
+      mockGetUserBasicInfo.resolves({
+        ...onboardingUser,
+        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email_status: "EMAIL_ACTIVE",
+      });
+
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockCreateMailbox.called).to.be.false;
+      expect(mockSendInvitation.called).to.be.false;
+    });
   });
 });

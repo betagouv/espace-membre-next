@@ -3,23 +3,29 @@ export const routes = {
   account: () => `/account`,
   accountEditBaseInfo: () => `/account/base-info`,
   accountEditPrivateInfo: () => `/account/info`,
-  signIn: () => `/signin`,
+  support: () => `/support`,
   community: () => `/community`,
-  communityMember: ({ username }: { username: string }) => `/community/${username}`,
+  communityMember: ({ username }: { username: string }) =>
+    `/community/${username}`,
   communityCreateMember: () => `/community/create`,
   dashboard: () => `/dashboard`,
-  incubatorDetailsEdit: ({ incubatorId }: { incubatorId: string }) => `/incubators/${incubatorId}`,
+  incubatorDetailsEdit: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}`,
   incubatorList: () => `/incubators`,
   incubatorCreate: () => `/incubators/create-form`,
-  incubatorDetails: ({ incubatorId }: { incubatorId: string }) => `/incubators/${incubatorId}`,
+  incubatorDetails: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}`,
   teamDetailsEdit: ({ teamId }: { teamId: string }) => `/teams/${teamId}`,
   teamList: () => `/teams`,
   teamCreate: () => `/teams/create-form`,
   teamDetails: ({ teamId }: { teamId: string }) => `/teams/${teamId}`,
   startupList: () => `/startups`,
-  startupDetails: ({ startupId }: { startupId: string }) => `/startups/${startupId}`,
-  startupDetailsEdit: ({ startupId }: { startupId: string }) => `/startups/${startupId}/info-form`,
-  startupDocs: ({ startupId }: { startupId: string }) => `/startups/${startupId}/files`,
+  startupDetails: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}`,
+  startupDetailsEdit: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}/info-form`,
+  startupDocs: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}/files`,
   startupCreate: () => `/startups/create-form`,
   home: () => `/`,
   login: () => `/login`,
@@ -33,8 +39,10 @@ export const routes = {
   formationDetails: () => `/formations/.*`,
   verifyMember: () => `/verify`,
   organizationList: () => `/organizations`,
-  organizationDetails: ({ organizationId }: { organizationId: string }) => `/organizations/${organizationId}`,
-  organizationDetailsEdit: ({ organizationId }: { organizationId: string }) => `/organizations/${organizationId}/info-form`,
+  organizationDetails: ({ organizationId }: { organizationId: string }) =>
+    `/organizations/${organizationId}`,
+  organizationDetailsEdit: ({ organizationId }: { organizationId: string }) =>
+    `/organizations/${organizationId}/info-form`,
   organizationCreate: () => `/organizations/create-form`,
   serviceList: () => `/services`,
   opsRequest: () => `/services/ops`,
@@ -44,8 +52,7 @@ export const routes = {
 // Route title generators
 export const routeTitles: {
   [routeName in keyof typeof routes]:
-    | (() => string)
-    | ((id?: string) => string);
+    (() => string) | ((id?: string) => string);
 } = {
   account: () => "Compte",
   accountEditBaseInfo: () => "Mise à jour de mes informations",
@@ -64,7 +71,7 @@ export const routeTitles: {
   organizationDetailsEdit: (id?: string) => `Modifier la fiche de ${id}`,
   organizationCreate: () => "Créer une fiche organisation sponsor",
   home: () => "",
-  signIn: () => "Me connecter",
+  support: () => "Aide à la connexion",
   login: () => "Me connecter",
   onboarding: () => "Créer une fiche membre",
   onboardingSuccess: () => "Fiche membre créée",
@@ -75,7 +82,8 @@ export const routeTitles: {
   formationProposal: () => "Proposer une formation",
   formationDetails: (id?: string) => `Formation ${id}`,
   verifyMember: () => "Vérifie les informations de ton compte",
-  incubatorDetailsEdit: (id?: string) => `Modifier la fiche incubateur de ${id}`,
+  incubatorDetailsEdit: (id?: string) =>
+    `Modifier la fiche incubateur de ${id}`,
   incubatorList: () => "Rechercher un incubateur",
   incubatorCreate: () => "Créer une fiche incubateur",
   incubatorDetails: () => "Fiche incubateur",

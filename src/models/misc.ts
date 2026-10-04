@@ -19,7 +19,7 @@ export const EMAIL_STATUS_READABLE_FORMAT: Record<EmailStatusCode, string> = {
   [EmailStatusCode.EMAIL_REDIRECTION_PENDING]:
     "L'email est une redirection. La création est en cours", // todo: remove
   [EmailStatusCode.EMAIL_VERIFICATION_WAITING]:
-    "Le membre doit se connecter à l'espace-membre et vérifier ses informations avant que tu puisses lui créer un compte.",
+    "Le membre a reçu son invitation : il doit se connecter à l'espace-membre avec ProConnect et vérifier ses informations.",
   [EmailStatusCode.EMAIL_CREATION_WAITING]:
     "La création de l'email est en cours", // todo: remove > EMAIL_CREATION_PENDING
   [EmailStatusCode.MEMBER_VALIDATION_WAITING]:

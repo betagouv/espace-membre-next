@@ -11,7 +11,9 @@ L'espace membre de l’incubateur
   - accès aux outils (sentry, matomo)
 - exploration de la communauté
 - afficher les formations et évènements
-- connexion via ProConnect ou magic-link
+- connexion uniquement via ProConnect, avec l'adresse principale du membre
+  (boîte `@beta.gouv.fr` ou adresse du service public). L'email personnel
+  (`secondary_email`) ne permet pas de se connecter. Aide : page publique `/support`
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 
@@ -66,11 +68,10 @@ npm run seed
 npm run dev-import-from-www # Ajoute les données du site beta.gouv.fr (utilisateur, produits, incubateurs, ...)
 ```
 
-L'application est disponible sur http://localhost:8100 et vous pouvez
-vous logger – une fois que la base de données est peuplée avec le
-seeding au dessus – avec `valid.member@betagouv.ovh` puis en
-récupérant l'email de connexion sur le maildev disponible sur
-http://localhost:1080.
+L'application est disponible sur http://localhost:8100. La connexion se fait
+via ProConnect (environnement d'intégration, variables `PRO_CONNECT_*`) avec
+l'adresse principale d'un membre présent en base. Les emails envoyés par
+l'application sont visibles sur le maildev http://localhost:1080.
 
 ### Lancer les tests
 
@@ -106,7 +107,11 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 
 Un seul job reste géré par [pg-boss](https://github.com/timgit/pg-boss), déclenché
 à la demande (et non planifié) : `create-dimail-mailbox`, qui crée une boite mail
-Dimail pour un utilisateur.
+Dimail pour un utilisateur. Il est déclenché à l'arrivée d'un membre (validation
+de la fiche, ou création par une personne autorisée) avec `onboarding: true` :
+une fois la boite créée, il envoie l'invitation à se connecter via ProConnect.
+En cas de relance (retry), la boite n'est pas recréée et l'invitation n'est
+envoyée qu'une fois.
 
 Les autres tâches de maintenance (relances avant/après mission, retrait des comptes GitHub/Matomo/Sentry...) sont gérées par des workflows n8n.
 
@@ -124,18 +129,31 @@ au moins une mission dont la date de fin n'est pas dépassée
 graph LR
 
 CreateMember-->ValidationIncubateur
-ValidationIncubateur-->VerifyMember
-VerifyMember-->CreateEmail
-CreateEmail-->SendEmailInvitation
+CreateMember-->CreateEmail
+ValidationIncubateur-->CreateEmail
+CreateEmail-->SendProConnectInvitation
+SendProConnectInvitation-->VerifyMember
 ```
 
-1. Une fiche membre est créée (par la personne elle-même ou un membre de son
-   équipe/produit), avec une première mission.
-2. L'incubateur valide la fiche (`ValidationIncubateur`).
-3. Le membre vérifie/complète ses informations (`VerifyMember`).
-4. Une adresse `@beta.gouv.fr` est créée via Dimail (`CreateEmail`, statut
-   `EMAIL_CREATION_WAITING` puis `EMAIL_ACTIVE`).
-5. Une invitation est envoyée par email (`SendEmailInvitation`).
+1. Une fiche membre est créée par un membre de la communauté, avec une
+   première mission et l'email personnel du nouveau membre (une adresse
+   `@beta.gouv.fr` ou un email déjà utilisé sont refusés).
+2. L'incubateur valide la fiche (`ValidationIncubateur`, statut
+   `MEMBER_VALIDATION_WAITING`). Cette étape est sautée si la personne qui crée
+   la fiche est admin ou membre de l'équipe de l'incubateur.
+3. L'arrivée démarre (`startMemberOnboarding`) :
+   - email personnel (hors attributaire) : une adresse `@beta.gouv.fr` est créée
+     via Dimail (`CreateEmail`, statut `EMAIL_CREATION_WAITING`). Le nom est
+     `prenom.nom` pour les agents publics (`legal_status`, ou à défaut statut
+     `admin` de la dernière mission), `prenom.nom.ext` sinon. Les accès sont
+     envoyés sur l'email personnel ;
+   - email du service public ou attributaire : cet email devient l'adresse
+     principale, pas de nouvelle boite.
+4. Une fois l'adresse principale prête (statut `EMAIL_VERIFICATION_WAITING`), une
+   invitation à se connecter **via ProConnect** avec cette adresse est envoyée
+   sur l'email personnel (`SendProConnectInvitation`, sans lien de connexion).
+5. Le membre se connecte avec ProConnect, puis vérifie/complète ses informations
+   (`VerifyMember`, statut `EMAIL_ACTIVE`).
 
 ### Départ (offboarding)
 

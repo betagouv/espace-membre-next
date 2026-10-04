@@ -20,7 +20,6 @@ import {
 } from "@/lib/email/email";
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
-  EMAIL_LOGIN: 0,
   EMAIL_CREATED_DIMAIL: 0,
   EMAIL_STARTUP_ASK_PHASE: 15,
   EMAIL_VERIFICATION_WAITING: 0,

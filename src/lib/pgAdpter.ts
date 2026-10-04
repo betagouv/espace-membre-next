@@ -5,36 +5,10 @@ import {
   AdapterAccount,
   AdapterSession,
   AdapterUser,
-  VerificationToken,
 } from "next-auth/adapters";
 
 import { findUsersByLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
 import { db } from "@/lib/kysely";
-
-export const createVerificationToken = async ({
-  identifier,
-  expires,
-  token,
-}: VerificationToken): Promise<VerificationToken | null | undefined> => {
-  const insertedRow = await db
-    .insertInto("verification_tokens")
-    .values({
-      identifier: identifier,
-      token: token,
-      expires: expires,
-    })
-    .returningAll()
-    .executeTakeFirst(); // This will return all columns of the inserted row
-  if (!insertedRow) {
-    throw new Error("Row not created");
-  }
-  const createdToken: VerificationToken = {
-    identifier: insertedRow.identifier,
-    token: insertedRow.token,
-    expires: insertedRow.expires,
-  };
-  return createdToken;
-};
 
 export default function customPostgresAdapter(): Adapter {
   try {
@@ -271,51 +245,6 @@ export default function customPostgresAdapter(): Adapter {
       return;
     };
 
-    //Return verification token from the database and delete it so it cannot be used again.
-    const useVerificationToken = async ({
-      identifier,
-      token,
-    }: {
-      identifier: string;
-      token: string;
-    }) => {
-      const rows = await db
-        .selectFrom("verification_tokens")
-        .selectAll()
-        .where("identifier", "=", identifier)
-        .where("token", "=", token)
-        .where("expires", ">", new Date())
-        .execute()
-        .then((rows) => rows)
-        .catch((err) => {
-          console.error(err);
-          throw new Error("Error fetching verification token");
-        });
-
-      // If a token is found, delete it
-      if (rows.length > 0) {
-        await db
-          .deleteFrom("verification_tokens")
-          .where("identifier", "=", identifier)
-          .where("token", "=", token)
-          .execute()
-          .catch((err) => {
-            console.error(err);
-            throw new Error("Error deleting verification token");
-          });
-
-        // Return the details of the deleted token
-        return {
-          expires: rows[0].expires,
-          identifier: rows[0].identifier,
-          token: rows[0].token,
-        };
-      } else {
-        // Handle the case where no token is found or it's already expired
-        throw new Error(`No valid token found: ${token}`);
-      }
-    };
-
     return {
       createUser,
       getUser,
@@ -327,8 +256,6 @@ export default function customPostgresAdapter(): Adapter {
       createSession,
       updateSession,
       deleteSession,
-      createVerificationToken,
-      useVerificationToken,
       linkAccount,
       unlinkAccount,
     };

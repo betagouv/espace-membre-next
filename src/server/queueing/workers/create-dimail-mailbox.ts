@@ -12,6 +12,9 @@ import {
 } from "@/lib/dimail/utils";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
+import { getLastEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
+import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 
@@ -31,7 +34,10 @@ créé un email dimail pour un utilisateur
  - met à jour le primary_email_status en ACTIVE
 
 */
-export async function createDimailMailboxForUser(userUuid: string) {
+export async function createDimailMailboxForUser(
+  userUuid: string,
+  { status = EmailStatusCode.EMAIL_ACTIVE }: { status?: EmailStatusCode } = {},
+) {
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
     console.log(`createDimailMailboxForUser error: User ${userUuid} not found`);
@@ -44,9 +50,18 @@ export async function createDimailMailboxForUser(userUuid: string) {
     throw new Error(`User ${userUuid} has no secondary_email`);
   }
 
+  // new members have no legal_status yet : use the status of their latest mission
+  const lastMission = await db
+    .selectFrom("missions")
+    .select("status")
+    .where("user_id", "=", userUuid)
+    .orderBy("start", "desc")
+    .executeTakeFirst();
+
   const userName = getDimailUsernameForUser(
     dbUser.username,
-    dbUser.legal_status || ``,
+    dbUser.legal_status,
+    lastMission?.status,
   );
 
   console.log(
@@ -107,7 +122,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
     .updateTable("users")
     .set({
       primary_email: primaryEmail,
-      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+      primary_email_status: status,
     })
     .where("uuid", "=", userUuid)
     .execute();
@@ -181,6 +196,52 @@ export async function createDimailMailboxForUser(userUuid: string) {
   return mailboxInfos.email;
 }
 
+/*
+
+onboarding d'un nouveau membre : crée la boite puis, seulement une fois la
+boite créée, envoie l'invitation à se connecter via ProConnect.
+
+idempotent : en cas de retry pg-boss (ex: échec d'envoi de l'invitation),
+la boite n'est pas recréée (sinon 409) et l'invitation n'est envoyée qu'une fois.
+
+*/
+export async function onboardNewMemberMailbox(userUuid: string) {
+  const dbUser = await getUserBasicInfo({ uuid: userUuid });
+  if (!dbUser) {
+    throw new Error(`User ${userUuid} not found`);
+  }
+  const mailboxAlreadyCreated =
+    dbUser.primary_email_status ===
+      EmailStatusCode.EMAIL_VERIFICATION_WAITING &&
+    !!dbUser.primary_email?.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`);
+
+  if (mailboxAlreadyCreated) {
+    console.log(`DIMAIL mailbox already created for ${dbUser.username}`);
+  } else if (
+    dbUser.primary_email_status === EmailStatusCode.EMAIL_CREATION_WAITING
+  ) {
+    await createDimailMailboxForUser(userUuid, {
+      status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    });
+  } else {
+    // user is not onboarding anymore (already verified, suspended...)
+    console.log(
+      `Skip onboarding of ${dbUser.username}: status is ${dbUser.primary_email_status}`,
+    );
+    return;
+  }
+
+  const invitationEvent = await getLastEvent(
+    dbUser.username,
+    EventCode.EMAIL_VERIFICATION_WAITING_SENT,
+  );
+  if (invitationEvent) {
+    console.log(`Invitation already sent to ${dbUser.username}`);
+    return;
+  }
+  await sendNewMemberVerificationEmail({ userId: userUuid });
+}
+
 export async function createDimailMailbox(
   job: PgBoss.Job<CreateDimailAdressDataSchemaType>,
 ) {
@@ -189,6 +250,10 @@ export async function createDimailMailbox(
     job.id,
     job.name,
   );
+  if (job.data.onboarding) {
+    await onboardNewMemberMailbox(job.data.userUuid);
+    return;
+  }
   const email = await createDimailMailboxForUser(job.data.userUuid);
   console.log(
     `The DIMAIL mailbox has been created for ${job.data.userUuid}: ${email}`,

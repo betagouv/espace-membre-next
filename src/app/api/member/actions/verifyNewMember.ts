@@ -3,15 +3,19 @@
 import { getServerSession } from "next-auth";
 
 import { updateMember } from "../updateMember";
-import { memberValidateInfoSchemaType } from "@/models/actions/member";
-import { Domaine, EmailStatusCode } from "@/models/member";
+import {
+  memberValidateInfoSchema,
+  memberValidateInfoSchemaType,
+} from "@/models/actions/member";
+import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
 import { authOptions } from "@/lib/authoptions";
-import { AdminEmailNotAllowedError } from "@/lib/error";
-import { getBossClientInstance } from "@/server/queueing/client";
-import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
+import { AdminEmailNotAllowedError, BusinessError } from "@/lib/error";
 
 // when the user verifies its membership (from AccountVerifyClientPage)
+// the email account (mailbox or public service email) has already been set up
+// at invitation/validation : this only saves the profile and activates the account
 export async function verifyNewMember(
   memberData: memberValidateInfoSchemaType & { username: string },
 ): Promise<{ success: boolean; message: string }> {
@@ -20,49 +24,36 @@ export async function verifyNewMember(
   if (!session || session.user.id !== memberData.username) {
     throw new Error(`You don't have the right to access this function`);
   }
-  const hasPublicServiceEmail = await isPublicServiceEmail(
-    memberData.secondary_email,
-  );
-  const isAttributaire = memberData.domaine === Domaine.ATTRIBUTAIRE;
+  const data = memberValidateInfoSchema.parse(memberData);
 
-  if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
+  const dbUser = await getUserBasicInfo({ uuid: session.user.uuid });
+  if (
+    !dbUser ||
+    dbUser.primary_email_status !== EmailStatusCode.EMAIL_VERIFICATION_WAITING
+  ) {
+    throw new BusinessError(
+      "userAlreadyVerified",
+      "Ta fiche a déjà été vérifiée.",
+    );
+  }
+
+  if (
+    data.secondary_email &&
+    (await isPublicServiceEmail(data.secondary_email)) &&
+    isAdminEmail(data.secondary_email)
+  ) {
     throw new AdminEmailNotAllowedError();
   }
 
-  // should create a new email account if not a public sector email and not an attributaire
-  const createNewEmail = !hasPublicServiceEmail && !isAttributaire;
-
-  updateMember(
-    memberData,
+  await updateMember(
+    data,
     session.user.uuid,
     {
-      // switch user secondary_email to primary if public sector email
-      primary_email: createNewEmail ? null : memberData.secondary_email,
-      secondary_email: createNewEmail ? memberData.secondary_email : null,
-      // set email as EMAIL_CREATION_WAITING if secondary_email is not a public sector email
-      primary_email_status: createNewEmail
-        ? EmailStatusCode.EMAIL_CREATION_WAITING
-        : EmailStatusCode.EMAIL_ACTIVE,
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
       primary_email_status_updated_at: new Date(),
     },
     session.user.id,
   );
-
-  // create a new email if necessary
-  if (createNewEmail) {
-    const bossClient = await getBossClientInstance();
-    await bossClient.send(
-      createDimailMailboxTopic,
-      {
-        userUuid: session.user.uuid,
-        username: memberData.username,
-      },
-      {
-        retryLimit: 5,
-        retryBackoff: true,
-      },
-    );
-  }
 
   return {
     success: true,
