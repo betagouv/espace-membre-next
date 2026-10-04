@@ -11,26 +11,34 @@ type UserRow = {
   dinum_emails: string[] | null;
 };
 
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 async function getCandidateEmails(user: UserRow): Promise<string[]> {
   const candidates: string[] = [];
-  if (user.primary_email && (await isPublicServiceEmail(user.primary_email))) {
-    candidates.push(user.primary_email);
+  const primaryEmail = user.primary_email
+    ? normalizeEmail(user.primary_email)
+    : null;
+  const secondaryEmail = user.secondary_email
+    ? normalizeEmail(user.secondary_email)
+    : null;
+
+  if (primaryEmail && (await isPublicServiceEmail(primaryEmail))) {
+    candidates.push(primaryEmail);
     if (
-      user.primary_email.endsWith("@beta.gouv.fr") &&
-      !user.primary_email.includes(".ext@beta")
+      primaryEmail.endsWith("@beta.gouv.fr") &&
+      !primaryEmail.includes(".ext@beta")
     ) {
       candidates.push(
-        user.primary_email.replace("@beta.gouv.fr", ".ext@beta.gouv.fr"),
+        primaryEmail.replace("@beta.gouv.fr", ".ext@beta.gouv.fr"),
       );
     }
   }
-  if (
-    user.secondary_email &&
-    (await isPublicServiceEmail(user.secondary_email))
-  ) {
-    candidates.push(user.secondary_email);
+  if (secondaryEmail && (await isPublicServiceEmail(secondaryEmail))) {
+    candidates.push(secondaryEmail);
   }
-  candidates.push(...(user.dinum_emails ?? []));
+  candidates.push(...(user.dinum_emails ?? []).map(normalizeEmail));
   return candidates;
 }
 

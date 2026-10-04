@@ -21,6 +21,7 @@ describe("syncMatrixAccounts", () => {
     const queryBuilder: any = {};
     queryBuilder.leftJoin = sinon.stub().returns(queryBuilder);
     queryBuilder.select = sinon.stub().returns(queryBuilder);
+    queryBuilder.where = sinon.stub().returns(queryBuilder);
     queryBuilder.groupBy = sinon.stub().returns({ execute: selectExecuteStub });
 
     const onConflictStub = sinon.stub().returns({ execute: insertExecuteStub });
@@ -33,7 +34,7 @@ describe("syncMatrixAccounts", () => {
 
     const mod = proxyquire("./sync-matrix-accounts", {
       "@/lib/kysely": { db: dbStub, "@noCallThru": true },
-      "@/server/controllers/utils": {
+      "@/lib/utils": {
         isPublicServiceEmail: isPublicServiceEmailStub,
         "@noCallThru": true,
       },
@@ -126,6 +127,29 @@ describe("syncMatrixAccounts", () => {
 
     expect(valuesStub.firstCall.args[0]).to.deep.equal([
       { user_id: "uuid-1", matrix_id: "@user:beta.tchap.gouv.fr" },
+    ]);
+  });
+
+  it("normalizes candidate emails (trim + lowercase) before lookup", async () => {
+    selectExecuteStub.resolves([
+      {
+        uuid: "uuid-1",
+        primary_email: "  Agent@Ministry.gouv.FR  ",
+        secondary_email: null,
+        dinum_emails: null,
+      },
+    ]);
+    isPublicServiceEmailStub.withArgs("agent@ministry.gouv.fr").resolves(true);
+    lookupMatrixIdsByEmailsStub.resolves(
+      new Map([["agent@ministry.gouv.fr", "@agent:tchap.gouv.fr"]]),
+    );
+
+    await syncMatrixAccounts(fakeJob);
+
+    const [uniqueEmails] = lookupMatrixIdsByEmailsStub.firstCall.args;
+    expect(uniqueEmails).to.include("agent@ministry.gouv.fr");
+    expect(valuesStub.firstCall.args[0]).to.deep.equal([
+      { user_id: "uuid-1", matrix_id: "@agent:tchap.gouv.fr" },
     ]);
   });
 
