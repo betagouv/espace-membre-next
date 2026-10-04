@@ -14,21 +14,21 @@ import {
   createMemberSchema,
   createMemberSchemaType,
 } from "@/models/actions/member";
-import {
-  SendNewMemberValidationEmailSchema,
-  SendNewMemberVerificationEmailSchema,
-} from "@/models/jobs/member";
+import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
 import { sendNewMemberValidationEmail } from "@/lib/email/send-validation-email";
-import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 import { authOptions } from "@/lib/authoptions";
 import {
   AdminEmailNotAllowedError,
   AuthorizationError,
+  BusinessError,
   MemberUniqueConstraintViolationError,
   withErrorHandling,
 } from "@/lib/error";
+import { findUsersUsingEmail } from "@/lib/auth/findUsersByLoginEmail";
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
+import { startMemberOnboarding } from "@/lib/onboarding/startMemberOnboarding";
 
 const createUsername = (firstName: string, lastName: string) =>
   `${slugify(firstName)}.${slugify(lastName)}`;
@@ -75,6 +75,19 @@ async function createMemberAction(input: createMemberSchemaType) {
   if (hasPublicServiceEmail && isAdminEmail(member.email)) {
     throw new AdminEmailNotAllowedError();
   }
+  // beta.gouv.fr mailboxes are only created by the platform
+  if (member.email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`)) {
+    throw new BusinessError(
+      "betaEmailNotAllowed",
+      `Les adresses @${DIMAIL_MAILBOX_DOMAIN} sont créées par l'espace-membre : indique l'email personnel ou professionnel du nouveau membre.`,
+    );
+  }
+  if ((await findUsersUsingEmail(member.email)).length) {
+    throw new BusinessError(
+      "emailAlreadyUsed",
+      `L'email ${member.email} est déjà utilisé par un autre membre.`,
+    );
+  }
   const username = createUsername(member.firstname, member.lastname);
   const sessionUserIsMemberOfUserIncubatorTeams =
     await isSessionUserMemberOfUserIncubatorTeams(
@@ -112,11 +125,7 @@ async function createMemberAction(input: createMemberSchemaType) {
       return user;
     });
     if (userIsValidatedStraightAway) {
-      await sendNewMemberVerificationEmail(
-        SendNewMemberVerificationEmailSchema.parse({
-          userId: dbUser.uuid,
-        }),
-      );
+      await startMemberOnboarding(dbUser.uuid);
     } else {
       await sendNewMemberValidationEmail(
         SendNewMemberValidationEmailSchema.parse({

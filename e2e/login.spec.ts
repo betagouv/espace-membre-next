@@ -5,26 +5,31 @@ test("has title", async ({ page }) => {
   await expect(page).toHaveTitle("Me connecter / Espace Membre");
 });
 
-test("submit invalid login returns error message", async ({ page }) => {
-  await page.goto("/");
-  await page.getByText("Se connecter par email").click();
-  await page.getByLabel("Mon email").fill("pouet.pouet@betagouv.ovh");
-  await page.getByText("Recevoir le lien de connexion").click();
-  await page.waitForTimeout(2000);
+test("login is ProConnect only, without email form", async ({ page }) => {
+  await page.goto("/login");
+
+  await expect(
+    page.getByRole("button", { name: /ProConnect/i }).first(),
+  ).toBeVisible();
+  await expect(page.getByText("Se connecter par email")).toHaveCount(0);
+  await expect(page.getByText("Recevoir le lien de connexion")).toHaveCount(0);
+  await expect(page.getByLabel("Mon email")).toHaveCount(0);
+});
+
+test("unknown member error explains to use the primary email", async ({
+  page,
+}) => {
+  await page.goto("/login?error=UnknownMember");
 
   await expect(
     page.getByText(
-      "Membre inconnu dans la communauté, veuillez contacter votre équipe référente.",
+      "Aucun membre ne correspond à ce compte. Connecte-toi avec ton adresse @beta.gouv.fr ou ton adresse du service public (pas ton email personnel).",
     ),
   ).toBeVisible();
 });
 
-test("submit expired login returns error message", async ({ page }) => {
-  await page.goto("/");
-  await page.getByText("Se connecter par email").click();
-  await page.getByLabel("Mon email").fill("expired.member@betagouv.ovh");
-  await page.getByText("Recevoir le lien de connexion").click();
-  await page.waitForTimeout(2000);
+test("expired member error is displayed", async ({ page }) => {
+  await page.goto("/login?error=ExpiredMember");
 
   await expect(
     page.getByText(
@@ -33,96 +38,12 @@ test("submit expired login returns error message", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("submit mission-less login returns error message", async ({ page }) => {
-  await page.goto("/");
-  await page.getByText("Se connecter par email").click();
-  await page.getByLabel("Mon email").fill("empty.member@betagouv.ovh");
-  await page.getByText("Recevoir le lien de connexion").click();
-  await page.waitForTimeout(2000);
+test("login page links to the public support page", async ({ page }) => {
+  await page.goto("/login");
+  await page.getByRole("link", { name: "Consulte la page d'aide" }).click();
 
+  await page.waitForURL("/support");
   await expect(
-    page.getByText(
-      "Ce membre a une date de fin expirée ou pas de mission définie.",
-    ),
+    page.getByRole("heading", { name: "Aide à la connexion" }),
   ).toBeVisible();
-});
-
-test("valid login sends magic link and show correct message", async ({
-  page,
-  browser,
-}) => {
-  await page.goto("/");
-  await page.getByText("Se connecter par email").click();
-  await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
-  await page.getByText("Recevoir le lien de connexion").click();
-  await page.waitForTimeout(2000);
-
-  await expect(
-    page.getByText(
-      "Un email avec un lien de connexion a été envoyé à ton adresse.",
-    ),
-  ).toBeVisible();
-
-  // maildev
-  await page.goto("http://127.0.0.1:1080");
-
-  await page.getByText("Connexion à l'espace membre BetaGouv").first().click();
-  await page.waitForTimeout(2000);
-
-  const iframe = await page.frameLocator(".preview-iframe").first();
-
-  const href =
-    (await iframe
-      .getByText("Me connecter", { exact: true })
-      .getAttribute("href")) || "/";
-
-  await page.goto(href);
-  //await page.getByText("Me connecter").first().click();
-  await page.waitForURL("/dashboard");
-
-  await expect(
-    page.getByRole("heading").getByText("Gérer mon compte", { exact: true }),
-  ).toBeVisible();
-
-  await expect(
-    page.getByRole("link").getByText("Ma fiche membre", { exact: true }),
-  ).toBeVisible();
-});
-
-test("valid login sends magic link and redirect to the page pass in next searchParans", async ({
-  page,
-  browser,
-}) => {
-  await page.goto("/login?next=/community/valid.member");
-  await page.getByText("Se connecter par email").click();
-  await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
-  await page.getByText("Recevoir le lien de connexion").click();
-  await page.waitForTimeout(2000);
-
-  await expect(
-    page.getByText(
-      "Un email avec un lien de connexion a été envoyé à ton adresse.",
-    ),
-  ).toBeVisible();
-
-  // maildev
-  await page.goto("http://127.0.0.1:1080");
-
-  await page.getByText("Connexion à l'espace membre BetaGouv").first().click();
-  await page.waitForTimeout(2000);
-
-  const iframe = await page.frameLocator(".preview-iframe").first();
-
-  const href =
-    (await iframe
-      .getByText("Me connecter", { exact: true })
-      .getAttribute("href")) || "/";
-
-  await page.goto(href);
-  //await page.getByText("Me connecter").first().click();
-  await page.waitForURL("/community/valid.member");
-  const url = new URL(page.url());
-  const pathname = url.pathname;
-  // Verify the URL is correct after redirection
-  expect(pathname).toBe("/community/valid.member");
 });
