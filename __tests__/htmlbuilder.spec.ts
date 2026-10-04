@@ -8,20 +8,19 @@ import { EMAIL_TYPES } from "@/lib/email/email";
 chai.should();
 
 describe(`Test EMAIL_CREATED_DIMAIL`, () => {
-  it(`email EMAIL_CREATED_DIMAIL renders the webmail credentials`, async () => {
-    const webmailUrl: string = "http://webmail-url";
+  it(`email EMAIL_CREATED_DIMAIL renders the webmail access link, without password`, async () => {
+    const webmailUrl: string = "http://webmail-url/code/access-code";
 
     const emailBody: string = await htmlBuilder.renderContentForType({
       type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
       variables: {
         email: "jean.paul@betagouv.ovh",
-        password: "tempPassword123",
         webmailUrl,
       },
     });
     emailBody.should.include(webmailUrl);
     emailBody.should.include("jean.paul@betagouv.ovh");
-    emailBody.should.include("tempPassword123");
+    emailBody.should.not.include("mot de passe");
   });
 });
 

@@ -14,10 +14,14 @@ import {
   createMemberSchema,
   createMemberSchemaType,
 } from "@/models/actions/member";
-import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
+import {
+  SendEmailToTeamWhenNewMemberSchema,
+  SendNewMemberValidationEmailSchema,
+} from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
 import { sendNewMemberValidationEmail } from "@/lib/email/send-validation-email";
+import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
 import { authOptions } from "@/lib/authoptions";
 import {
   AdminEmailNotAllowedError,
@@ -125,6 +129,12 @@ async function createMemberAction(input: createMemberSchemaType) {
       return user;
     });
     if (userIsValidatedStraightAway) {
+      // no incubator validation : announce the new member to the team right away
+      await sendEmailToTeamWhenNewMember(
+        SendEmailToTeamWhenNewMemberSchema.parse({
+          userId: dbUser.uuid,
+        }),
+      );
       await startMemberOnboarding(dbUser.uuid);
     } else {
       await sendNewMemberValidationEmail(

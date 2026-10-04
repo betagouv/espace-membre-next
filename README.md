@@ -126,47 +126,85 @@ au moins une mission dont la date de fin n'est pas dépassée
 ### Arrivée (onboarding)
 
 ```mermaid
-graph LR
+flowchart TD
+    classDef status fill:#e3e3fd,stroke:#000091,color:#000091
+    classDef mail fill:#fef7da,stroke:#b34000,color:#3a3a3a
+    classDef ko fill:#ffe9e9,stroke:#ce0500,color:#ce0500
 
-CreateMember-->ValidationIncubateur
-CreateMember-->CreateEmail
-ValidationIncubateur-->CreateEmail
-CreateEmail-->SendProConnectInvitation
-SendProConnectInvitation-->VerifyMember
+    subgraph creation["1 - Création de la fiche (membre connecté)"]
+        A["Formulaire de création :<br/>identité, mission(s), email personnel"] --> B{"Email valide ?"}
+        B -- "@beta.gouv.fr, email d'admin<br/>ou email déjà utilisé" --> KO["Refusé"]:::ko
+        B -- oui --> C["createMember :<br/>création user + missions<br/>événement MEMBER_CREATED"]
+        C --> D{"Créateur admin ou membre<br/>de l'équipe de l'incubateur ?"}
+    end
+
+    subgraph validation["2 - Validation par l'incubateur"]
+        S1(["MEMBER_VALIDATION_WAITING"]):::status
+        S1 --> M1[/"Email de demande de validation<br/>à l'équipe de l'incubateur"/]:::mail
+        M1 --> E["validateNewMember<br/>(admin ou équipe incubateur)<br/>événement MEMBER_VALIDATED"]
+    end
+
+    subgraph onboarding["3 - Annonce et démarrage de l'arrivée (startMemberOnboarding)"]
+        S2(["EMAIL_VERIFICATION_WAITING<br/>sans email primaire"]):::status
+        S2 --> M2[/"Email d'annonce aux équipes produit<br/>du nouveau membre (dans tous les cas)"/]:::mail
+        M2 --> F{"Email du service public<br/>ou domaine attributaire ?"}
+        F -- non --> S3(["EMAIL_CREATION_WAITING"]):::status
+        S3 --> G["Job pg-boss create-dimail-mailbox<br/>onboarding: true, 5 essais"]
+        G --> H["Création de la boîte Dimail<br/>prenom.nom ou prenom.nom.ext<br/>@beta.gouv.fr"]
+        H --> M3[/"Email des accès à la boîte<br/>(adresse + lien d'accès temporaire au webmail,<br/>code d'invitation Dimail)<br/>sur l'email personnel"/]:::mail
+        M3 --> S4(["EMAIL_VERIFICATION_WAITING<br/>email primaire = boîte @beta.gouv.fr"]):::status
+        F -- oui --> I{"Email déjà utilisé<br/>par un autre membre ?"}
+        I -- oui --> KO2["Refusé"]:::ko
+        I -- non --> S5(["EMAIL_VERIFICATION_WAITING<br/>email primaire = email fourni"]):::status
+    end
+
+    subgraph connexion["4 - Première connexion (nouveau membre)"]
+        M4[/"Invitation à se connecter via ProConnect<br/>avec l'email primaire, sans lien de connexion<br/>événement EMAIL_VERIFICATION_WAITING_SENT"/]:::mail
+        M4 --> J["Connexion ProConnect<br/>avec l'email primaire"]
+        J --> K["Redirection vers /verify :<br/>vérifie et complète sa fiche"]
+        K --> L["verifyNewMember"]
+        L --> S6(["EMAIL_ACTIVE"]):::status
+    end
+
+    D -- non --> S1
+    D -- oui --> S2
+    E --> S2
+    S4 --> M4
+    S5 --> M4
 ```
+
+Les nœuds arrondis sont les valeurs de `primary_email_status`, les
+parallélogrammes les emails envoyés.
 
 1. Une fiche membre est créée par un membre de la communauté, avec une
    première mission et l'email personnel du nouveau membre (une adresse
    `@beta.gouv.fr` ou un email déjà utilisé sont refusés).
-2. L'incubateur valide la fiche (`ValidationIncubateur`, statut
-   `MEMBER_VALIDATION_WAITING`). Cette étape est sautée si la personne qui crée
-   la fiche est admin ou membre de l'équipe de l'incubateur.
-3. L'arrivée démarre (`startMemberOnboarding`) :
+2. L'incubateur valide la fiche (statut `MEMBER_VALIDATION_WAITING`). Cette
+   étape est sautée si la personne qui crée la fiche est admin ou membre de
+   l'équipe de l'incubateur.
+3. Dans tous les cas (fiche validée par l'incubateur ou validée d'office à la
+   création), un email annonce l'arrivée aux membres actifs des produits du
+   nouveau membre, puis l'arrivée démarre (`startMemberOnboarding`) :
    - email personnel (hors attributaire) : une adresse `@beta.gouv.fr` est créée
-     via Dimail (`CreateEmail`, statut `EMAIL_CREATION_WAITING`). Le nom est
+     via Dimail (statut `EMAIL_CREATION_WAITING`). Le nom est
      `prenom.nom` pour les agents publics (`legal_status`, ou à défaut statut
-     `admin` de la dernière mission), `prenom.nom.ext` sinon. Les accès sont
-     envoyés sur l'email personnel ;
+     `admin` de la dernière mission), `prenom.nom.ext` sinon. Un lien
+     d'accès temporaire au webmail (code d'invitation Dimail, sans mot de
+     passe) est envoyé sur l'email personnel ;
    - email du service public ou attributaire : cet email devient l'adresse
      principale, pas de nouvelle boite.
 4. Une fois l'adresse principale prête (statut `EMAIL_VERIFICATION_WAITING`), une
    invitation à se connecter **via ProConnect** avec cette adresse est envoyée
-   sur l'email personnel (`SendProConnectInvitation`, sans lien de connexion).
+   sur l'email personnel (sans lien de connexion).
 5. Le membre se connecte avec ProConnect, puis vérifie/complète ses informations
-   (`VerifyMember`, statut `EMAIL_ACTIVE`).
+   (page `/verify`, statut `EMAIL_ACTIVE`).
 
 ### Départ (offboarding)
 
 Déclenché automatiquement à l'approche puis au passage de la date de fin de mission
 (workflows n8n) :
 
-- **J-30 / J-15 / J-1** : messages de rappel envoyés au membre (N8N)
-- **J+1** : le compte GitHub est retiré de l'organisation (N8N)
-- **J+5** : l'email primaire passe en `EMAIL_SUSPENDED` (N8N)
-- **J+30** : message final (N8N)
-- **J+30** : le compte Tchap est retiré de la communauté (N8N)
-- **J+30** : le compte Matomo est désactivé (N8N)
-- **J+30** : le compte Sentry est désactivé (N8N)
+Voir https://github.com/betagouv/n8n-workflows
 
 ### Retour d'un utilisateur (self-healing)
 
