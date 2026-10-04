@@ -10,7 +10,7 @@ fileignoreconfig:
 - filename: README.md
   checksum: 9f3ceb61b1e3140608bc4c88b210ba9e94f3d277b055c2b3ad71f75961942a5c
 - filename: __tests__/htmlbuilder.spec.ts
-  checksum: 3204d46ffc02fc0eef7abed2ad9c2d9f342d49a03c69f0066907443d48d84980
+  checksum: b7e67d2a05570add2fee22a95e3faa3b5af001cffbeefd71725064e82636e889
 - filename: __tests__/test-email.ts
   checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts

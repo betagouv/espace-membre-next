@@ -5,7 +5,11 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
-import { createMailbox, createAlias } from "@/lib/dimail/client";
+import {
+  createMailbox,
+  createAlias,
+  createMailboxCode,
+} from "@/lib/dimail/client";
 import {
   getDimailUsernameForUser,
   DIMAIL_MAILBOX_DOMAIN,
@@ -28,6 +32,7 @@ const splitFullName = (fullname: string) => {
 créé un email dimail pour un utilisateur
 
  - crée l'email en prenom.nom[.ext]@domain selon le statut légal de l'utilisateur
+   (ou reprend la boite déjà créée par une tentative précédente, cf dinum_emails)
  - envoie l'email de connexion à l'utilisateur
  - créé un alias pour les anciens utilisateurs
  - met à jour la table dinum_emails
@@ -70,54 +75,84 @@ export async function createDimailMailboxForUser(
 
   const [surName, givenName] = splitFullName(dbUser.fullname);
 
-  const mailboxInfos = await createMailbox({
-    user_name: userName,
-    domain: DIMAIL_MAILBOX_DOMAIN,
-    displayName: dbUser.fullname,
-    givenName,
-    surName,
-  })
-    .then(async (infos) => {
-      // envoi email invitation avec password
-      if (dbUser.secondary_email) {
-        await sendEmail({
-          toEmail: [dbUser.secondary_email],
-          type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
-          variables: {
-            email: infos.email,
-            password: infos.password,
-            webmailUrl:
-              process.env.DIMAIL_WEBMAIL_URL || "https://webmail.beta.gouv.fr/",
-          },
-        });
-      } else {
-        console.error(`No secondary email defined for ${dbUser.username}`);
-        Sentry.captureException(
-          new Error(`No secondary email defined for ${dbUser.username}`),
-        );
-      }
-      return infos;
-    })
-    .catch((e) => {
+  const secondaryEmail = dbUser.secondary_email;
+
+  // a previous attempt may have created the mailbox then failed (access code,
+  // email...) : creating it again would end in a 409, so resume from the
+  // mailbox recorded in dinum_emails
+  const existingMailbox = await db
+    .selectFrom("dinum_emails")
+    .select("email")
+    .where("email", "=", `${userName}@${DIMAIL_MAILBOX_DOMAIN}`)
+    .where("user_id", "=", userUuid)
+    .where("type", "=", "mailbox")
+    .executeTakeFirst();
+
+  let mailboxEmail: string;
+  if (existingMailbox) {
+    console.log(
+      `DIMAIL mailbox ${existingMailbox.email} already created for ${dbUser.username}`,
+    );
+    mailboxEmail = existingMailbox.email;
+  } else {
+    const mailboxInfos = await createMailbox({
+      user_name: userName,
+      domain: DIMAIL_MAILBOX_DOMAIN,
+      displayName: dbUser.fullname,
+      givenName,
+      surName,
+    }).catch((e) => {
       console.error(
         `Error creating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
       );
       Sentry.captureException(e);
-      if (e.status === 409) {
-        // mailbox already exist somewhere
-        console.log(
-          `Error 409 creating dimail for ${userName}@${DIMAIL_MAILBOX_DOMAIN}`,
-        );
-        throw e;
-        //return { email: `${userName}@${DIMAIL_MAILBOX_DOMAIN}` };
-      }
       throw e;
     });
+    mailboxEmail = mailboxInfos.email;
+
+    // MAJ de la table dinum_emails
+    // recorded right after the creation, so a retry does not create the mailbox again
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: mailboxEmail,
+        type: "mailbox",
+        status: "ok",
+        user_id: userUuid,
+      })
+      .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
+      .execute();
+  }
+
+  try {
+    // génère un code d'accès valable 3 fois pour l'accès à la mailbox
+    const mailboxCode = await createMailboxCode({
+      domain_name: DIMAIL_MAILBOX_DOMAIN,
+      user_name: userName,
+      maxuse: 3,
+    });
+    const webmailUrl = `${process.env.DIMAIL_WEBMAIL_URL || "https://messagerie.numerique.gouv.fr"}/code/${mailboxCode.code}`;
+    // envoi email invitation avec le lien d'accès
+    await sendEmail({
+      toEmail: [secondaryEmail],
+      type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+      variables: {
+        email: mailboxEmail,
+        webmailUrl,
+      },
+    });
+  } catch (e: any) {
+    console.error(
+      `Error sending DIMAIL access link for ${mailboxEmail}: ${e.status || ""} ${e.message}`,
+    );
+    Sentry.captureException(e);
+    throw e;
+  }
 
   // MAJ infos base espace-membre (primary_email_status)
   // keep primary_email so the user dont change its current login
   // set newly created email otherwise
-  const primaryEmail = dbUser.primary_email || mailboxInfos.email;
+  const primaryEmail = dbUser.primary_email || mailboxEmail;
   await db
     .updateTable("users")
     .set({
@@ -127,43 +162,30 @@ export async function createDimailMailboxForUser(
     .where("uuid", "=", userUuid)
     .execute();
 
-  // MAJ de la table dinum_emails
-  // update the dinum_emails in the database with the original or new email to mark migrated
-  await db
-    .insertInto("dinum_emails")
-    .values({
-      email: mailboxInfos.email,
-      type: "mailbox",
-      status: "ok",
-      user_id: userUuid,
-    })
-    .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
-    .execute();
-
   // if we create a new address, add an alias
   // ex: prenom.nom -> prenom.nom.ext
   // only create the alias for legacy members, up to 01/12/2025
   if (
     dbUser.primary_email &&
     dbUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`) &&
-    dbUser.primary_email !== mailboxInfos.email
+    dbUser.primary_email !== mailboxEmail
   ) {
     // créé un alias prenom.nom@beta.gouv.fr pour les comptes créés avant le 1er Décembre 2025
     if (new Date(dbUser.created_at) >= new Date(2025, 11, 1)) {
       console.log(
-        `Skip create DIMAIL alias for ${mailboxInfos.email} : not a legacy member`,
+        `Skip create DIMAIL alias for ${mailboxEmail} : not a legacy member`,
       );
     } else {
       const legacyUserName = dbUser.primary_email.split("@")[0];
       const legacyEmail = `${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN}`;
       console.log(
-        `Create DIMAIL alias: ${legacyEmail} -> ${mailboxInfos.email}`,
+        `Create DIMAIL alias: ${legacyEmail} -> ${mailboxEmail}`,
       );
       try {
         await createAlias({
           user_name: legacyUserName,
           domain: DIMAIL_MAILBOX_DOMAIN,
-          destination: mailboxInfos.email,
+          destination: mailboxEmail,
         });
         // MAJ de la table dinum_emails
         // update the dinum_emails in the database with the new email
@@ -172,7 +194,7 @@ export async function createDimailMailboxForUser(
           .values({
             email: legacyEmail,
             type: "alias",
-            destination: mailboxInfos.email,
+            destination: mailboxEmail,
             status: "enabled",
             user_id: userUuid,
           })
@@ -182,18 +204,18 @@ export async function createDimailMailboxForUser(
           .execute();
       } catch (e: any) {
         console.error(
-          `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
+          `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxEmail} : ${e.message}`,
         );
         Sentry.captureException(
           new Error(
-            `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
+            `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxEmail} : ${e.message}`,
           ),
         );
       }
     }
   }
 
-  return mailboxInfos.email;
+  return mailboxEmail;
 }
 
 /*

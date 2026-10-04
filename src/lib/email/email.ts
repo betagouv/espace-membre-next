@@ -36,7 +36,6 @@ type BaseEmail = {
 export type EmailCreatedDimail = {
   type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL;
   variables: {
-    password: string;
     email: string;
     webmailUrl: string;
   };
