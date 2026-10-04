@@ -186,6 +186,10 @@ Les permissions sont vérifiées côté serveur (routes sous
   produits ou ses équipes), ou s'il partage un produit avec lui et a un statut
   légal `contractuel` ou `fonctionnaire`. Logique implémentée dans
   [`src/lib/canEditMember.ts`](./src/lib/canEditMember.ts) (fonction `canEditMember`).
+  Seuls les admins et les membres d'une équipe incubateur en commun peuvent
+  modifier l'ensemble de la fiche (infos, photo, compétences, missions…) via
+  `/community/[id]/admin-update` (fonction `canEditMemberFullInfo`) ; dans le cas
+  du produit partagé, seules les missions sont modifiables (`/community/[id]/update`).
 - **Member** : peut modifier son propre compte et éditer les fiches produit, mais
   pas la fiche d'un autre membre en dehors du cas ci-dessus.
 - **Anonymous** : aucun accès aux pages privées (redirection vers `/login`).
