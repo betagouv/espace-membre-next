@@ -14,6 +14,10 @@ import { checkUserIsExpired } from "@/lib/utils";
 import { getJwtTokenForUser } from "@/lib/session";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { checkRateLimit } from "@/lib/rateLimit";
+import {
+  findUsersByLoginEmail,
+  normalizeLoginEmail,
+} from "@/lib/auth/findUsersByLoginEmail";
 
 async function sendVerificationRequest(params) {
   const { identifier, url } = params;
@@ -89,36 +93,18 @@ export const authOptions: NextAuthOptions = {
             },
           ).then((r) => r.text());
           const userinfo = jwt.decode(userInfoRequest) as ProConnectProfile;
-          const dbUser = await db
-            .selectFrom("users")
-            .select(["username"])
-            .where(({ eb, fn }) =>
-              eb.or([
-                eb("primary_email", "ilike", userinfo.email),
-                eb("secondary_email", "ilike", userinfo.email),
-                eb(
-                  "users.uuid",
-                  "in",
-                  eb
-                    .selectFrom("dinum_emails")
-                    .select("user_id")
-                    .distinct()
-                    .where(({ eb }) =>
-                      eb("email", "ilike", userinfo.email).and(
-                        "user_id",
-                        "is not",
-                        null,
-                      ),
-                    ),
-                ),
-              ]),
-            )
-            .executeTakeFirst();
-          if (!dbUser) {
-            console.log(`ProConnect: no member found for ${userinfo.email}`);
+          const dbUsers = await findUsersByLoginEmail(userinfo?.email);
+          if (dbUsers.length !== 1) {
+            console.log(
+              `ProConnect: ${dbUsers.length} member(s) found for ${userinfo?.email}`,
+            );
             throw new Error("UnknownMember");
           }
-          return { ...userinfo, id: dbUser.username };
+          return {
+            ...userinfo,
+            email: normalizeLoginEmail(userinfo.email)!,
+            id: dbUsers[0].username,
+          };
         },
       },
 
