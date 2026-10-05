@@ -26,7 +26,7 @@ export default async function Page() {
       <p>
         Une fois ta fiche validée, ta boîte @beta.gouv.fr est créée
         automatiquement. Tu as alors reçu deux emails sur ton adresse
-        personnelle : les accès à ta boîte (adresse et mot de passe), puis une
+        personnelle : un lien d'accès temporaire à ta boîte, puis une
         invitation à te connecter avec ProConnect.
       </p>
       <p>
@@ -35,11 +35,12 @@ export default async function Page() {
         encore en attente de validation.
       </p>
 
-      <h2>J'ai perdu le mot de passe de ma boîte @beta.gouv.fr</h2>
+      <h2>Je n'arrive plus à accéder à ma boîte @beta.gouv.fr</h2>
       <p>
-        Sans ce mot de passe, tu ne peux plus te connecter avec ProConnect.
-        Contacte le support pour qu'il soit réinitialisé : le nouveau mot de
-        passe sera envoyé sur ton email personnel.
+        Lien d'accès expiré ou déjà utilisé, mot de passe perdu : sans accès à
+        ta boîte, tu ne peux pas te connecter avec ProConnect. Contacte le
+        support pour retrouver l'accès : les nouveaux accès seront envoyés sur
+        ton email personnel.
       </p>
 
       <h2>ProConnect refuse ma connexion</h2>

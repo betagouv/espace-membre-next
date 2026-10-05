@@ -5,11 +5,7 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
-import {
-  createMailbox,
-  createAlias,
-  createMailboxCode,
-} from "@/lib/dimail/client";
+import { createMailbox, createMailboxCode } from "@/lib/dimail/client";
 import {
   getDimailUsernameForUser,
   DIMAIL_MAILBOX_DOMAIN,
@@ -161,59 +157,6 @@ export async function createDimailMailboxForUser(
     })
     .where("uuid", "=", userUuid)
     .execute();
-
-  // if we create a new address, add an alias
-  // ex: prenom.nom -> prenom.nom.ext
-  // only create the alias for legacy members, up to 01/12/2025
-  if (
-    dbUser.primary_email &&
-    dbUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`) &&
-    dbUser.primary_email !== mailboxEmail
-  ) {
-    // créé un alias prenom.nom@beta.gouv.fr pour les comptes créés avant le 1er Décembre 2025
-    if (new Date(dbUser.created_at) >= new Date(2025, 11, 1)) {
-      console.log(
-        `Skip create DIMAIL alias for ${mailboxEmail} : not a legacy member`,
-      );
-    } else {
-      const legacyUserName = dbUser.primary_email.split("@")[0];
-      const legacyEmail = `${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN}`;
-      console.log(
-        `Create DIMAIL alias: ${legacyEmail} -> ${mailboxEmail}`,
-      );
-      try {
-        await createAlias({
-          user_name: legacyUserName,
-          domain: DIMAIL_MAILBOX_DOMAIN,
-          destination: mailboxEmail,
-        });
-        // MAJ de la table dinum_emails
-        // update the dinum_emails in the database with the new email
-        await db
-          .insertInto("dinum_emails")
-          .values({
-            email: legacyEmail,
-            type: "alias",
-            destination: mailboxEmail,
-            status: "enabled",
-            user_id: userUuid,
-          })
-          .onConflict((oc) =>
-            oc.column("email").doUpdateSet({ status: "enabled" }),
-          )
-          .execute();
-      } catch (e: any) {
-        console.error(
-          `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxEmail} : ${e.message}`,
-        );
-        Sentry.captureException(
-          new Error(
-            `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxEmail} : ${e.message}`,
-          ),
-        );
-      }
-    }
-  }
 
   return mailboxEmail;
 }

@@ -84,6 +84,46 @@ describe("startMemberOnboarding", () => {
     expect(sendVerificationEmailStub.called).to.be.false;
   });
 
+  it("personal email: puts the status back when the mailbox job cannot be enqueued", async () => {
+    bossSendStub.rejects(new Error("pg-boss down"));
+
+    try {
+      await startMemberOnboarding(USER_UUID);
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.message).to.equal("pg-boss down");
+    }
+
+    expect(updateSetStub.calledTwice).to.be.true;
+    expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
+      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    );
+    // only undoes its own transition
+    expect(
+      updateWhereStub.calledWith(
+        "primary_email_status",
+        "=",
+        EmailStatusCode.EMAIL_CREATION_WAITING,
+      ),
+    ).to.be.true;
+    expect(sendVerificationEmailStub.called).to.be.false;
+  });
+
+  it("personal email: puts the status back when pg-boss creates no job", async () => {
+    bossSendStub.resolves(null);
+
+    try {
+      await startMemberOnboarding(USER_UUID);
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.message).to.contain("mailbox job not created");
+    }
+
+    expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
+      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    );
+  });
+
   it("only transitions a member waiting for verification without primary email", async () => {
     await startMemberOnboarding(USER_UUID);
     expect(

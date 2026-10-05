@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import slugify from "@sindresorhus/slugify";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
@@ -128,22 +129,7 @@ async function createMemberAction(input: createMemberSchemaType) {
       }
       return user;
     });
-    if (userIsValidatedStraightAway) {
-      // no incubator validation : announce the new member to the team right away
-      await sendEmailToTeamWhenNewMember(
-        SendEmailToTeamWhenNewMemberSchema.parse({
-          userId: dbUser.uuid,
-        }),
-      );
-      await startMemberOnboarding(dbUser.uuid);
-    } else {
-      await sendNewMemberValidationEmail(
-        SendNewMemberValidationEmailSchema.parse({
-          userId: dbUser.uuid,
-          incubator_id,
-        }),
-      );
-    }
+    // recorded first : the fiche exists whatever happens next
     await addEvent({
       created_by_username: session.user.id,
       action_on_username: username,
@@ -154,6 +140,42 @@ async function createMemberAction(input: createMemberSchemaType) {
         incubator_id,
       },
     });
+    if (userIsValidatedStraightAway) {
+      try {
+        await startMemberOnboarding(dbUser.uuid);
+      } catch (e) {
+        if (e instanceof BusinessError) throw e;
+        console.error(`createMember: onboarding failed for ${username}`, e);
+        Sentry.captureException(e);
+        // the fiche is created : creating it again would fail (username taken)
+        throw new BusinessError(
+          "onboardingNotStarted",
+          `La fiche de ${username} a été créée mais son arrivée n'a pas pu démarrer. Ne recrée pas la fiche : ouvre /community/${username}/validate pour relancer.`,
+        );
+      }
+      // no incubator validation : announce the new member to the team right away.
+      // the announcement must never block the onboarding
+      try {
+        await sendEmailToTeamWhenNewMember(
+          SendEmailToTeamWhenNewMemberSchema.parse({
+            userId: dbUser.uuid,
+          }),
+        );
+      } catch (e) {
+        console.error(
+          `createMember: team announcement failed for ${username}`,
+          e,
+        );
+        Sentry.captureException(e);
+      }
+    } else {
+      await sendNewMemberValidationEmail(
+        SendNewMemberValidationEmailSchema.parse({
+          userId: dbUser.uuid,
+          incubator_id,
+        }),
+      );
+    }
     revalidatePath("/community", "layout");
     const response: createMemberResponseSchemaType = {
       uuid: dbUser.uuid,

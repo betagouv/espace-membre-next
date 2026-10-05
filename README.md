@@ -146,8 +146,8 @@ flowchart TD
 
     subgraph onboarding["3 - Annonce et démarrage de l'arrivée (startMemberOnboarding)"]
         S2(["EMAIL_VERIFICATION_WAITING<br/>sans email primaire"]):::status
-        S2 --> M2[/"Email d'annonce aux équipes produit<br/>du nouveau membre (dans tous les cas)"/]:::mail
-        M2 --> F{"Email du service public<br/>ou domaine attributaire ?"}
+        S2 -. "dans tous les cas,<br/>non bloquant" .-> M2[/"Email d'annonce aux équipes produit<br/>du nouveau membre"/]:::mail
+        S2 --> F{"Email du service public<br/>ou domaine attributaire ?"}
         F -- non --> S3(["EMAIL_CREATION_WAITING"]):::status
         S3 --> G["Job pg-boss create-dimail-mailbox<br/>onboarding: true, 5 essais"]
         G --> H["Création de la boîte Dimail<br/>prenom.nom ou prenom.nom.ext<br/>@beta.gouv.fr"]
@@ -182,9 +182,12 @@ parallélogrammes les emails envoyés.
 2. L'incubateur valide la fiche (statut `MEMBER_VALIDATION_WAITING`). Cette
    étape est sautée si la personne qui crée la fiche est admin ou membre de
    l'équipe de l'incubateur.
-3. Dans tous les cas (fiche validée par l'incubateur ou validée d'office à la
-   création), un email annonce l'arrivée aux membres actifs des produits du
-   nouveau membre, puis l'arrivée démarre (`startMemberOnboarding`) :
+3. L'arrivée démarre (`startMemberOnboarding`). Dans tous les cas (fiche
+   validée par l'incubateur ou validée d'office à la création), un email
+   annonce ensuite l'arrivée aux membres actifs des produits du nouveau
+   membre ; un échec de cette annonce ne bloque pas l'arrivée. Si l'arrivée n'a
+   pas pu démarrer (ex : file de jobs indisponible), rouvrir
+   `/community/<username>/validate` la relance.
    - email personnel (hors attributaire) : une adresse `@beta.gouv.fr` est créée
      via Dimail (statut `EMAIL_CREATION_WAITING`). Le nom est
      `prenom.nom` pour les agents publics (`legal_status`, ou à défaut statut

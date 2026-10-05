@@ -23,6 +23,10 @@ une personne autorisée), en statut EMAIL_VERIFICATION_WAITING sans email primai
 
 idempotent : ne fait rien si l'arrivée a déjà été démarrée.
 
+si le job de création de boite ne peut pas être mis en file, le statut est
+remis à EMAIL_VERIFICATION_WAITING : l'arrivée peut alors être relancée
+(cf validateNewMember).
+
 */
 export async function startMemberOnboarding(userUuid: string) {
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
@@ -56,19 +60,44 @@ export async function startMemberOnboarding(userUuid: string) {
       return;
     }
     // the ProConnect invitation is sent by the worker, once the mailbox exists
-    const bossClient = await getBossClientInstance();
-    await bossClient.send(
-      createDimailMailboxTopic,
-      {
-        userUuid,
-        username: dbUser.username,
-        onboarding: true,
-      },
-      {
-        retryLimit: 5,
-        retryBackoff: true,
-      },
-    );
+    try {
+      const bossClient = await getBossClientInstance();
+      const jobId = await bossClient.send(
+        createDimailMailboxTopic,
+        {
+          userUuid,
+          username: dbUser.username,
+          onboarding: true,
+        },
+        {
+          retryLimit: 5,
+          retryBackoff: true,
+        },
+      );
+      if (!jobId) {
+        throw new Error(
+          `startMemberOnboarding: mailbox job not created for ${userUuid}`,
+        );
+      }
+    } catch (e) {
+      // no job : nothing would ever create the mailbox, so undo the transition
+      // to let the onboarding be started again
+      await db
+        .updateTable("users")
+        .set({
+          primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+          primary_email_status_updated_at: new Date(),
+        })
+        .where("uuid", "=", userUuid)
+        .where(
+          "primary_email_status",
+          "=",
+          EmailStatusCode.EMAIL_CREATION_WAITING,
+        )
+        .where("primary_email", "is", null)
+        .executeTakeFirst();
+      throw e;
+    }
     return;
   }
 

@@ -6,7 +6,6 @@ import proxyquire from "proxyquire";
 const mockGetUserBasicInfo = sinon.stub();
 const mockCreateMailbox = sinon.stub();
 const mockSendEmail = sinon.stub();
-const mockCreateAlias = sinon.stub();
 const mockCreateMailboxCode = sinon.stub();
 
 // Mock Kysely database
@@ -58,7 +57,6 @@ const { createDimailMailboxForUser, onboardNewMemberMailbox } = proxyquire(
     "@/lib/kysely/queries/users": { getUserBasicInfo: mockGetUserBasicInfo },
     "@/lib/dimail/client": {
       createMailbox: mockCreateMailbox,
-      createAlias: mockCreateAlias,
       createMailboxCode: mockCreateMailboxCode,
     },
     "@/server/config/email.config": { sendEmail: mockSendEmail },
@@ -82,7 +80,6 @@ describe("create-dimail-mail", () => {
       mockGetUserBasicInfo,
       mockCreateMailbox,
       mockSendEmail,
-      mockCreateAlias,
       mockExecute,
       mockWhere,
       mockSet,
@@ -121,7 +118,6 @@ describe("create-dimail-mail", () => {
     });
 
     mockSendEmail.resolves();
-    mockCreateAlias.resolves();
     mockCreateMailboxCode.resolves({
       email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
       code: "test-access-code",
@@ -183,16 +179,6 @@ describe("create-dimail-mail", () => {
       `mockSendEmail should be called with correct parameters. instead got ${JSON.stringify(mockSendEmail.firstCall && mockSendEmail.firstCall.args)}`,
     ).to.be.true;
 
-    // createAlias is called with expected parameters
-    expect(
-      mockCreateAlias.calledOnceWith({
-        user_name: "john.doe",
-        domain: DIMAIL_MAILBOX_DOMAIN,
-        destination: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-      }),
-      `mockCreateAlias should be called with correct parameters. instead got ${JSON.stringify(mockCreateAlias.firstCall && mockCreateAlias.firstCall.args)}`,
-    ).to.be.true;
-
     // Verify database updates
     expect(
       mockUpdateTable.calledOnceWith("users"),
@@ -212,13 +198,8 @@ describe("create-dimail-mail", () => {
     ).to.be.true;
 
     // Verify dinum_emails insert
-
     expect(
       mockInsertInto.getCall(0).calledWith("dinum_emails"),
-      "should update table dinum_emails",
-    ).to.be.true;
-    expect(
-      mockInsertInto.getCall(1).calledWith("dinum_emails"),
       "should update table dinum_emails",
     ).to.be.true;
 
@@ -230,16 +211,6 @@ describe("create-dimail-mail", () => {
         user_id: userTestUuid,
       }),
       `should update table dinum_emails with new email, got ${JSON.stringify(mockValues.getCall(0).args)}`,
-    ).to.be.true;
-    expect(
-      mockValues.getCall(1).calledWithExactly({
-        email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
-        type: "alias",
-        status: "enabled",
-        destination: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-        user_id: userTestUuid,
-      }),
-      `should update table dinum_emails with new alias, got ${JSON.stringify(mockValues.getCall(1).args)}`,
     ).to.be.true;
 
     // Verify execute calls
@@ -286,71 +257,6 @@ describe("create-dimail-mail", () => {
     }
   });
 
-  it("should not create alias when primary_email does not end with DIMAIL domain", async () => {
-    mockSendEmail.reset();
-    mockCreateAlias.reset();
-    mockGetUserBasicInfo.resolves({
-      uuid: userTestUuid,
-      username: "john.doe",
-      fullname: "John Doe",
-      secondary_email: "john.doe@example.com",
-      primary_email: `some.thing@some.email`,
-      legal_status: "something",
-      missions: [],
-    });
-
-    // Arrange
-    const userUuid = userTestUuid;
-
-    // Act
-    await createDimailMailboxForUser(userUuid);
-
-    // sendEmail is called with expected parameters
-    expect(
-      mockSendEmail.calledOnceWith({
-        toEmail: ["john.doe@example.com"],
-        type: "EMAIL_CREATED_DIMAIL",
-        variables: {
-          email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-          webmailUrl:
-            "https://messagerie.numerique.gouv.fr/code/test-access-code",
-        },
-      }),
-      `mockSendEmail should be called with correct parameters. instead got ${JSON.stringify(mockSendEmail.firstCall && mockSendEmail.getCalls())}`,
-    ).to.be.true;
-
-    // createAlias is not called
-    expect(mockCreateAlias.called).to.be.false;
-  });
-
-  it("should not create alias when primary_email is the same as new email", async () => {
-    mockGetUserBasicInfo.resolves({
-      uuid: userTestUuid,
-      username: "john.doe",
-      fullname: "John Doe",
-      secondary_email: "john.doe@example.com",
-      primary_email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
-      legal_status: "fonctionnaire",
-      missions: [],
-    });
-    mockCreateMailbox.resolves({
-      email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
-      password: "generated-password",
-    });
-
-    // Arrange
-    const userUuid = userTestUuid;
-
-    // Act
-    await createDimailMailboxForUser(userUuid);
-
-    // Assert
-    expect(
-      mockCreateAlias.called,
-      `Got ${JSON.stringify(mockCreateAlias.getCalls())}`,
-    ).to.be.false;
-  });
-
   it("should split names correctly", async () => {
     mockCreateMailbox.reset();
     mockGetUserBasicInfo.resolves({
@@ -384,11 +290,6 @@ describe("create-dimail-mail", () => {
         givenName: "Doe Machin",
       }),
       `createMailbox should be called with correct parameters. instead got ${JSON.stringify(mockCreateMailbox.firstCall && mockCreateMailbox.firstCall.args)}`,
-    ).to.be.true;
-
-    expect(
-      mockCreateAlias.called,
-      `Got ${JSON.stringify(mockCreateAlias.getCalls())}`,
     ).to.be.true;
   });
 

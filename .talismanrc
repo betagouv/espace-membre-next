@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: src/app/(public)/login/page.tsx
   checksum: 20924a45d0763b0ac98b53f4f2953fbfbd54e636b4accf8d05c84c35a9b3c5ab
 - filename: src/app/(public)/support/page.tsx
-  checksum: dd5bdf1a7206a76c2b3eb7aa98c8b5fa8d593bb903445d79427b08e4e93c4df7
+  checksum: a2f36bfa4def238ff23bcadac869c4c3779259ebc795ae30fd92379ae76680a8
 - filename: src/app/api/member/actions/__tests__/validateNewMember.test.ts
   checksum: 5bb531c43b9326865e4d7d9ac268d384e99f219adb64100a336122bda65592a7
 - filename: src/app/api/member/route.ts

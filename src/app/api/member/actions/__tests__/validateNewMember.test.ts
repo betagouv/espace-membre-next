@@ -183,5 +183,49 @@ describe("validateNewMember", () => {
     expect(sendEmailToTeamStub.calledOnce).to.be.true;
     expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
     expect(startMemberOnboardingStub.calledAfter(addEventStub)).to.be.true;
+    expect(sendEmailToTeamStub.calledAfter(startMemberOnboardingStub)).to.be
+      .true;
+  });
+
+  it("should not fail when the team announcement fails", async () => {
+    sendEmailToTeamStub.rejects(new Error("smtp down"));
+    sinon.stub(console, "error");
+
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+
+    expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
+  });
+
+  it("should restart the onboarding of a validated member whose onboarding never started", async () => {
+    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
+    getUserBasicInfoStub.resolves({
+      ...mockUserData,
+      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email: null,
+    } as any);
+
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+
+    expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
+    // not validated a second time
+    expect(addEventStub.called).to.be.false;
+    expect(sendEmailToTeamStub.called).to.be.false;
+  });
+
+  it("should not restart the onboarding of a member who already has a primary email", async () => {
+    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
+    getUserBasicInfoStub.resolves({
+      ...mockUserData,
+      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email: "test.member.ext@beta.gouv.fr",
+    } as any);
+
+    try {
+      await validateNewMember({ memberUuid: MEMBER_UUID });
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.code).to.equal("userAlreadyValided");
+    }
+    expect(startMemberOnboardingStub.called).to.be.false;
   });
 });

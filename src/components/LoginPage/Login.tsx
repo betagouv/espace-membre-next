@@ -118,7 +118,7 @@ export const LoginPage = function () {
         />
       </div>
       <p className="fr-text--sm">
-        Mot de passe de ta boîte perdu ou impossible de te connecter ?{" "}
+        Accès à ta boîte perdu ou impossible de te connecter ?{" "}
         <Link href="/support">Consulte la page d'aide</Link>
       </p>
     </div>

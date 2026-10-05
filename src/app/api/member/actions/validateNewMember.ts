@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { getServerSession } from "next-auth/next";
 import { z } from "zod";
 
@@ -79,6 +80,17 @@ export async function validateNewMember({
     )
     .executeTakeFirst();
   if (!Number(result.numUpdatedRows)) {
+    // already validated. if the onboarding never started (ex: the mailbox job
+    // could not be enqueued), opening the validation link again restarts it
+    const currentData = await getUserBasicInfo({ uuid: memberUuid });
+    if (
+      currentData?.primary_email_status ===
+        EmailStatusCode.EMAIL_VERIFICATION_WAITING &&
+      !currentData.primary_email
+    ) {
+      await startMemberOnboarding(rawData.uuid);
+      return;
+    }
     throw new BusinessError(
       "userAlreadyValided",
       `Ce membre a déjà été validé`,
@@ -91,13 +103,22 @@ export async function validateNewMember({
     action_on_username: rawData.username,
   });
 
-  await sendEmailToTeamWhenNewMember(
-    SendEmailToTeamWhenNewMemberSchema.parse({
-      userId: rawData.uuid,
-    }),
-  );
-
   await startMemberOnboarding(rawData.uuid);
+
+  // the announcement must never block the onboarding
+  try {
+    await sendEmailToTeamWhenNewMember(
+      SendEmailToTeamWhenNewMemberSchema.parse({
+        userId: rawData.uuid,
+      }),
+    );
+  } catch (e) {
+    console.error(
+      `validateNewMember: team announcement failed for ${rawData.username}`,
+      e,
+    );
+    Sentry.captureException(e);
+  }
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);
