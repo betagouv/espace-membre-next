@@ -17,12 +17,13 @@ import { formatInTimeZone } from "date-fns-tz";
 import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import {
   updateFormation,
   validateFormation,
 } from "@/app/api/formations/actions";
+import { FormationAdresseField } from "@/components/Formation/FormationAdresseField";
 import { FormationScheduleForm } from "@/components/Formation/FormationScheduleForm";
 import {
   FormationSessionsParticipants,
@@ -36,9 +37,11 @@ import { AlertMessageType } from "@/models/common";
 import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
+  FORMATION_MODALITE,
   FORMATION_MODALITE_CHOICES,
   FORMATION_STATUT,
   FORMATION_THEMATIQUES,
+  libelleAudience,
 } from "@/models/formationsGrist";
 
 const emptyAsUndefined = (value: unknown) =>
@@ -100,14 +103,26 @@ export const FormationManagePanel = ({
   const router = useRouter();
 
   const {
+    control,
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<formationUpdateSchemaType>({
     resolver: zodResolver(formationUpdateSchema),
     mode: "onChange",
     defaultValues,
   });
+
+  // Un e-learning est ouvert en continu : ni date, ni limite de places, ni
+  // visioconférence, mais un lien vers la formation elle-même. Le détail suit
+  // la modalité enregistrée, le formulaire celle qu'on est en train de choisir.
+  const estELearning = defaultValues.modalite === FORMATION_MODALITE.E_LEARNING;
+  const devientELearning = watch("modalite") === FORMATION_MODALITE.E_LEARNING;
+  // En présentiel, c'est une adresse qui dit où se retrouver, pas une visio.
+  const estPresentiel =
+    defaultValues.modalite === FORMATION_MODALITE.PRESENTIEL;
+  const devientPresentiel = watch("modalite") === FORMATION_MODALITE.PRESENTIEL;
 
   const [validating, setValidating] = React.useState(false);
   const onValidate = async () => {
@@ -210,31 +225,42 @@ export const FormationManagePanel = ({
               <Detail label="Statut" value={statut} />
               <Detail label="Modalité" value={defaultValues.modalite} />
               <Detail label="Durée" value={defaultValues.duree} />
-              <Detail
-                label="Capacité"
-                // La ligne reste même sans limite : la voir disparaître se lit
-                // comme une donnée manquante, alors que l'absence de limite est
-                // un choix, et le seul qui ouvre les inscriptions à tout le monde.
-                value={defaultValues.capacite?.toString() ?? "Pas de limite"}
-              />
+              {!estELearning && (
+                <Detail
+                  label="Capacité"
+                  // La ligne reste même sans limite : la voir disparaître se lit
+                  // comme une donnée manquante, alors que l'absence de limite est
+                  // un choix, et le seul qui ouvre les inscriptions à tout le monde.
+                  value={defaultValues.capacite?.toString() ?? "Pas de limite"}
+                />
+              )}
               <Detail
                 label="Catégories"
                 value={defaultValues.thematiques?.join(", ")}
               />
               <Detail
                 label="Audience"
-                value={defaultValues.audience?.join(", ")}
+                value={defaultValues.audience?.map(libelleAudience).join(", ")}
               />
               <Detail label="Animateur·ice" value={defaultValues.animateur} />
               <Detail
                 label="Email organisateur·trice"
                 value={defaultValues.emailOrganisateur}
               />
+              {estPresentiel ? (
+                <Detail label="Adresse" value={defaultValues.adresse} />
+              ) : (
+                !estELearning && (
+                  <Detail
+                    label="Lien visio admin"
+                    value={defaultValues.lienVisioAdmin}
+                  />
+                )
+              )}
               <Detail
-                label="Lien visio admin"
-                value={defaultValues.lienVisioAdmin}
+                label={estELearning ? "Lien de la formation" : "Support"}
+                value={defaultValues.lienSupport}
               />
-              <Detail label="Support" value={defaultValues.lienSupport} />
               <Detail label="Feedback" value={defaultValues.lienFeedback} />
             </dl>
 
@@ -250,29 +276,45 @@ export const FormationManagePanel = ({
               Modifier les informations
             </Button>
 
-            {/* h4 : l'accordéon porte un h3. Le titre suffit à séparer les deux
-                blocs du panneau, chacun avec son action en bas — un filet ici
-                doublerait celui que l'accordéon trace déjà sous lui. */}
-            <h4 className={fr.cx("fr-h6", "fr-mt-4w", "fr-mb-1w")}>
-              Sessions programmées ({sessions.length})
-            </h4>
-            <FormationSessionsParticipants
-              sessions={sessions}
-              participantsBySession={participantsBySession}
-            />
+            {/* Un e-learning n'a pas de date : pas de bloc de sessions, sauf
+                s'il en reste d'avant, dont les inscrits doivent rester
+                visibles. */}
+            {(!estELearning || sessions.length > 0) && (
+              <>
+                {/* h4 : l'accordéon porte un h3. Le titre suffit à séparer les
+                    deux blocs du panneau, chacun avec son action en bas — un
+                    filet ici doublerait celui que l'accordéon trace déjà sous
+                    lui. */}
+                <h4 className={fr.cx("fr-h6", "fr-mt-4w", "fr-mb-1w")}>
+                  Sessions programmées ({sessions.length})
+                </h4>
+                <FormationSessionsParticipants
+                  sessions={sessions}
+                  participantsBySession={participantsBySession}
+                />
+              </>
+            )}
 
-            <Button
-              className={fr.cx("fr-mt-2w")}
-              size="small"
-              priority="secondary"
-              nativeButtonProps={{ type: "button" }}
-              onClick={() => {
-                setDateProgrammee(false);
-                setScheduling((was) => !was);
-              }}
-            >
-              {scheduling ? "Annuler" : "Programmer une autre session"}
-            </Button>
+            {!estELearning && (
+              <Button
+                className={fr.cx("fr-mt-2w")}
+                size="small"
+                priority="secondary"
+                nativeButtonProps={{ type: "button" }}
+                onClick={() => {
+                  setDateProgrammee(false);
+                  setScheduling((was) => !was);
+                }}
+              >
+                {/* « Autre » n'a de sens qu'à côté d'une session existante : sans
+                  aucune date, c'est la première qu'on programme. */}
+                {scheduling
+                  ? "Annuler"
+                  : sessions.length
+                    ? "Programmer une autre session"
+                    : "Programmer une session"}
+              </Button>
+            )}
 
             {!scheduling && dateProgrammee && (
               <Alert
@@ -330,7 +372,7 @@ export const FormationManagePanel = ({
               state={errors.audience ? "error" : "default"}
               stateRelatedMessage={errors.audience?.message}
               options={FORMATION_AUDIENCES.map((audience) => ({
-                label: audience,
+                label: libelleAudience(audience),
                 nativeInputProps: { value: audience, ...register("audience") },
               }))}
             />
@@ -403,41 +445,83 @@ export const FormationManagePanel = ({
                   ]}
                 />
               </div>
-              <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
-                <Input
-                  className={fr.cx("fr-mb-0")}
-                  label="Limite de participants par défaut (facultatif)"
-                  hintText="Proposée pour les prochaines sessions. Chaque session programmée garde la sienne, modifiable dans sa propre fiche."
-                  state={errors.capacite ? "error" : "default"}
-                  stateRelatedMessage={errors.capacite?.message}
-                  nativeInputProps={{
-                    type: "number",
-                    min: 1,
-                    step: 1,
-                    ...register("capacite", {
-                      setValueAs: (value) =>
-                        value === "" || value === null
-                          ? undefined
-                          : Number(value),
-                    }),
-                  }}
-                />
-              </div>
+              {!devientELearning && (
+                <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
+                  <Input
+                    className={fr.cx("fr-mb-0")}
+                    label="Limite de participants par défaut (facultatif)"
+                    hintText="Proposée pour les prochaines sessions. Chaque session programmée garde la sienne, modifiable dans sa propre fiche."
+                    state={errors.capacite ? "error" : "default"}
+                    stateRelatedMessage={errors.capacite?.message}
+                    nativeInputProps={{
+                      type: "number",
+                      min: 1,
+                      step: 1,
+                      ...register("capacite", {
+                        setValueAs: (value) =>
+                          value === "" || value === null
+                            ? undefined
+                            : Number(value),
+                        // Masquée en e-learning : sa valeur part avec elle, au
+                        // lieu de bloquer l'envoi sans qu'on la voie.
+                        shouldUnregister: true,
+                      }),
+                    }}
+                  />
+                </div>
+              )}
             </div>
-            <Input
-              label="Lien de visioconférence administrateur"
-              state={errors.lienVisioAdmin ? "error" : "default"}
-              stateRelatedMessage={errors.lienVisioAdmin?.message}
-              nativeInputProps={{
-                type: "url",
-                placeholder: "https://",
-                ...register("lienVisioAdmin", { setValueAs: emptyAsUndefined }),
-              }}
-            />
-            {/* Support et retour d'expérience sont retirés du formulaire pour
-                l'instant. Les valeurs restent enregistrées : sans ces champs
-                cachés, la moindre modification les effacerait. */}
-            <input type="hidden" {...register("lienSupport")} />
+            {devientELearning ? (
+              <Input
+                label="Lien de la formation"
+                hintText="L'adresse où suivre l'e-learning."
+                state={errors.lienSupport ? "error" : "default"}
+                stateRelatedMessage={errors.lienSupport?.message}
+                nativeInputProps={{
+                  type: "url",
+                  placeholder: "https://",
+                  ...register("lienSupport", { setValueAs: emptyAsUndefined }),
+                }}
+              />
+            ) : (
+              <>
+                {devientPresentiel ? (
+                  <Controller
+                    control={control}
+                    name="adresse"
+                    shouldUnregister
+                    render={({ field }) => (
+                      <FormationAdresseField
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        error={errors.adresse?.message}
+                      />
+                    )}
+                  />
+                ) : (
+                  <Input
+                    label="Lien de visioconférence administrateur"
+                    state={errors.lienVisioAdmin ? "error" : "default"}
+                    stateRelatedMessage={errors.lienVisioAdmin?.message}
+                    nativeInputProps={{
+                      type: "url",
+                      placeholder: "https://",
+                      ...register("lienVisioAdmin", {
+                        setValueAs: emptyAsUndefined,
+                        shouldUnregister: true,
+                      }),
+                    }}
+                  />
+                )}
+                {/* Le support est retiré du formulaire pour l'instant, sauf
+                    pour un e-learning où il porte le lien de la formation. La
+                    valeur reste enregistrée : sans ce champ caché, la moindre
+                    modification l'effacerait. */}
+                <input type="hidden" {...register("lienSupport")} />
+              </>
+            )}
+            {/* Même raison pour le retour d'expérience. */}
             <input type="hidden" {...register("lienFeedback")} />
             <input type="hidden" {...register("formationId")} />
 
