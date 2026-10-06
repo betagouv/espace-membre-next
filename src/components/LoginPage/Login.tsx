@@ -89,6 +89,8 @@ const oAuthErrors = {
   UnknownMember:
     "Aucun membre ne correspond à ce compte. Connecte-toi avec ton adresse @beta.gouv.fr ou ton adresse du service public (pas ton email personnel).",
   ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
+  MemberNotReady:
+    "Ta fiche n'est pas encore validée, ou ton adresse de connexion est en cours de création. Réessaie plus tard ou rapproche-toi de ton incubateur.",
 };
 
 // development only : stands in for ProConnect, which is not reachable from a

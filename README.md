@@ -75,7 +75,8 @@ En développement (`next dev`), l'environnement d'intégration ProConnect n'est
 pas utilisable : la page `/login` propose une **connexion ProConnect simulée**.
 On y saisit l'adresse principale d'un membre présent en base (pas son email
 personnel) et on est connecté sans mot de passe, avec les mêmes règles que la
-vraie connexion (un seul membre correspondant, mission en cours). Ce mode
+vraie connexion (un seul membre correspondant, mission en cours, fiche validée
+et adresse de connexion prête). Ce mode
 n'existe que quand `NODE_ENV=development` : il est absent de toute application
 buildée (production, staging, review apps). `FAKE_PROCONNECT_LOGIN=false` le
 désactive en local, par exemple pour tester le vrai ProConnect avec les

@@ -54,6 +54,11 @@ export default async function Page() {
           Si ta mission est terminée, ton accès est désactivé : demande à ton
           équipe de mettre à jour ta fiche.
         </li>
+        <li>
+          Si ta fiche n'est pas encore validée par ton incubateur, ou si ta
+          boîte @beta.gouv.fr est en cours de création, la connexion est
+          refusée : réessaie un peu plus tard.
+        </li>
         <li>Si ProConnect est indisponible, réessaie un peu plus tard.</li>
       </ul>
 

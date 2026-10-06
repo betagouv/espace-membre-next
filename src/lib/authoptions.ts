@@ -18,6 +18,7 @@ import {
   fakeProConnectProvider,
   isFakeProConnectEnabled,
 } from "@/lib/auth/fakeProConnect";
+import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
 
 export type ProConnectProfile = {
   sub: string;
@@ -153,6 +154,14 @@ export const authOptions: NextAuthOptions = {
         if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
           console.log(`Cannot login expired member ${user.id}`);
           throw new Error("ExpiredMember");
+        }
+        // a fiche not validated yet, or without its login address, cannot be
+        // entered through a Dimail address linked to it by username
+        if (!isMemberReadyToLogin(dbUser)) {
+          console.log(
+            `Cannot login member ${user.id}: status ${dbUser.primary_email_status}`,
+          );
+          throw new Error("MemberNotReady");
         }
         const loginProvider =
           account?.provider === "proconnect" ? "proconnect" : "email";
