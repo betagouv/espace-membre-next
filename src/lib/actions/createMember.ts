@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import slugify from "@sindresorhus/slugify";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
@@ -15,20 +16,24 @@ import {
   createMemberSchemaType,
 } from "@/models/actions/member";
 import {
+  SendEmailToTeamWhenNewMemberSchema,
   SendNewMemberValidationEmailSchema,
-  SendNewMemberVerificationEmailSchema,
 } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
 import { sendNewMemberValidationEmail } from "@/lib/email/send-validation-email";
-import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
+import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
 import { authOptions } from "@/lib/authoptions";
 import {
   AdminEmailNotAllowedError,
   AuthorizationError,
+  BusinessError,
   MemberUniqueConstraintViolationError,
   withErrorHandling,
 } from "@/lib/error";
+import { findUsersUsingEmail } from "@/lib/auth/findUsersByLoginEmail";
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
+import { startMemberOnboarding } from "@/lib/onboarding/startMemberOnboarding";
 
 const createUsername = (firstName: string, lastName: string) =>
   `${slugify(firstName)}.${slugify(lastName)}`;
@@ -75,6 +80,19 @@ async function createMemberAction(input: createMemberSchemaType) {
   if (hasPublicServiceEmail && isAdminEmail(member.email)) {
     throw new AdminEmailNotAllowedError();
   }
+  // beta.gouv.fr mailboxes are only created by the platform
+  if (member.email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`)) {
+    throw new BusinessError(
+      "betaEmailNotAllowed",
+      `Les adresses @${DIMAIL_MAILBOX_DOMAIN} sont créées par l'espace-membre : indique l'email personnel ou professionnel du nouveau membre.`,
+    );
+  }
+  if ((await findUsersUsingEmail(member.email)).length) {
+    throw new BusinessError(
+      "emailAlreadyUsed",
+      `L'email ${member.email} est déjà utilisé par un autre membre.`,
+    );
+  }
   const username = createUsername(member.firstname, member.lastname);
   const sessionUserIsMemberOfUserIncubatorTeams =
     await isSessionUserMemberOfUserIncubatorTeams(
@@ -94,8 +112,9 @@ async function createMemberAction(input: createMemberSchemaType) {
           fullname: `${member.firstname} ${member.lastname}`,
           username,
           role: "",
+          // accepted but no login email yet : startMemberOnboarding takes over
           primary_email_status: userIsValidatedStraightAway
-            ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
+            ? EmailStatusCode.EMAIL_UNSET
             : EmailStatusCode.MEMBER_VALIDATION_WAITING,
         })
         .returning("uuid")
@@ -111,20 +130,7 @@ async function createMemberAction(input: createMemberSchemaType) {
       }
       return user;
     });
-    if (userIsValidatedStraightAway) {
-      await sendNewMemberVerificationEmail(
-        SendNewMemberVerificationEmailSchema.parse({
-          userId: dbUser.uuid,
-        }),
-      );
-    } else {
-      await sendNewMemberValidationEmail(
-        SendNewMemberValidationEmailSchema.parse({
-          userId: dbUser.uuid,
-          incubator_id,
-        }),
-      );
-    }
+    // recorded first : the fiche exists whatever happens next
     await addEvent({
       created_by_username: session.user.id,
       action_on_username: username,
@@ -135,6 +141,42 @@ async function createMemberAction(input: createMemberSchemaType) {
         incubator_id,
       },
     });
+    if (userIsValidatedStraightAway) {
+      try {
+        await startMemberOnboarding(dbUser.uuid);
+      } catch (e) {
+        if (e instanceof BusinessError) throw e;
+        console.error(`createMember: onboarding failed for ${username}`, e);
+        Sentry.captureException(e);
+        // the fiche is created : creating it again would fail (username taken)
+        throw new BusinessError(
+          "onboardingNotStarted",
+          `La fiche de ${username} a été créée mais son arrivée n'a pas pu démarrer. Ne recrée pas la fiche : ouvre /community/${username}/validate pour relancer.`,
+        );
+      }
+      // no incubator validation : announce the new member to the team right away.
+      // the announcement must never block the onboarding
+      try {
+        await sendEmailToTeamWhenNewMember(
+          SendEmailToTeamWhenNewMemberSchema.parse({
+            userId: dbUser.uuid,
+          }),
+        );
+      } catch (e) {
+        console.error(
+          `createMember: team announcement failed for ${username}`,
+          e,
+        );
+        Sentry.captureException(e);
+      }
+    } else {
+      await sendNewMemberValidationEmail(
+        SendNewMemberValidationEmailSchema.parse({
+          userId: dbUser.uuid,
+          incubator_id,
+        }),
+      );
+    }
     revalidatePath("/community", "layout");
     const response: createMemberResponseSchemaType = {
       uuid: dbUser.uuid,

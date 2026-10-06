@@ -9,6 +9,10 @@ import { EventCode } from "@/models/actionEvent/actionEvent";
 import { isPublicServiceEmail, isAdminEmail, userInfos } from "@/lib/utils";
 import { authOptions } from "@/lib/authoptions";
 import {
+  findUsersUsingEmail,
+  normalizeLoginEmail,
+} from "@/lib/auth/findUsersByLoginEmail";
+import {
   AuthorizationError,
   UnwrapPromise,
   withErrorHandling,
@@ -18,7 +22,7 @@ import {
 
 export async function managePrimaryEmailForUser({
   username,
-  primaryEmail,
+  primaryEmail: rawPrimaryEmail,
 }: {
   username: string;
   primaryEmail: string;
@@ -32,6 +36,13 @@ export async function managePrimaryEmailForUser({
   if (!user.authorizations.canChangeEmails && !session.user.isAdmin) {
     throw new AuthorizationError();
   }
+  const primaryEmail = normalizeLoginEmail(rawPrimaryEmail);
+  if (!primaryEmail) {
+    throw new BusinessError(
+      "invalidEmail",
+      `L'email renseigné n'est pas valide`,
+    );
+  }
   const primaryEmailIsPublicServiceEmail =
     await isPublicServiceEmail(primaryEmail);
   if (!primaryEmailIsPublicServiceEmail) {
@@ -41,6 +52,18 @@ export async function managePrimaryEmailForUser({
   }
   if (isAdminEmail(primaryEmail)) {
     throw new AdminEmailNotAllowedError();
+  }
+
+  // the primary email is the ProConnect login identifier : an email shared by
+  // two members would lock both out (login requires exactly one match)
+  const otherUsers = await findUsersUsingEmail(primaryEmail, {
+    excludeUserUuid: user.userInfos.uuid,
+  });
+  if (otherUsers.length) {
+    throw new BusinessError(
+      "emailAlreadyUsed",
+      `L'email ${primaryEmail} est déjà utilisé par un autre membre.`,
+    );
   }
 
   await db

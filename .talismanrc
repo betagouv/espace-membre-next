@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: baab9bc320877785c6ccf878f72a9b9257becfb719d4bcbcca1a2ba2bca49870
+  checksum: cc2dcc54c5affe24cbfeea3aaf11d7a389bfc29b327a7cbe4fadda6470735cde
 - filename: .env.test
   checksum: ac4a41141b6012a11636e64642152bbc339bf10380b564d35fe33870531d732a
 - filename: .github/workflows/nodejs.yml
@@ -8,13 +8,15 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: 2bf3b8babdc7578c6e99e67c1cf8022a26fb4ac9bd6d411019e064f68f766a00
 - filename: README.md
-  checksum: 9f3ceb61b1e3140608bc4c88b210ba9e94f3d277b055c2b3ad71f75961942a5c
+  checksum: 554368306b26bb92ec5176538398adf7aab1d84b741666bc6dafb45f66d9a989
 - filename: __tests__/htmlbuilder.spec.ts
-  checksum: 3204d46ffc02fc0eef7abed2ad9c2d9f342d49a03c69f0066907443d48d84980
+  checksum: b7e67d2a05570add2fee22a95e3faa3b5af001cffbeefd71725064e82636e889
 - filename: __tests__/test-email.ts
   checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
+- filename: e2e/auth.valid.member.setup.ts
+  checksum: 7a239296ed02a1826845830e31700a724aec621fccf6a078a3cdff565b578e17
 - filename: migrations/20260618000001_add_startups_incubators_table.ts
   checksum: bede298828d3b776caa717960fd6afb95f5f344a158246e265309e14d6dfa5ab
 - filename: package-lock.json
@@ -27,6 +29,10 @@ fileignoreconfig:
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/app/(public)/login/page.tsx
   checksum: 20924a45d0763b0ac98b53f4f2953fbfbd54e636b4accf8d05c84c35a9b3c5ab
+- filename: src/app/(public)/support/page.tsx
+  checksum: a2f36bfa4def238ff23bcadac869c4c3779259ebc795ae30fd92379ae76680a8
+- filename: src/app/api/member/actions/__tests__/validateNewMember.test.ts
+  checksum: 5bb531c43b9326865e4d7d9ac268d384e99f219adb64100a336122bda65592a7
 - filename: src/app/api/member/route.ts
   checksum: 70c62cc99b6a82c2b8ef217dd083531e311a863bb637921a4c15628aed1ac119
 - filename: src/components/Checklist.tsx
@@ -86,7 +92,7 @@ fileignoreconfig:
 - filename: src/proxy.ts
   checksum: f1487d61722d98af1ebf111e8db40eeb4f682763b933572866121b291c689235
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
-  checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
+  checksum: 8e9e0d0cb8a16090379496eebf03ef83486145231425f9b364affe153a52ead1
 - filename: src/server/queueing/workers/send-verification-email.ts
   checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
 - filename: src/server/schedulers/emailScheduler.ts

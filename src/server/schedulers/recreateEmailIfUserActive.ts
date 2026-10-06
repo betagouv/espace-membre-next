@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 
 import { db } from "@/lib/kysely";
-import { Domaine, EmailStatusCode } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import { patchMailbox } from "@/lib/dimail/client";
 import { getDimailEmail } from "@/lib/kysely/queries/dimail";
 import * as createDimailMailboxWorker from "../queueing/workers/create-dimail-mailbox";
@@ -31,7 +31,6 @@ export async function recreateEmailIfUserActive() {
       EmailStatusCode.EMAIL_SUSPENDED,
     ])
     .where("users.secondary_email", "is not", null)
-    .where("users.domaine", "!=", Domaine.ATTRIBUTAIRE)
     .execute();
   console.log(`recreateEmailIfUserActive: ${dbUsers.length} accounts`);
   for (const dbUser of dbUsers) {

@@ -11,7 +11,12 @@ L'espace membre de l’incubateur
   - accès aux outils (sentry, matomo)
 - exploration de la communauté
 - afficher les formations et évènements
-- connexion via ProConnect ou magic-link
+- connexion uniquement via ProConnect, avec l'adresse principale du membre
+  (boîte `@beta.gouv.fr` ou adresse du service public). L'email personnel
+  (`secondary_email`) ne permet pas de se connecter. La double authentification
+  est exigée (claim `acr` essentiel, niveaux `eidas0-mfa`, `eidas1-mfa`,
+  `eidas2`, `eidas3`, vérifié dans l'`id_token` au retour). Aide : page
+  publique `/support`
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 
@@ -66,11 +71,19 @@ npm run seed
 npm run dev-import-from-www # Ajoute les données du site beta.gouv.fr (utilisateur, produits, incubateurs, ...)
 ```
 
-L'application est disponible sur http://localhost:8100 et vous pouvez
-vous logger – une fois que la base de données est peuplée avec le
-seeding au dessus – avec `valid.member@betagouv.ovh` puis en
-récupérant l'email de connexion sur le maildev disponible sur
-http://localhost:1080.
+L'application est disponible sur http://localhost:8100. Les emails envoyés par
+l'application sont visibles sur le maildev http://localhost:1080.
+
+En développement (`next dev`), l'environnement d'intégration ProConnect n'est
+pas utilisable : la page `/login` propose une **connexion ProConnect simulée**.
+On y saisit l'adresse principale d'un membre présent en base (pas son email
+personnel) et on est connecté sans mot de passe, avec les mêmes règles que la
+vraie connexion (un seul membre correspondant, mission en cours, fiche validée
+et adresse de connexion prête). Ce mode
+n'existe que quand `NODE_ENV=development` : il est absent de toute application
+buildée (production, staging, review apps). `FAKE_PROCONNECT_LOGIN=false` le
+désactive en local, par exemple pour tester le vrai ProConnect avec les
+variables `PRO_CONNECT_*`.
 
 ### Lancer les tests
 
@@ -106,7 +119,13 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 
 Un seul job reste géré par [pg-boss](https://github.com/timgit/pg-boss), déclenché
 à la demande (et non planifié) : `create-dimail-mailbox`, qui crée une boite mail
-Dimail pour un utilisateur.
+Dimail pour un utilisateur. Il est déclenché à l'arrivée d'un membre (validation
+de la fiche, ou création par une personne autorisée) avec `onboarding: true` :
+une fois la boite créée, et après 10 secondes d'attente (le temps que la boite
+accepte le courrier, réglable via `DIMAIL_INVITATION_DELAY_MS`), il envoie sur
+cette boite l'invitation à se connecter via ProConnect.
+En cas de relance (retry), la boite n'est pas recréée et l'invitation n'est
+envoyée qu'une fois.
 
 Les autres tâches de maintenance (relances avant/après mission, retrait des comptes GitHub/Matomo/Sentry...) sont gérées par des workflows n8n.
 
@@ -121,34 +140,97 @@ au moins une mission dont la date de fin n'est pas dépassée
 ### Arrivée (onboarding)
 
 ```mermaid
-graph LR
+flowchart TD
+    classDef status fill:#e3e3fd,stroke:#000091,color:#000091
+    classDef mail fill:#fef7da,stroke:#b34000,color:#3a3a3a
+    classDef ko fill:#ffe9e9,stroke:#ce0500,color:#ce0500
 
-CreateMember-->ValidationIncubateur
-ValidationIncubateur-->VerifyMember
-VerifyMember-->CreateEmail
-CreateEmail-->SendEmailInvitation
+    subgraph creation["1 - Création de la fiche (membre connecté)"]
+        A["Formulaire de création :<br/>identité, mission(s), email personnel"] --> B{"Email valide ?"}
+        B -- "@beta.gouv.fr, email d'admin<br/>ou email déjà utilisé" --> KO["Refusé"]:::ko
+        B -- oui --> C["createMember :<br/>création user + missions<br/>événement MEMBER_CREATED"]
+        C --> D{"Créateur admin ou membre<br/>de l'équipe de l'incubateur ?"}
+    end
+
+    subgraph validation["2 - Validation par l'incubateur"]
+        S1(["MEMBER_VALIDATION_WAITING"]):::status
+        S1 --> M1[/"Email de demande de validation<br/>à l'équipe de l'incubateur"/]:::mail
+        M1 --> E["validateNewMember<br/>(admin ou équipe incubateur)<br/>événement MEMBER_VALIDATED"]
+    end
+
+    subgraph onboarding["3 - Annonce et démarrage de l'arrivée (startMemberOnboarding)"]
+        S2(["EMAIL_UNSET<br/>fiche acceptée, sans email primaire"]):::status
+        S2 -. "dans tous les cas,<br/>non bloquant" .-> M2[/"Email d'annonce aux équipes produit<br/>du nouveau membre"/]:::mail
+        S2 --> F{"Email du service public ?"}
+        F -- non --> S3(["EMAIL_CREATION_WAITING"]):::status
+        S3 --> G["Job pg-boss create-dimail-mailbox<br/>onboarding: true, 5 essais"]
+        G --> H["Création de la boîte Dimail<br/>prenom.nom ou prenom.nom.ext<br/>@beta.gouv.fr"]
+        H --> M3[/"Email des accès à la boîte<br/>(adresse + lien d'accès temporaire au webmail,<br/>code d'invitation Dimail)<br/>sur l'email personnel"/]:::mail
+        M3 --> S4(["EMAIL_VERIFICATION_WAITING<br/>email primaire = boîte @beta.gouv.fr"]):::status
+        F -- oui --> I{"Email déjà utilisé<br/>par un autre membre ?"}
+        I -- oui --> KO2["Refusé"]:::ko
+        I -- non --> S5(["EMAIL_VERIFICATION_WAITING<br/>email primaire = email fourni"]):::status
+    end
+
+    subgraph connexion["4 - Première connexion (nouveau membre)"]
+        M4[/"Invitation à se connecter via ProConnect<br/>envoyée sur l'email primaire (nouvelle boîte<br/>ou email public), sans lien de connexion<br/>événement EMAIL_VERIFICATION_WAITING_SENT"/]:::mail
+        M4 --> J["Le membre ouvre sa boîte, y trouve l'invitation<br/>et se connecte avec ProConnect"]
+        J --> K["Redirection vers /verify :<br/>vérifie et complète sa fiche"]
+        K --> L["verifyNewMember"]
+        L --> S6(["EMAIL_ACTIVE"]):::status
+    end
+
+    D -- non --> S1
+    D -- oui --> S2
+    E --> S2
+    S4 --> M4
+    S5 --> M4
 ```
 
-1. Une fiche membre est créée (par la personne elle-même ou un membre de son
-   équipe/produit), avec une première mission.
-2. L'incubateur valide la fiche (`ValidationIncubateur`).
-3. Le membre vérifie/complète ses informations (`VerifyMember`).
-4. Une adresse `@beta.gouv.fr` est créée via Dimail (`CreateEmail`, statut
-   `EMAIL_CREATION_WAITING` puis `EMAIL_ACTIVE`).
-5. Une invitation est envoyée par email (`SendEmailInvitation`).
+Les nœuds arrondis sont les valeurs de `primary_email_status`, les
+parallélogrammes les emails envoyés.
+
+1. Une fiche membre est créée par un membre de la communauté, avec une
+   première mission et l'email personnel du nouveau membre (une adresse
+   `@beta.gouv.fr` ou un email déjà utilisé sont refusés).
+2. L'incubateur valide la fiche (statut `MEMBER_VALIDATION_WAITING`). Cette
+   étape est sautée si la personne qui crée la fiche est admin ou membre de
+   l'équipe de l'incubateur.
+3. La fiche acceptée passe en `EMAIL_UNSET` (pas encore d'adresse de
+   connexion) et l'arrivée démarre (`startMemberOnboarding`). Dans tous les cas (fiche
+   validée par l'incubateur ou validée d'office à la création), un email
+   annonce ensuite l'arrivée aux membres actifs des produits du nouveau
+   membre ; un échec de cette annonce ne bloque pas l'arrivée. Si l'arrivée n'a
+   pas pu démarrer (ex : file de jobs indisponible), rouvrir
+   `/community/<username>/validate` la relance.
+   - email personnel : une adresse `@beta.gouv.fr` est créée
+     via Dimail (statut `EMAIL_CREATION_WAITING`). Le nom est
+     `prenom.nom` pour les agents publics (`legal_status`, ou à défaut statut
+     `admin` de la dernière mission), `prenom.nom.ext` sinon. Les
+     attributaires (domaine « Attributaire » ou type de membre
+     « attributaire ») ont toujours une adresse en `.ext`. Un lien
+     d'accès temporaire au webmail (code d'invitation Dimail, sans mot de
+     passe) est envoyé sur l'email personnel ;
+   - email du service public : cet email devient l'adresse principale, pas de
+     nouvelle boite.
+
+   Seul l'email compte : les attributaires suivent le même parcours que les
+   autres membres externes (boîte `@beta.gouv.fr` si leur email n'est pas celui
+   d'un service public).
+4. Une fois l'adresse principale prête (statut `EMAIL_VERIFICATION_WAITING`), une
+   invitation à se connecter **via ProConnect** est envoyée **sur cette adresse
+   principale** (sans lien de connexion) : le membre la trouve en ouvrant sa
+   nouvelle boîte pour la première fois. L'email personnel ne reçoit que le
+   lien d'accès à la boîte.
+5. Le membre se connecte avec ProConnect, puis vérifie/complète ses informations
+   (page `/verify`, statut `EMAIL_ACTIVE`).
 
 ### Départ (offboarding)
 
 Déclenché automatiquement à l'approche puis au passage de la date de fin de mission
 (workflows n8n) :
 
-- **J-30 / J-15 / J-1** : messages de rappel envoyés au membre (N8N)
-- **J+1** : le compte GitHub est retiré de l'organisation (N8N)
-- **J+5** : l'email primaire passe en `EMAIL_SUSPENDED` (N8N)
-- **J+30** : message final (N8N)
-- **J+30** : le compte Tchap est retiré de la communauté (N8N)
-- **J+30** : le compte Matomo est désactivé (N8N)
-- **J+30** : le compte Sentry est désactivé (N8N)
+Voir https://github.com/betagouv/n8n-workflows
 
 ### Retour d'un utilisateur (self-healing)
 
@@ -166,7 +248,9 @@ Définis dans [`src/models/member.ts`](./src/models/member.ts) :
 
 | Statut                                              | Signification                        |
 | --------------------------------------------------- | ------------------------------------ |
-| `EMAIL_UNSET`                                       | Aucun email primaire défini          |
+| `EMAIL_UNSET`                                       | Aucun email primaire défini ; statut d'une fiche acceptée dont l'arrivée démarre |
+| `MEMBER_VALIDATION_WAITING`                         | Fiche en attente de validation par l'incubateur |
+| `EMAIL_VERIFICATION_WAITING`                        | Adresse de connexion prête, invitation envoyée : le membre doit se connecter et vérifier sa fiche |
 | `EMAIL_CREATION_WAITING` / `EMAIL_CREATION_PENDING` | Création de la boite en cours        |
 | `EMAIL_ACTIVE`                                      | Boite active                         |
 | `EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING`      | Boite active, mot de passe à définir |

@@ -3,18 +3,19 @@ import sinon from "sinon";
 import * as nextAuth from "next-auth/next";
 import * as controllerUtils from "@/lib/utils";
 import * as updateMemberModule from "@/app/api/member/updateMember";
+import * as usersQueries from "@/lib/kysely/queries/users";
 import * as bossClient from "@/server/queueing/client";
 import { verifyNewMember } from "../verifyNewMember";
 import { Domaine, EmailStatusCode } from "@/models/member";
-import { AdminEmailNotAllowedError } from "@/lib/error";
+import { AdminEmailNotAllowedError, BusinessError } from "@/lib/error";
 
 describe("verifyNewMember", () => {
   let getServerSessionStub: sinon.SinonStub;
   let isPublicServiceEmailStub: sinon.SinonStub;
   let isAdminEmailStub: sinon.SinonStub;
   let updateMemberStub: sinon.SinonStub;
+  let getUserBasicInfoStub: sinon.SinonStub;
   let getBossClientInstanceStub: sinon.SinonStub;
-  let bossClientSendStub: sinon.SinonStub;
 
   const mockSession = {
     user: {
@@ -31,14 +32,21 @@ describe("verifyNewMember", () => {
     avatar: null,
     github: null,
     competences: [],
-    missions: [],
+    missions: [
+      {
+        start: new Date(),
+        end: new Date(Date.now() + 30 * 24 * 3600 * 1000),
+        status: "independent",
+        employer: "",
+      },
+    ],
     domaine: Domaine.DEVELOPPEMENT,
     bio: null,
     memberType: null,
     gender: null,
     secondary_email: "johndoe@example.com",
-    average_nb_of_days: null,
-    legal_status: null,
+    average_nb_of_days: 5,
+    legal_status: "AE",
     workplace_insee_code: null,
     osm_city: null,
   } as any;
@@ -62,10 +70,18 @@ describe("verifyNewMember", () => {
       .stub(updateMemberModule, "updateMember")
       .resolves(undefined as any);
 
-    bossClientSendStub = sinon.stub().resolves();
+    getUserBasicInfoStub = sinon
+      .stub(usersQueries, "getUserBasicInfo")
+      .resolves({
+        uuid: mockSession.user.uuid,
+        username: "johndoe",
+        primary_email: "john.doe.ext@beta.gouv.fr",
+        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      } as any);
+
     getBossClientInstanceStub = sinon
       .stub(bossClient, "getBossClientInstance")
-      .resolves({ send: bossClientSendStub } as any);
+      .resolves({ send: sinon.stub().resolves() } as any);
   });
 
   afterEach(() => {
@@ -96,6 +112,36 @@ describe("verifyNewMember", () => {
     }
   });
 
+  it("should validate input server-side", async () => {
+    try {
+      await verifyNewMember({ ...baseMemberData, secondary_email: "nope" });
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.name).to.equal("ZodError");
+    }
+    expect(updateMemberStub.called).to.be.false;
+  });
+
+  it("should refuse when the member is not waiting for verification", async () => {
+    for (const status of [
+      EmailStatusCode.EMAIL_ACTIVE,
+      EmailStatusCode.EMAIL_CREATION_WAITING,
+      EmailStatusCode.MEMBER_VALIDATION_WAITING,
+    ]) {
+      getUserBasicInfoStub.resolves({
+        uuid: mockSession.user.uuid,
+        primary_email_status: status,
+      } as any);
+      try {
+        await verifyNewMember(baseMemberData);
+        expect.fail(`Should have thrown for ${status}`);
+      } catch (e) {
+        expect(e).to.be.instanceof(BusinessError);
+      }
+    }
+    expect(updateMemberStub.called).to.be.false;
+  });
+
   it("should throw AdminEmailNotAllowedError if email is both public service and admin", async () => {
     isPublicServiceEmailStub.resolves(true);
     isAdminEmailStub.returns(true);
@@ -108,62 +154,21 @@ describe("verifyNewMember", () => {
     }
   });
 
-  it("should create new email when secondary_email is not public service and not attributaire", async () => {
-    isPublicServiceEmailStub.resolves(false);
-
+  it("should only save the profile and activate the account", async () => {
     await verifyNewMember(baseMemberData);
 
     expect(updateMemberStub.calledOnce).to.be.true;
-    const updateArgs = updateMemberStub.firstCall.args;
-    expect(updateArgs[2]).to.deep.include({
-      primary_email: null,
-      secondary_email: baseMemberData.secondary_email,
-      primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
-    });
-
-    expect(getBossClientInstanceStub.calledOnce).to.be.true;
-    expect(bossClientSendStub.calledOnce).to.be.true;
-    expect(bossClientSendStub.firstCall.args[1]).to.deep.include({
-      username: baseMemberData.username,
-      userUuid: mockSession.user.uuid,
-    });
-  });
-
-  it("should not create new email when secondary_email is public service", async () => {
-    isPublicServiceEmailStub.resolves(true);
-    isAdminEmailStub.returns(false);
-
-    await verifyNewMember(baseMemberData);
-
-    expect(updateMemberStub.calledOnce).to.be.true;
-    const updateArgs = updateMemberStub.firstCall.args;
-    expect(updateArgs[2]).to.deep.include({
-      primary_email: baseMemberData.secondary_email,
-      secondary_email: null,
-      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-    });
-
-    expect(bossClientSendStub.called).to.be.false;
-  });
-
-  it("should not create new email when domaine is ATTRIBUTAIRE", async () => {
-    const attributaireMemberData = {
-      ...baseMemberData,
-      domaine: Domaine.ATTRIBUTAIRE,
-    };
-    isPublicServiceEmailStub.resolves(false);
-
-    await verifyNewMember(attributaireMemberData);
-
-    expect(updateMemberStub.calledOnce).to.be.true;
-    const updateArgs = updateMemberStub.firstCall.args;
-    expect(updateArgs[2]).to.deep.include({
-      primary_email: baseMemberData.secondary_email,
-      secondary_email: null,
-      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-    });
-
-    expect(bossClientSendStub.called).to.be.false;
+    const [, uuid, extraParams, createdBy] = updateMemberStub.firstCall.args;
+    expect(uuid).to.equal(mockSession.user.uuid);
+    expect(createdBy).to.equal(mockSession.user.id);
+    expect(extraParams.primary_email_status).to.equal(
+      EmailStatusCode.EMAIL_ACTIVE,
+    );
+    // primary/secondary emails are not touched anymore
+    expect(extraParams).to.not.have.property("primary_email");
+    expect(extraParams).to.not.have.property("secondary_email");
+    // no mailbox creation from here
+    expect(getBossClientInstanceStub.called).to.be.false;
   });
 
   it("should return success message", async () => {

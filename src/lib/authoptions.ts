@@ -1,6 +1,5 @@
 import jwt, { JwtPayload, VerifyOptions } from "jsonwebtoken";
 import { NextAuthOptions, User } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
 import { v4 as uuidv4 } from "uuid";
 
 import customPostgresAdapter from "@/lib/pgAdpter";
@@ -9,28 +8,22 @@ import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/lib/config";
 import { getAdmin } from "@/server/config/admin.config";
-import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/lib/utils";
 import { getJwtTokenForUser } from "@/lib/session";
-import { EMAIL_TYPES } from "@/lib/email/email";
-import { checkRateLimit } from "@/lib/rateLimit";
 import {
   findUsersByLoginEmail,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
+import {
+  fakeProConnectProvider,
+  isFakeProConnectEnabled,
+} from "@/lib/auth/fakeProConnect";
+import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
+import {
+  hasRequiredProConnectAcr,
+  proConnectAcrClaims,
+} from "@/lib/auth/proConnectAcr";
 
-async function sendVerificationRequest(params) {
-  const { identifier, url } = params;
-  const urlObj = new URL(url);
-  await sendEmail({
-    type: EMAIL_TYPES.EMAIL_LOGIN,
-    variables: {
-      loginUrlWithToken: `${process.env.NEXTAUTH_URL}/signin${urlObj.search}`,
-      fullname: "",
-    },
-    toEmail: [identifier],
-  });
-}
 export type ProConnectProfile = {
   sub: string;
   email: string;
@@ -46,10 +39,8 @@ export const authOptions: NextAuthOptions = {
   adapter: customPostgresAdapter(),
   debug: process.env.NODE_ENV !== "production",
   providers: [
-    EmailProvider({
-      sendVerificationRequest,
-      maxAge: 3600,
-    }),
+    // development only (never enabled in a built app) : see fakeProConnect.ts
+    ...(isFakeProConnectEnabled() ? [fakeProConnectProvider] : []),
     {
       id: "proconnect",
       name: "Pro Connect",
@@ -68,7 +59,8 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: "openid uid given_name usual_name email",
-          acr_values: "eidas1",
+          // double authentication required (essential acr) : see proConnectAcr.ts
+          claims: proConnectAcrClaims(),
           nonce: uuidv4(),
           state: uuidv4(),
         },
@@ -126,7 +118,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
     signOut: "/auth/signout",
     error: "/login",
-    verifyRequest: "/auth/verify-request",
   },
   jwt: {
     async encode({ secret, token }) {
@@ -151,24 +142,15 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user, account, email }) {
+    async signIn({ user, account }) {
       if (user.id) {
-        // Only the initial login-form submission (`verificationRequest`) can be
-        // sprayed by an unauthenticated caller against arbitrary addresses at
-        // zero cost — it mails whoever is asked about and writes a token to the
-        // DB before this point returns. The redemption phase below (the emailed
-        // link actually being clicked) isn't spray-able the same way, since it
-        // requires a real token from that inbox, so it isn't rate-limited here.
-        if (email?.verificationRequest) {
-          const { allowed } = checkRateLimit(
-            `login-request:${user.id}`,
-            3,
-            15 * 60_000,
-          );
-          if (!allowed) {
-            console.log(`Too many login attempts for ${user.id}`);
-            throw new Error("TooManyAttempts");
-          }
+        // the acr asked as essential must be read back from the id_token
+        if (
+          account?.provider === "proconnect" &&
+          !hasRequiredProConnectAcr(account.id_token)
+        ) {
+          console.log(`ProConnect: acr without MFA refused for ${user.id}`);
+          throw new Error("MfaRequired");
         }
         const dbUser = await getUserInfos({
           username: user.id,
@@ -185,6 +167,14 @@ export const authOptions: NextAuthOptions = {
         if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
           console.log(`Cannot login expired member ${user.id}`);
           throw new Error("ExpiredMember");
+        }
+        // a fiche not validated yet, or without its login address, cannot be
+        // entered through a Dimail address linked to it by username
+        if (!isMemberReadyToLogin(dbUser)) {
+          console.log(
+            `Cannot login member ${user.id}: status ${dbUser.primary_email_status}`,
+          );
+          throw new Error("MemberNotReady");
         }
         const loginProvider =
           account?.provider === "proconnect" ? "proconnect" : "email";
