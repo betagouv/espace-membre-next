@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: baab9bc320877785c6ccf878f72a9b9257becfb719d4bcbcca1a2ba2bca49870
+  checksum: cc2dcc54c5affe24cbfeea3aaf11d7a389bfc29b327a7cbe4fadda6470735cde
 - filename: .env.test
   checksum: ac4a41141b6012a11636e64642152bbc339bf10380b564d35fe33870531d732a
 - filename: .github/workflows/nodejs.yml
@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: 2bf3b8babdc7578c6e99e67c1cf8022a26fb4ac9bd6d411019e064f68f766a00
 - filename: README.md
-  checksum: 9f3ceb61b1e3140608bc4c88b210ba9e94f3d277b055c2b3ad71f75961942a5c
+  checksum: 554368306b26bb92ec5176538398adf7aab1d84b741666bc6dafb45f66d9a989
 - filename: __tests__/htmlbuilder.spec.ts
   checksum: b7e67d2a05570add2fee22a95e3faa3b5af001cffbeefd71725064e82636e889
 - filename: __tests__/test-email.ts

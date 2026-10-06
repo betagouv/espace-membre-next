@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { getDimailUsernameForUser } from "./utils";
+import { getDimailUsernameForUser, isAttributaire } from "./utils";
 
 const tests = [
   {
@@ -38,6 +38,26 @@ const tests = [
     input: ["ada.lovelace", "AE", "admin"],
     expected: "ada.lovelace.ext",
   },
+  {
+    title: "attributaire fonctionnaire : .ext anyway",
+    input: ["ada.lovelace", "fonctionnaire", null, true],
+    expected: "ada.lovelace.ext",
+  },
+  {
+    title: "attributaire contractuel : .ext anyway",
+    input: ["ada.lovelace", "contractuel", "admin", true],
+    expected: "ada.lovelace.ext",
+  },
+  {
+    title: "attributaire without legal_status and an admin mission : .ext anyway",
+    input: ["ada.lovelace", null, "admin", true],
+    expected: "ada.lovelace.ext",
+  },
+  {
+    title: "attributaire independent",
+    input: ["ada.lovelace", null, "independent", true],
+    expected: "ada.lovelace.ext",
+  },
 ];
 
 describe("getDimailUsernameForUser", () => {
@@ -46,9 +66,26 @@ describe("getDimailUsernameForUser", () => {
       expect(
         getDimailUsernameForUser.apply(
           this,
-          t.input as [string, string | null, string | null],
+          t.input as [string, string | null, string | null, boolean],
         ),
       ).to.equal(t.expected);
     });
+  });
+});
+
+describe("isAttributaire", () => {
+  it("is true for the Attributaire domaine", () => {
+    expect(isAttributaire({ domaine: "Attributaire", member_type: null })).to.be
+      .true;
+  });
+  it("is true for the attributaire member type", () => {
+    expect(
+      isAttributaire({ domaine: "Développement", member_type: "attributaire" }),
+    ).to.be.true;
+  });
+  it("is false otherwise", () => {
+    expect(isAttributaire({ domaine: "Développement", member_type: "beta" })).to
+      .be.false;
+    expect(isAttributaire({})).to.be.false;
   });
 });

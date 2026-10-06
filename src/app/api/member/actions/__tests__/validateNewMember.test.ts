@@ -21,6 +21,7 @@ describe("validateNewMember", () => {
   let dbUpdateTableStub: sinon.SinonStub;
   let updateExecuteStub: sinon.SinonStub;
   let updateWhereStub: sinon.SinonStub;
+  let updateSetStub: sinon.SinonStub;
   let canEditMemberStub: sinon.SinonStub;
   let addEventStub: sinon.SinonStub;
   let sendEmailToTeamStub: sinon.SinonStub;
@@ -74,8 +75,9 @@ describe("validateNewMember", () => {
     // stub db chainable update builder
     updateExecuteStub = sinon.stub().resolves({ numUpdatedRows: BigInt(1) });
     updateWhereStub = sinon.stub();
+    updateSetStub = sinon.stub();
     const updateBuilder = {
-      set: sinon.stub().returnsThis(),
+      set: updateSetStub.returnsThis(),
       where: updateWhereStub.returnsThis(),
       executeTakeFirst: updateExecuteStub,
     };
@@ -170,6 +172,13 @@ describe("validateNewMember", () => {
     ).to.be.true;
   });
 
+  it("should put the validated member in EMAIL_UNSET (no login email yet)", async () => {
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+    expect(updateSetStub.firstCall.args[0].primary_email_status).to.equal(
+      EmailStatusCode.EMAIL_UNSET,
+    );
+  });
+
   it("should validate the member then start the onboarding", async () => {
     await validateNewMember({ memberUuid: MEMBER_UUID });
 
@@ -196,12 +205,16 @@ describe("validateNewMember", () => {
     expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
   });
 
+  const activeMission = [{ end: new Date(Date.now() + 30 * 24 * 3600 * 1000) }];
+  const endedMission = [{ end: new Date(Date.now() - 30 * 24 * 3600 * 1000) }];
+
   it("should restart the onboarding of a validated member whose onboarding never started", async () => {
     updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
     getUserBasicInfoStub.resolves({
       ...mockUserData,
-      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
       primary_email: null,
+      missions: activeMission,
     } as any);
 
     await validateNewMember({ memberUuid: MEMBER_UUID });
@@ -212,12 +225,45 @@ describe("validateNewMember", () => {
     expect(sendEmailToTeamStub.called).to.be.false;
   });
 
+  it("should restart the onboarding of a fiche accepted before the change (EMAIL_VERIFICATION_WAITING without primary email)", async () => {
+    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
+    getUserBasicInfoStub.resolves({
+      ...mockUserData,
+      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email: null,
+      missions: activeMission,
+    } as any);
+
+    await validateNewMember({ memberUuid: MEMBER_UUID });
+
+    expect(startMemberOnboardingStub.calledOnceWith(MEMBER_UUID)).to.be.true;
+  });
+
+  it("should not restart the onboarding of an old EMAIL_UNSET fiche whose mission is over", async () => {
+    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
+    getUserBasicInfoStub.resolves({
+      ...mockUserData,
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
+      primary_email: null,
+      missions: endedMission,
+    } as any);
+
+    try {
+      await validateNewMember({ memberUuid: MEMBER_UUID });
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.code).to.equal("userAlreadyValided");
+    }
+    expect(startMemberOnboardingStub.called).to.be.false;
+  });
+
   it("should not restart the onboarding of a member who already has a primary email", async () => {
     updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
     getUserBasicInfoStub.resolves({
       ...mockUserData,
       primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
       primary_email: "test.member.ext@beta.gouv.fr",
+      missions: activeMission,
     } as any);
 
     try {

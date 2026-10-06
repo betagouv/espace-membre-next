@@ -8,6 +8,7 @@ import { EmailStatusCode } from "@/models/member";
 import { createMailbox, createMailboxCode } from "@/lib/dimail/client";
 import {
   getDimailUsernameForUser,
+  isAttributaire,
   DIMAIL_MAILBOX_DOMAIN,
 } from "@/lib/dimail/utils";
 import { sendEmail } from "@/server/config/email.config";
@@ -63,6 +64,7 @@ export async function createDimailMailboxForUser(
     dbUser.username,
     dbUser.legal_status,
     lastMission?.status,
+    isAttributaire(dbUser),
   );
 
   console.log(
@@ -161,10 +163,18 @@ export async function createDimailMailboxForUser(
   return mailboxEmail;
 }
 
+// a mailbox created a moment ago may not accept emails yet : wait before
+// sending the invitation to it (DIMAIL_INVITATION_DELAY_MS overrides the 10s)
+const getInvitationDelayMs = () => {
+  const delay = Number(process.env.DIMAIL_INVITATION_DELAY_MS ?? 10_000);
+  return Number.isFinite(delay) && delay > 0 ? delay : 0;
+};
+
 /*
 
 onboarding d'un nouveau membre : crée la boite puis, seulement une fois la
-boite créée, envoie l'invitation à se connecter via ProConnect.
+boite créée et après un délai de 10s, envoie l'invitation à se connecter via
+ProConnect sur cette nouvelle boite.
 
 idempotent : en cas de retry pg-boss (ex: échec d'envoi de l'invitation),
 la boite n'est pas recréée (sinon 409) et l'invitation n'est envoyée qu'une fois.
@@ -180,6 +190,7 @@ export async function onboardNewMemberMailbox(userUuid: string) {
       EmailStatusCode.EMAIL_VERIFICATION_WAITING &&
     !!dbUser.primary_email?.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`);
 
+  let mailboxJustCreated = false;
   if (mailboxAlreadyCreated) {
     console.log(`DIMAIL mailbox already created for ${dbUser.username}`);
   } else if (
@@ -188,6 +199,7 @@ export async function onboardNewMemberMailbox(userUuid: string) {
     await createDimailMailboxForUser(userUuid, {
       status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
     });
+    mailboxJustCreated = true;
   } else {
     // user is not onboarding anymore (already verified, suspended...)
     console.log(
@@ -203,6 +215,13 @@ export async function onboardNewMemberMailbox(userUuid: string) {
   if (invitationEvent) {
     console.log(`Invitation already sent to ${dbUser.username}`);
     return;
+  }
+  const delayMs = getInvitationDelayMs();
+  if (mailboxJustCreated && delayMs) {
+    console.log(
+      `Wait ${delayMs}ms before sending the invitation to the new mailbox of ${dbUser.username}`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
   }
   await sendNewMemberVerificationEmail({ userId: userUuid });
 }

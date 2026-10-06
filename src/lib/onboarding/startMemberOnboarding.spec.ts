@@ -7,7 +7,10 @@ import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
 import * as utilsLib from "@/lib/utils";
 import { BusinessError } from "@/lib/error";
-import { startMemberOnboarding } from "@/lib/onboarding/startMemberOnboarding";
+import {
+  ONBOARDING_NOT_STARTED_STATUSES,
+  startMemberOnboarding,
+} from "@/lib/onboarding/startMemberOnboarding";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import * as bossClient from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
@@ -30,7 +33,7 @@ describe("startMemberOnboarding", () => {
     secondary_email: "ada@example.com",
     primary_email: null,
     domaine: Domaine.DEVELOPPEMENT,
-    primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    primary_email_status: EmailStatusCode.EMAIL_UNSET,
   };
 
   beforeEach(() => {
@@ -96,7 +99,7 @@ describe("startMemberOnboarding", () => {
 
     expect(updateSetStub.calledTwice).to.be.true;
     expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
-      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      EmailStatusCode.EMAIL_UNSET,
     );
     // only undoes its own transition
     expect(
@@ -120,20 +123,27 @@ describe("startMemberOnboarding", () => {
     }
 
     expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
-      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      EmailStatusCode.EMAIL_UNSET,
     );
   });
 
-  it("only transitions a member waiting for verification without primary email", async () => {
+  it("only transitions an accepted member without primary email", async () => {
     await startMemberOnboarding(USER_UUID);
     expect(
       updateWhereStub.calledWith(
         "primary_email_status",
-        "=",
-        EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+        "in",
+        ONBOARDING_NOT_STARTED_STATUSES,
       ),
     ).to.be.true;
     expect(updateWhereStub.calledWith("primary_email", "is", null)).to.be.true;
+  });
+
+  it("starts from EMAIL_UNSET, and from the legacy EMAIL_VERIFICATION_WAITING without primary email", () => {
+    expect(ONBOARDING_NOT_STARTED_STATUSES).to.have.members([
+      EmailStatusCode.EMAIL_UNSET,
+      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    ]);
   });
 
   it("is a no-op when the onboarding already started", async () => {
@@ -155,6 +165,10 @@ describe("startMemberOnboarding", () => {
     expect(updateSetStub.firstCall.args[0].primary_email).to.equal(
       "ada@interieur.gouv.fr",
     );
+    // the login email is ready : the member can now log in and verify
+    expect(updateSetStub.firstCall.args[0].primary_email_status).to.equal(
+      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    );
     expect(bossSendStub.called).to.be.false;
     expect(sendVerificationEmailStub.calledOnceWith({ userId: USER_UUID })).to
       .be.true;
@@ -162,7 +176,7 @@ describe("startMemberOnboarding", () => {
     expect(sendVerificationEmailStub.calledAfter(updateExecuteStub)).to.be.true;
   });
 
-  it("attributaire: no mailbox, the email becomes the primary email", async () => {
+  it("attributaire with a personal email: gets a mailbox like any other external member", async () => {
     getUserBasicInfoStub.resolves({
       ...baseUser,
       domaine: Domaine.ATTRIBUTAIRE,
@@ -170,8 +184,26 @@ describe("startMemberOnboarding", () => {
 
     await startMemberOnboarding(USER_UUID);
 
+    expect(updateSetStub.firstCall.args[0].primary_email_status).to.equal(
+      EmailStatusCode.EMAIL_CREATION_WAITING,
+    );
+    expect(updateSetStub.firstCall.args[0].primary_email).to.be.undefined;
+    expect(bossSendStub.calledOnce).to.be.true;
+    expect(sendVerificationEmailStub.called).to.be.false;
+  });
+
+  it("attributaire with a public service email: that email becomes the primary email", async () => {
+    isPublicServiceEmailStub.resolves(true);
+    getUserBasicInfoStub.resolves({
+      ...baseUser,
+      domaine: Domaine.ATTRIBUTAIRE,
+      secondary_email: "ada@interieur.gouv.fr",
+    } as any);
+
+    await startMemberOnboarding(USER_UUID);
+
     expect(updateSetStub.firstCall.args[0].primary_email).to.equal(
-      "ada@example.com",
+      "ada@interieur.gouv.fr",
     );
     expect(bossSendStub.called).to.be.false;
     expect(sendVerificationEmailStub.calledOnce).to.be.true;

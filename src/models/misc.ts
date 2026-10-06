@@ -15,7 +15,8 @@ export const EMAIL_STATUS_READABLE_FORMAT: Record<EmailStatusCode, string> = {
   [EmailStatusCode.EMAIL_EXPIRED]: "Expiré", // todo: remove
   [EmailStatusCode.EMAIL_CREATION_PENDING]: "Création en cours",
   [EmailStatusCode.EMAIL_RECREATION_PENDING]: "Recréation en cours", // todo: remove
-  [EmailStatusCode.EMAIL_UNSET]: "Non défini",
+  [EmailStatusCode.EMAIL_UNSET]:
+    "Fiche validée : l'adresse de connexion n'est pas encore attribuée.",
   [EmailStatusCode.EMAIL_REDIRECTION_PENDING]:
     "L'email est une redirection. La création est en cours", // todo: remove
   [EmailStatusCode.EMAIL_VERIFICATION_WAITING]:

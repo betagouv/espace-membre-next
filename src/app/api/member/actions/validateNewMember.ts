@@ -19,7 +19,12 @@ import {
 } from "@/lib/error";
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
 import { canEditMember } from "@/lib/canEditMember";
-import { startMemberOnboarding } from "@/lib/onboarding/startMemberOnboarding";
+import {
+  ONBOARDING_NOT_STARTED_STATUSES,
+  startMemberOnboarding,
+} from "@/lib/onboarding/startMemberOnboarding";
+import { checkUserIsExpired } from "@/lib/utils";
+import { memberBaseInfoSchemaType } from "@/models/member";
 
 const MemberCreatedIncubatorSchema = z.object({
   action_metadata: z.object({
@@ -65,11 +70,12 @@ export async function validateNewMember({
     );
   }
 
-  // atomic transition : a second (concurrent) validation updates nothing
+  // atomic transition : a second (concurrent) validation updates nothing.
+  // EMAIL_UNSET : accepted, no login email yet (startMemberOnboarding takes over)
   const result = await db
     .updateTable("users")
     .set({
-      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
       primary_email_status_updated_at: new Date(),
     })
     .where("uuid", "=", memberUuid)
@@ -81,12 +87,17 @@ export async function validateNewMember({
     .executeTakeFirst();
   if (!Number(result.numUpdatedRows)) {
     // already validated. if the onboarding never started (ex: the mailbox job
-    // could not be enqueued), opening the validation link again restarts it
+    // could not be enqueued), opening the validation link again restarts it.
+    // EMAIL_UNSET is also the status of old fiches without email : only
+    // members with a current mission are concerned.
     const currentData = await getUserBasicInfo({ uuid: memberUuid });
     if (
-      currentData?.primary_email_status ===
-        EmailStatusCode.EMAIL_VERIFICATION_WAITING &&
-      !currentData.primary_email
+      currentData &&
+      ONBOARDING_NOT_STARTED_STATUSES.includes(
+        currentData.primary_email_status as EmailStatusCode,
+      ) &&
+      !currentData.primary_email &&
+      !checkUserIsExpired(currentData as unknown as memberBaseInfoSchemaType)
     ) {
       await startMemberOnboarding(rawData.uuid);
       return;

@@ -25,9 +25,10 @@ export default async function Page() {
       <h2>Je viens d'arriver dans la communauté</h2>
       <p>
         Une fois ta fiche validée, ta boîte @beta.gouv.fr est créée
-        automatiquement. Tu as alors reçu deux emails sur ton adresse
-        personnelle : un lien d'accès temporaire à ta boîte, puis une
-        invitation à te connecter avec ProConnect.
+        automatiquement. Tu reçois alors sur ton adresse personnelle un lien
+        d'accès temporaire à ta boîte. Dans cette nouvelle boîte, un email
+        t'invite à te connecter à l'espace-membre avec ProConnect pour
+        finaliser ton inscription.
       </p>
       <p>
         Si tu n'as rien reçu, vérifie tes spams puis rapproche-toi de la

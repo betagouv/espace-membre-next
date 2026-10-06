@@ -27,7 +27,7 @@ describe("sendNewMemberVerificationEmail", () => {
     mockAddEvent.resolves();
   });
 
-  it("invites to log in with ProConnect using the primary email, sent to the contact email", async () => {
+  it("invites to log in with ProConnect using the primary email, sent to that primary email", async () => {
     mockGetUserBasicInfo.resolves({
       username: "ada.lovelace",
       fullname: "Ada Lovelace",
@@ -40,7 +40,8 @@ describe("sendNewMemberVerificationEmail", () => {
     expect(mockSendEmail.calledOnce).to.be.true;
     const email = mockSendEmail.firstCall.args[0];
     expect(email.type).to.equal("EMAIL_VERIFICATION_WAITING");
-    expect(email.toEmail).to.deep.equal(["ada@example.com"]);
+    // found in the new mailbox, never sent to the personal email
+    expect(email.toEmail).to.deep.equal(["ada.lovelace.ext@beta.gouv.fr"]);
     expect(email.variables).to.deep.equal({
       loginEmail: "ada.lovelace.ext@beta.gouv.fr",
       loginUrl: "https://espace-membre.test/login",
@@ -58,7 +59,7 @@ describe("sendNewMemberVerificationEmail", () => {
     ).to.be.true;
   });
 
-  it("falls back to the primary email as recipient when there is no contact email", async () => {
+  it("is sent to the primary email when there is no contact email", async () => {
     mockGetUserBasicInfo.resolves({
       username: "ada.lovelace",
       fullname: "Ada Lovelace",

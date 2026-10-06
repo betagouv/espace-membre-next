@@ -98,6 +98,9 @@ describe("create-dimail-mail", () => {
     // Mock console methods
     consoleErrorStub = sinon.stub(console, "error");
 
+    // no waiting in tests, except where the delay itself is tested
+    process.env.DIMAIL_INVITATION_DELAY_MS = "0";
+
     // Mock process.env
     process.env.DIMAIL_WEBMAIL_URL = "https://messagerie.numerique.gouv.fr";
 
@@ -213,8 +216,8 @@ describe("create-dimail-mail", () => {
       `should update table dinum_emails with new email, got ${JSON.stringify(mockValues.getCall(0).args)}`,
     ).to.be.true;
 
-    // Verify execute calls
-    expect(mockExecute.calledThrice, "should execute 3 queries").to.be.true;
+    // Verify execute calls : dinum_emails insert + users update
+    expect(mockExecute.calledTwice, "should execute 2 queries").to.be.true;
   });
 
   it("should throw error when user is not found", async () => {
@@ -291,6 +294,29 @@ describe("create-dimail-mail", () => {
       }),
       `createMailbox should be called with correct parameters. instead got ${JSON.stringify(mockCreateMailbox.firstCall && mockCreateMailbox.firstCall.args)}`,
     ).to.be.true;
+  });
+
+  it("should always add .ext for an attributaire, even with an admin mission or a public legal status", async () => {
+    mockGetUserBasicInfo.resolves({
+      uuid: userTestUuid,
+      username: "john.doe",
+      fullname: "John Doe",
+      secondary_email: "john.doe@example.com",
+      primary_email: null,
+      legal_status: "fonctionnaire",
+      domaine: "Attributaire",
+      missions: [],
+    });
+    mockLastMission.resolves({ status: "admin" });
+    mockCreateMailbox.resolves({
+      email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+    });
+
+    await createDimailMailboxForUser(userTestUuid);
+
+    expect(mockCreateMailbox.firstCall.args[0].user_name).to.equal(
+      "john.doe.ext",
+    );
   });
 
   it("should not add .ext for a new member (no legal_status) whose latest mission is admin", async () => {
@@ -393,6 +419,32 @@ describe("create-dimail-mail", () => {
       // the invitation is sent only once the mailbox is created and saved
       expect(mockSendInvitation.calledAfter(mockCreateMailbox)).to.be.true;
       expect(mockSendInvitation.calledAfter(mockSet)).to.be.true;
+    });
+
+    it("waits before sending the invitation to a mailbox that was just created", async () => {
+      process.env.DIMAIL_INVITATION_DELAY_MS = "60";
+      mockGetUserBasicInfo.resolves(onboardingUser);
+
+      const start = Date.now();
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockSendInvitation.calledOnce).to.be.true;
+      expect(Date.now() - start).to.be.at.least(55);
+    });
+
+    it("does not wait when the mailbox was created by a previous attempt", async () => {
+      process.env.DIMAIL_INVITATION_DELAY_MS = "5000";
+      mockGetUserBasicInfo.resolves({
+        ...onboardingUser,
+        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email_status: "EMAIL_VERIFICATION_WAITING",
+      });
+
+      const start = Date.now();
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockSendInvitation.calledOnce).to.be.true;
+      expect(Date.now() - start).to.be.below(1000);
     });
 
     it("does not send the invitation when the mailbox creation fails", async () => {

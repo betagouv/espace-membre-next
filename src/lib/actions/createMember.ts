@@ -112,8 +112,9 @@ async function createMemberAction(input: createMemberSchemaType) {
           fullname: `${member.firstname} ${member.lastname}`,
           username,
           role: "",
+          // accepted but no login email yet : startMemberOnboarding takes over
           primary_email_status: userIsValidatedStraightAway
-            ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
+            ? EmailStatusCode.EMAIL_UNSET
             : EmailStatusCode.MEMBER_VALIDATION_WAITING,
         })
         .returning("uuid")

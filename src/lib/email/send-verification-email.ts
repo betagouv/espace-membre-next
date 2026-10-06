@@ -9,8 +9,9 @@ import { EMAIL_TYPES } from "@/lib/email/email";
 
 // invite the new member to log in with ProConnect using their primary email
 // (new @beta.gouv.fr mailbox or public service email).
-// the email contains no login token : it is sent to the contact email
-// (secondary_email) when there is one, the login account being the primary email.
+// the email contains no login token. it is sent to that primary email, never
+// to the personal one : the member finds it when opening the new mailbox for the
+// first time (the mailbox access link is the email sent to the personal address).
 export async function sendNewMemberVerificationEmail(
   data: SendNewMemberVerificationEmailSchemaType,
 ) {
@@ -26,12 +27,11 @@ export async function sendNewMemberVerificationEmail(
     );
   }
   const loginEmail = dbUser.primary_email;
-  const toEmail = dbUser.secondary_email || dbUser.primary_email;
   const loginUrl = `${getBaseUrl()}/login`;
 
   await sendEmail({
     type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
-    toEmail: [toEmail],
+    toEmail: [loginEmail],
     variables: {
       loginEmail,
       loginUrl,

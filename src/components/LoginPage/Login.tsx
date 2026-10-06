@@ -3,6 +3,8 @@ import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Input } from "@codegouvfr/react-dsfr/Input";
 import ProConnectButton from "@codegouvfr/react-dsfr/ProConnectButton";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -89,7 +91,49 @@ const oAuthErrors = {
   ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
 };
 
-export const LoginPage = function () {
+// development only : stands in for ProConnect, which is not reachable from a
+// local setup. The server only accepts it under `next dev` (see fakeProConnect.ts)
+const FakeProConnectForm = ({ next }: { next: string | null }) => {
+  const [email, setEmail] = React.useState("");
+  return (
+    <form
+      className={fr.cx("fr-mb-3w", "fr-p-2w")}
+      style={{ border: "2px dashed var(--border-plain-warning)" }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        signIn("fake-proconnect", {
+          email,
+          callbackUrl: next || "/dashboard",
+        });
+      }}
+    >
+      <p className={fr.cx("fr-text--sm", "fr-mb-1w")}>
+        <strong>Développement</strong> : connexion ProConnect simulée, sans
+        mot de passe.
+      </p>
+      <Input
+        label="Email renvoyé par ProConnect"
+        hintText="Adresse principale d'un membre présent en base (pas son email personnel)"
+        nativeInputProps={{
+          type: "email",
+          required: true,
+          value: email,
+          placeholder: "prenom.nom@beta.gouv.fr",
+          onChange: (e) => setEmail(e.target.value),
+        }}
+      />
+      <Button type="submit" priority="secondary">
+        Simuler la connexion ProConnect
+      </Button>
+    </form>
+  );
+};
+
+export const LoginPage = function ({
+  fakeProConnect = false,
+}: {
+  fakeProConnect?: boolean;
+}) {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const next = searchParams.get("next");
@@ -117,6 +161,7 @@ export const LoginPage = function () {
           }
         />
       </div>
+      {fakeProConnect && <FakeProConnectForm next={next} />}
       <p className="fr-text--sm">
         Accès à ta boîte perdu ou impossible de te connecter ?{" "}
         <Link href="/support">Consulte la page d'aide</Link>

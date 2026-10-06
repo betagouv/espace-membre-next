@@ -14,6 +14,10 @@ import {
   findUsersByLoginEmail,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
+import {
+  fakeProConnectProvider,
+  isFakeProConnectEnabled,
+} from "@/lib/auth/fakeProConnect";
 
 export type ProConnectProfile = {
   sub: string;
@@ -30,6 +34,8 @@ export const authOptions: NextAuthOptions = {
   adapter: customPostgresAdapter(),
   debug: process.env.NODE_ENV !== "production",
   providers: [
+    // development only (never enabled in a built app) : see fakeProConnect.ts
+    ...(isFakeProConnectEnabled() ? [fakeProConnectProvider] : []),
     {
       id: "proconnect",
       name: "Pro Connect",
