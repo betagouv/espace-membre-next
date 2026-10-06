@@ -59,6 +59,11 @@ export default async function Page() {
           boîte @beta.gouv.fr est en cours de création, la connexion est
           refusée : réessaie un peu plus tard.
         </li>
+        <li>
+          La connexion exige une double authentification : si ton fournisseur
+          d'identité n'en propose pas, ProConnect t'envoie un code par email.
+          Sans second facteur, la connexion est refusée.
+        </li>
         <li>Si ProConnect est indisponible, réessaie un peu plus tard.</li>
       </ul>
 

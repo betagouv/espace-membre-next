@@ -89,6 +89,8 @@ const oAuthErrors = {
   UnknownMember:
     "Aucun membre ne correspond à ce compte. Connecte-toi avec ton adresse @beta.gouv.fr ou ton adresse du service public (pas ton email personnel).",
   ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
+  MfaRequired:
+    "Vous ne pouvez pas accéder au service sans avoir une double authentification installée. Veuillez installer une application d'authentification et vous connecter à nouveau.",
   MemberNotReady:
     "Ta fiche n'est pas encore validée, ou ton adresse de connexion est en cours de création. Réessaie plus tard ou rapproche-toi de ton incubateur.",
 };

@@ -13,7 +13,10 @@ L'espace membre de l’incubateur
 - afficher les formations et évènements
 - connexion uniquement via ProConnect, avec l'adresse principale du membre
   (boîte `@beta.gouv.fr` ou adresse du service public). L'email personnel
-  (`secondary_email`) ne permet pas de se connecter. Aide : page publique `/support`
+  (`secondary_email`) ne permet pas de se connecter. La double authentification
+  est exigée (claim `acr` essentiel, niveaux `eidas0-mfa`, `eidas1-mfa`,
+  `eidas2`, `eidas3`, vérifié dans l'`id_token` au retour). Aide : page
+  publique `/support`
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 

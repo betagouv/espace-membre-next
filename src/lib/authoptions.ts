@@ -19,6 +19,10 @@ import {
   isFakeProConnectEnabled,
 } from "@/lib/auth/fakeProConnect";
 import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
+import {
+  hasRequiredProConnectAcr,
+  proConnectAcrClaims,
+} from "@/lib/auth/proConnectAcr";
 
 export type ProConnectProfile = {
   sub: string;
@@ -55,7 +59,8 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           scope: "openid uid given_name usual_name email",
-          acr_values: "eidas1",
+          // double authentication required (essential acr) : see proConnectAcr.ts
+          claims: proConnectAcrClaims(),
           nonce: uuidv4(),
           state: uuidv4(),
         },
@@ -139,6 +144,14 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (user.id) {
+        // the acr asked as essential must be read back from the id_token
+        if (
+          account?.provider === "proconnect" &&
+          !hasRequiredProConnectAcr(account.id_token)
+        ) {
+          console.log(`ProConnect: acr without MFA refused for ${user.id}`);
+          throw new Error("MfaRequired");
+        }
         const dbUser = await getUserInfos({
           username: user.id,
           options: {
