@@ -68,6 +68,18 @@ export default async function Page() {
       </ul>
 
       <h2>Contacter le support</h2>
+      <ul>
+        <li>
+          Consulte{" "}
+          <a href="https://faq-betagouv.crisp.help/fr/category/espace-membre-1o8xzu0/">
+            la FAQ espace-membre
+          </a>
+        </li>
+        <li>
+          Contacte l'équipe support{" "}
+          <a href="https://faq-betagouv.crisp.help">via CRISP</a>
+        </li>
+      </ul>
       {supportEmail ? (
         <p>
           Écris à <a href={`mailto:${supportEmail}`}>{supportEmail}</a> en
