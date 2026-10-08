@@ -25,6 +25,7 @@ import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailVerificationNotice } from "./MemberWaitingEmailVerificationNotice";
 import { userEventSchemaType } from "@/models/userEvent";
+import type { ChecklistType } from "@/lib/checklists/getChecklistObject";
 
 //@ts-ignore
 import "./MemberPage.css";
@@ -38,6 +39,7 @@ const mdParser = new MarkdownIt({
 });
 
 export interface UserChecklist {
+  type: ChecklistType;
   progress: number;
   checklistObject: checklistSchemaType;
   userEvents: userEventSchemaType[];
@@ -182,10 +184,33 @@ export default function MemberPage({
           userInfos={userInfos}
           checklistObject={onboarding.checklistObject}
           intro={
-            <p>
-              Bienvenue dans la communauté ! Cette checklist est là pour t'aider
-              à bien débuter ta mission chez beta.gouv.fr.
-            </p>
+            onboarding.type === "onboarding-intrapreneur" ? (
+              <>
+                <p>
+                  Bienvenue dans la communauté ! Tu prends la responsabilité
+                  d'un produit numérique public. Cette checklist est là pour
+                  t'aider à démarrer !
+                </p>
+                <p>
+                  Elle est construite pour préparer, dès tes premières semaines,
+                  les 8 compétences que la{" "}
+                  <a
+                    href="https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers/intrapreneur/certification-des-intrapreneurs"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="certification des intras - ouvre une nouvelle fenêtre"
+                  >
+                    certification des intras
+                  </a>{" "}
+                  évaluera.
+                </p>
+              </>
+            ) : (
+              <p>
+                Bienvenue dans la communauté ! Cette checklist est là pour
+                t'aider à bien débuter ta mission chez beta.gouv.fr.
+              </p>
+            )
           }
         />
       ),

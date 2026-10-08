@@ -1,0 +1,96 @@
+# Checklist d'embarquement des nouveaux membres du domaine Intraprenariat, à la
+# place de onboarding.yml (voir getOnboardingChecklistType) : elle les forme au
+# pilotage de leur produit et prépare les 8 compétences évaluées par la
+# certification des intras.
+#
+# Un item qui existe aussi dans onboarding.yml garde son id : la case reste
+# cochée si le domaine du membre change, et n8n arrête les relances
+# d'embarquement sur `onboarding-atelier-onboarding`, pour tout le monde.
+- title: "🚀 La première semaine : assimiler les enjeux de ton environnement"
+  items:
+    - id: onboarding-fiche-membre
+      title: Compléter ta fiche membre
+      disabled: true
+      defaultValue: true
+    - id: onboarding-video-presentation
+      title: Lire l'email de bienvenue et regarder [la vidéo de présentation de beta.gouv.fr](https://tube.numerique.gouv.fr/w/uoqH4BLXqLFS2HsLZRcBLJ)
+    - id: onboarding-atelier-onboarding
+      title: Participer à la session d'embarquement en visioconférence dédiée aux intrapreneur·es
+      # Attesté par l'équipe d'animation, pas auto-déclaratif.
+      restricted: true
+    - id: onboarding-valeurs-beta
+      title: Prendre connaissance des [valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
+    - id: onboarding-standards-beta
+      title: Lire la documentation sur nos [standards de qualité](https://doc.incubateur.net/communaute/gerer-son-produit/readme-doc-incubateur-net)
+    - id: onboarding-intra-phases-programme
+      title: Comprendre [les 4 phases du programme beta.gouv.fr](https://doc.incubateur.net/communaute/gerer-son-produit/la-vie-du-produit) et identifier celle où se trouve ton produit
+    - id: onboarding-intra-comite-investissement
+      title: Savoir quand a lieu ton prochain comité d'investissement, et ce qui s'y décide, en lien avec ton incubateur
+    - id: onboarding-presentation-incubateur
+      title: Participer à une session de présentation de ton incubateur
+- title: "🧰 La première semaine : explorer les outils et la communauté"
+  items:
+    - id: onboarding-canaux-tchap
+      title: Découvrir [les canaux Tchap recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/tchap) et rejoindre ceux de ton équipe
+    - id: onboarding-intra-canal-tchap
+      title: "Rejoindre le [canal Domaine-intras](https://tchap.gouv.fr/#/room/!AdOsEgKcBcmTVsXFOf:agent.dinum.tchap.gouv.fr?via=agent.dinum.tchap.gouv.fr&via=agent.dev-durable.tchap.gouv.fr&via=agent.agriculture.tchap.gouv.fr) sur Tchap"
+    - id: onboarding-carte-membres
+      title: Signaler ton arrivée aux [membres de la communauté près de chez toi](https://espace-membre.beta.gouv.fr/community) via ton canal Tchap local
+    - id: onboarding-agenda
+      title: T'abonner à [l'agenda public de l'incubateur](https://messagerie.numerique.gouv.fr/appsuite/api/share/0366722a002da2b9366722802da84e5eb694970c9c989a65/1/2/Y2FsOi8vMC8yMjczNA)
+- title: "🧭 La première semaine : comprendre ton produit et ton mandat"
+  items:
+    - id: onboarding-doc-metier
+      title: Comprendre [mon rôle d’intrapreneur·e](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers/intrapreneur)
+    - id: onboarding-doc-incubateur
+      title: Lire la [documentation de ton incubateur de rattachement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee)
+    - id: onboarding-equipe-produit
+      title: T'imprégner de ton service numérique via sa fiche produit sur [beta.gouv.fr/startups](https://beta.gouv.fr/startups)
+    - id: onboarding-intra-sponsor
+      title: Identifier ton sponsor de proximité et le rencontrer
+    - id: onboarding-intra-budget
+      title: Prendre connaissance du budget dont tu disposes, et de l'horizon qu'il couvre
+    - id: onboarding-intra-point-coach
+      title: Faire le point avec [ton coach](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers/coach.e) sur ce que la phase précédente a produit, et ce qui reste à établir
+    - id: onboarding-equipe-outils
+      title: Créer tes comptes sur les outils de l’équipe
+- title: "👥 Le premier mois : poser la direction et organiser l’équipe"
+  items:
+    - id: onboarding-equipe-rencontres
+      title: Fixer des rencontres individuelles avec chaque membre de l'équipe
+    - id: onboarding-intra-cadre-contractuel
+      title: "Comprendre le cadre contractuel de chaque membre : statut, titulaire de marché, échéance du bon de commande"
+    - id: onboarding-intra-objectifs-prestataires
+      title: Co-construire les livrables et objectifs de mission avec chaque prestataire, en fixant des critères de réussite compréhensibles
+    - id: onboarding-intra-matrice-impact
+      title: "Construire ou reprendre la [matrice d'impact du produit](https://doc.incubateur.net/communaute/gerer-son-produit/guide-de-financement-des-startups-detat/4.-lenjeu-du-pilotage-par-limpact#modele-de-matrice-et-outils-pour-vous-aider-a-la-realiser)"
+    - id: onboarding-intra-objectifs-mensuels
+      title: Décliner la direction en objectifs mensuels, puis en activités concrètes pour chaque membre
+    - id: onboarding-intra-rituels
+      title: Définir les rituels et le cadre de collaboration de l'équipe, ou vérifier si ceux en place sont toujours utiles et pertinents
+    - id: onboarding-intra-pitch
+      title: Préparer mon pitch produit, et le tester devant quelqu'un qui ne connaît pas le sujet
+    - id: onboarding-intra-referent-technique
+      title: "Identifier qui peut m'aider à juger un livrable technique : [référent technique d'incubateur](https://doc.incubateur.net/communaute/solliciter-et-contribuer-a-la-communaute/je-sollicite-de-laide-transverse/laide-au-recrutement-des-referents-metiers#id-3.-qui-sont-ces-referents), coach, ou pair du métier concerné"
+- title: "🎓 Le premier mois : se former"
+  items:
+    - id: onboarding-forum-beta
+      title: Participer à la journée d'embarquement obligatoire lors du forum mensuel
+    - id: onboarding-focus-prestataires
+      title: "Participer à la session focus : Pilote tes prestataires avec un cadre, pas seulement avec de la confiance"
+    - id: onboarding-focus-4
+      title: "Participer à la session focus : Maîtrise le feedback pour bien travailler avec des gens différents"
+    - id: onboarding-focus-5
+      title: "Participer à la session focus : Comment ne pas finir en prison quand on bosse sur un produit numérique"
+    - id: onboarding-focus-6
+      title: "Participer à la session focus : Recrute et chéris tes utilisateurs"
+    - id: onboarding-rencontres-metiers
+      title: Participer à un club intras lors d'un [forum mensuel](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/seminaire)
+- title: "📄 Les premiers mois : préparer la suite"
+  items:
+    - id: onboarding-intra-dossier-certification
+      title: "Commencer à rassembler les pièces du [dossier de certification intra](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers/intrapreneur/certification-des-intrapreneurs#prerequis-dune-certification) : comptes rendus d'entretiens utilisateurs, maquettes, tableau d'investissement, support de présentation du service"
+    - id: onboarding-intra-eligibilite-certification
+      title: Vérifier mon éligibilité à la certification et la date de la prochaine session
+    - id: onboarding-linkedin-beta
+      title: Ajouter mon expérience chez [beta.gouv.fr](https://www.linkedin.com/company/betagouv/?originalSubdomain=fr) à mon profil LinkedIn
