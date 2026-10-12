@@ -48,7 +48,7 @@ fileignoreconfig:
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
 - filename: src/lib/actions/image.ts
-  checksum: 3482e0b52c661f24a115fad091f54289876651d8250a2e3fb8d691726221e7b4
+  checksum: 373dc04373d6aa22e0edf235a18f41eb459257f637ed693037ba2382cb4c8544
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
 - filename: src/lib/checklists/offboarding.yml
@@ -76,7 +76,7 @@ fileignoreconfig:
 - filename: src/lib/s3.spec.ts
   checksum: aa48871cc9298449e92c0fe710e76cc75e0952f00eecbef643b9f2fbc377ec17
 - filename: src/lib/s3.ts
-  checksum: a74621f69d4d7e4cdb99c05d127fcdc4a3f81aed2dc921146272f3deed3e283e
+  checksum: 1bdce3d9d9ba297d2170171a44768ca470aaba2c7ac5401ed6951bd36711b6e7
 - filename: src/middleware.ts
   checksum: 3467fbdbbcae62e35af58cf82fdd8723ac9b5abcc5a16065c80cee7ccbb5d519
 - filename: src/models/member.ts

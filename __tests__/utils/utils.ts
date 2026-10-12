@@ -15,6 +15,10 @@ import config from "@/server/config";
 import { stopBossClientInstance } from "@/server/queueing/client";
 import knex from "@/lib/db";
 
+function quoteIdentifier(identifier: string): string {
+  return `"${identifier.replace(/"/g, '""')}"`;
+}
+
 const testUtils = {
   getJWT(id: string) {
     const token = jwt.sign(
@@ -56,8 +60,12 @@ const testUtils = {
     const client = new Client({ connectionString: temporaryConnection });
     return client
       .connect()
-      .then(() => client.query(`DROP DATABASE IF EXISTS ${testDbName}`, []))
-      .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
+      .then(() =>
+        client.query(`DROP DATABASE IF EXISTS ${quoteIdentifier(testDbName)}`, []),
+      )
+      .then(() =>
+        client.query(`CREATE DATABASE ${quoteIdentifier(testDbName)}`, []),
+      )
       .then(() => client.end())
       .then(() => knex.migrate.latest())
       .then(async () => {})
@@ -89,7 +97,7 @@ const testUtils = {
     return knex
       .destroy()
       .then(() => client.connect())
-      .then(() => client.query(`DROP DATABASE ${testDbName}`, []))
+      .then(() => client.query(`DROP DATABASE ${quoteIdentifier(testDbName)}`, []))
       .then(() => client.end())
       .then(() =>
         console.log(`Test database ${testDbName} cleaned up successfully`),

@@ -7,7 +7,7 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { IncubatorUpdate } from "@/components/IncubatorUpdatePage";
 import { db } from "@/lib/kysely";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
-import s3 from "@/lib/s3";
+import { hasImage } from "@/lib/s3";
 import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
 
@@ -47,17 +47,7 @@ export default async function Page(props: Props) {
   const sponsors = await db.selectFrom("organizations").selectAll().execute();
 
   const s3LogoKey = `incubators/${dbIncubator.ghid}/logo.jpg`;
-  let hasLogo = false;
-  try {
-    const s3Object = await s3
-      .getObject({
-        Key: s3LogoKey,
-      })
-      .promise();
-    hasLogo = true;
-  } catch (error) {
-    console.log("No image for user");
-  }
+  const hasLogo = await hasImage(s3LogoKey);
   const logoURL = hasLogo
     ? `/api/image?fileObjIdentifier=${dbIncubator.ghid}&fileRelativeObjType=incubator&fileIdentifier=logo`
     : undefined;

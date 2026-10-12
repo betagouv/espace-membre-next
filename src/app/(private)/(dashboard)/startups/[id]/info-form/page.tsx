@@ -12,7 +12,7 @@ import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getStartupIncubatorIds } from "@/lib/kysely/queries/incubators";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
-import s3 from "@/lib/s3";
+import { hasImage } from "@/lib/s3";
 import { startupChangeToModel, startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema } from "@/models/startup";
@@ -119,29 +119,9 @@ export default async function Page(props) {
         .execute(),
     );
   const s3ShotKey = `startups/${startup.ghid}/shot.jpg`;
-  let hasShot = false;
-  try {
-    const s3Object = await s3
-      .getObject({
-        Key: s3ShotKey,
-      })
-      .promise();
-    hasShot = true;
-  } catch (error) {
-    console.log("No image for user");
-  }
+  const hasShot = await hasImage(s3ShotKey);
   const s3HeroKey = `startups/${startup.ghid}/hero.jpg`;
-  let hasHero = false;
-  try {
-    const s3Object = await s3
-      .getObject({
-        Key: s3HeroKey,
-      })
-      .promise();
-    hasHero = true;
-  } catch (error) {
-    console.log("No image for user");
-  }
+  const hasHero = await hasImage(s3HeroKey);
 
   const changes = await getEventListByStartupUuid(startup.uuid);
 
