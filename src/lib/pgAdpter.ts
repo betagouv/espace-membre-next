@@ -8,6 +8,11 @@ import {
 } from "next-auth/adapters";
 
 import { findUsersByLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+import {
+  findUsersBySecondaryEmail,
+  legacyEmailLoginAdapterMethods,
+} from "@/lib/auth/legacyEmailLogin";
 import { db } from "@/lib/kysely";
 
 export default function customPostgresAdapter(): Adapter {
@@ -44,7 +49,12 @@ export default function customPostgresAdapter(): Adapter {
     const getUserByEmail = async (
       email: string,
     ): Promise<AdapterUser | null> => {
-      const dbUsers = await findUsersByLoginEmail(email);
+      // legacy-email-login: back to const with src/lib/auth/legacyEmailLogin
+      let dbUsers = await findUsersByLoginEmail(email);
+      // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+      if (dbUsers.length === 0) {
+        dbUsers = await findUsersBySecondaryEmail(email);
+      }
       if (dbUsers.length > 1) {
         console.log(`several db users match this email`);
         return null;
@@ -211,6 +221,19 @@ export default function customPostgresAdapter(): Adapter {
     const linkAccount = async (
       account: AdapterAccount,
     ): Promise<AdapterAccount | null | undefined> => {
+      // next-auth links the account to the member of the current session, if
+      // any. The ProConnect account id is the username resolved from the
+      // ProConnect email (see authoptions.ts) : a member signed in as someone
+      // else must not attach their own ProConnect identity to that account.
+      if (
+        account.provider === "proconnect" &&
+        account.providerAccountId !== account.userId
+      ) {
+        console.log(
+          `ProConnect: refused to link ${account.providerAccountId} to ${account.userId}`,
+        );
+        throw new Error("AccountLinkRefused");
+      }
       await db
         .insertInto("accounts")
         .values({
@@ -258,6 +281,8 @@ export default function customPostgresAdapter(): Adapter {
       deleteSession,
       linkAccount,
       unlinkAccount,
+      // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+      ...legacyEmailLoginAdapterMethods,
     };
   } catch (error) {
     throw error;

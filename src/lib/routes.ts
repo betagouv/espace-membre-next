@@ -4,6 +4,8 @@ export const routes = {
   accountEditBaseInfo: () => `/account/base-info`,
   accountEditPrivateInfo: () => `/account/info`,
   support: () => `/support`,
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  signIn: () => `/signin`,
   community: () => `/community`,
   communityMember: ({ username }: { username: string }) =>
     `/community/${username}`,
@@ -71,6 +73,8 @@ export const routeTitles: {
   organizationCreate: () => "Créer une fiche organisation sponsor",
   home: () => "",
   support: () => "Aide à la connexion",
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  signIn: () => "Me connecter",
   login: () => "Me connecter",
   onboarding: () => "Créer une fiche membre",
   onboardingSuccess: () => "Fiche membre créée",

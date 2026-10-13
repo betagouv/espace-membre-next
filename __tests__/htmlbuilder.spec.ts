@@ -7,6 +7,51 @@ import { userStartupSchemaType } from "@/models/startup";
 import { EMAIL_TYPES } from "@/lib/email/email";
 chai.should();
 
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+describe(`Test EMAIL_LOGIN`, () => {
+  it(`email EMAIL_LOGIN renders the magic link and fullname`, async () => {
+    const loginUrlWithToken: string = "http://localhost:8100/signin?token=abc";
+
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_LOGIN,
+      variables: {
+        loginUrlWithToken,
+        fullname: "Jean Paul",
+      },
+    });
+    emailBody.should.include(loginUrlWithToken);
+    emailBody.should.include("Jean Paul");
+  });
+});
+
+describe(`Test EMAIL_LEGACY_LOGIN_REMINDER`, () => {
+  const variables = {
+    fullname: "Jean Paul",
+    endDate: "1 décembre 2026",
+    loginUrl: "http://espace-membre/login",
+    supportUrl: "http://espace-membre/support",
+  };
+
+  it(`invites to log in with ProConnect with the primary email`, async () => {
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER,
+      variables: { ...variables, loginEmail: "jean.paul@beta.gouv.fr" },
+    });
+    emailBody.should.include("1 décembre 2026");
+    emailBody.should.include("jean.paul@beta.gouv.fr");
+    emailBody.should.include(variables.loginUrl);
+  });
+
+  it(`points to the support page without a primary email`, async () => {
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER,
+      variables: { ...variables, loginEmail: null },
+    });
+    emailBody.should.include(variables.supportUrl);
+    emailBody.should.not.include(variables.loginUrl);
+  });
+});
+
 describe(`Test EMAIL_CREATED_DIMAIL`, () => {
   it(`email EMAIL_CREATED_DIMAIL renders the webmail access link, without password`, async () => {
     const webmailUrl: string = "http://webmail-url/code/access-code";

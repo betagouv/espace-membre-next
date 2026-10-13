@@ -6,6 +6,12 @@ test("has title", async ({ page }) => {
 });
 
 test("login is ProConnect only, without email form", async ({ page }) => {
+  // legacy-email-login: remove this skip with src/lib/auth/legacyEmailLogin
+  test.skip(
+    !!process.env.LEGACY_EMAIL_LOGIN_MODE &&
+      process.env.LEGACY_EMAIL_LOGIN_MODE !== "off",
+    "the email form is shown while the legacy email login is enabled",
+  );
   await page.goto("/login");
 
   await expect(

@@ -12,9 +12,11 @@ import { checkUserIsExpired } from "@/lib/utils";
 import { getJwtTokenForUser } from "@/lib/session";
 import {
   findUsersByLoginEmail,
+  isLegacyExtEmail,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
 import {
+  FAKE_PROCONNECT_PROVIDER_ID,
   fakeProConnectProvider,
   isFakeProConnectEnabled,
 } from "@/lib/auth/fakeProConnect";
@@ -23,6 +25,15 @@ import {
   hasRequiredProConnectAcr,
   proConnectAcrClaims,
 } from "@/lib/auth/proConnectAcr";
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+import {
+  checkLegacyEmailLoginAllowed,
+  checkLegacyEmailLoginRateLimit,
+  legacyEmailLoginProviders,
+} from "@/lib/auth/legacyEmailLogin";
+
+// never a username : no accounts row can match it
+const REFUSED_PROCONNECT_LOGIN_ID = "refused-proconnect-login";
 
 export type ProConnectProfile = {
   sub: string;
@@ -41,6 +52,8 @@ export const authOptions: NextAuthOptions = {
   providers: [
     // development only (never enabled in a built app) : see fakeProConnect.ts
     ...(isFakeProConnectEnabled() ? [fakeProConnectProvider] : []),
+    // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+    ...legacyEmailLoginProviders(),
     {
       id: "proconnect",
       name: "Pro Connect",
@@ -85,12 +98,25 @@ export const authOptions: NextAuthOptions = {
             },
           ).then((r) => r.text());
           const userinfo = jwt.decode(userInfoRequest) as ProConnectProfile;
+          // an error thrown here reaches the login page as a generic
+          // OAuthCallback : the refusal is raised by the signIn callback
+          // instead, which forwards its message as the error code
+          const refuse = (loginRefusal: string) => ({
+            ...userinfo,
+            email: normalizeLoginEmail(userinfo?.email) || "",
+            id: REFUSED_PROCONNECT_LOGIN_ID,
+            loginRefusal,
+          });
+          if (isLegacyExtEmail(userinfo?.email)) {
+            console.log(`ProConnect: legacy ext address ${userinfo?.email}`);
+            return refuse("ExtEmailNotAllowed");
+          }
           const dbUsers = await findUsersByLoginEmail(userinfo?.email);
           if (dbUsers.length !== 1) {
             console.log(
               `ProConnect: ${dbUsers.length} member(s) found for ${userinfo?.email}`,
             );
-            throw new Error("UnknownMember");
+            return refuse("UnknownMember");
           }
           return {
             ...userinfo,
@@ -142,8 +168,19 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user, account }) {
+    // legacy-email-login: drop `email` with src/lib/auth/legacyEmailLogin
+    async signIn({ user, account, profile, email }) {
+      const loginRefusal = (profile as { loginRefusal?: string } | undefined)
+        ?.loginRefusal;
+      if (loginRefusal) {
+        throw new Error(loginRefusal);
+      }
       if (user.id) {
+        // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+        checkLegacyEmailLoginRateLimit({
+          username: user.id,
+          isVerificationRequest: !!email?.verificationRequest,
+        });
         // the acr asked as essential must be read back from the id_token
         if (
           account?.provider === "proconnect" &&
@@ -176,8 +213,25 @@ export const authOptions: NextAuthOptions = {
           );
           throw new Error("MemberNotReady");
         }
+        // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+        await checkLegacyEmailLoginAllowed({
+          provider: account?.provider,
+          dbUser,
+        });
+        // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+        // the magic link is only requested here, the login happens when it
+        // is redeemed
+        if (email?.verificationRequest) {
+          return true;
+        }
+        // distinct from the former `login.proconnect`, recorded before MFA
+        // was required
+        // legacy-email-login: the "email" branch goes with src/lib/auth/legacyEmailLogin
         const loginProvider =
-          account?.provider === "proconnect" ? "proconnect" : "email";
+          account?.provider === "proconnect" ||
+          account?.provider === FAKE_PROCONNECT_PROVIDER_ID
+            ? "proconnect_mfa"
+            : "email";
         await db
           .insertInto("user_events")
           .values({

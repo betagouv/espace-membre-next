@@ -14,6 +14,9 @@
     },
     {
       "command": "0 * * * * sh -c '[ \"$APP\" = \"espace-membre-cron\" ] && npm run job:recreate-email-if-user-active || echo \"skip recreate-email-if-user-active\"'"
+    },
+    {
+      "command": "0 9 * * MON sh -c '[ \"$APP\" = \"espace-membre-cron\" ] && npm run job:remind-legacy-email-login || echo \"skip remind-legacy-email-login\"'"
     }
   ]
 }

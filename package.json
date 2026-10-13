@@ -26,6 +26,8 @@
     "job:sync-matrix-accounts": "tsx src/scripts/sync-matrix-accounts",
     "job:clean-teams-members": "tsx src/scripts/clean-teams-members",
     "job:recreate-email-if-user-active": "tsx src/scripts/recreate-email-if-user-active",
+    "job:remind-legacy-email-login": "tsx src/scripts/remind-legacy-email-login",
+    "report:legacy-email-login": "tsx src/scripts/legacy-email-login-report",
     "export-to-www": "./src/scripts/export-to-www.sh",
     "start-pgboss-jobs-dev": "ts-node src/server/schedulers/schedulePgBossJobs.ts",
     "start-jobs-dev": "npm run start-pgboss-jobs-dev",

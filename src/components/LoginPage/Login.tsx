@@ -10,6 +10,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+import { LegacyEmailLoginForm } from "@/components/LegacyEmailLogin/LegacyEmailLoginForm";
+
 const ConnectBlock = ({ children }) => {
   return (
     <>
@@ -91,6 +94,11 @@ const oAuthErrors = {
   ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
   MfaRequired:
     "Vous ne pouvez pas accéder au service sans avoir une double authentification installée. Veuillez installer une application d'authentification et vous connecter à nouveau.",
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  EmailLoginClosed:
+    "La connexion par email n'est plus disponible pour ton compte. Connecte-toi avec ProConnect.",
+  ExtEmailNotAllowed:
+    "Les adresses @ext.beta.gouv.fr ne permettent pas de se connecter avec ProConnect. Utilise ton adresse @beta.gouv.fr.",
   MemberNotReady:
     "Ta fiche n'est pas encore validée, ou ton adresse de connexion est en cours de création. Réessaie plus tard ou rapproche-toi de ton incubateur.",
 };
@@ -112,8 +120,8 @@ const FakeProConnectForm = ({ next }: { next: string | null }) => {
       }}
     >
       <p className={fr.cx("fr-text--sm", "fr-mb-1w")}>
-        <strong>Développement</strong> : connexion ProConnect simulée, sans
-        mot de passe.
+        <strong>Développement</strong> : connexion ProConnect simulée, sans mot
+        de passe.
       </p>
       <Input
         label="Email renvoyé par ProConnect"
@@ -135,8 +143,15 @@ const FakeProConnectForm = ({ next }: { next: string | null }) => {
 
 export const LoginPage = function ({
   fakeProConnect = false,
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  legacyEmailLogin = null,
 }: {
   fakeProConnect?: boolean;
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  legacyEmailLogin?: {
+    mode: "transition" | "exceptions";
+    endDate: string | null;
+  } | null;
 }) {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -145,6 +160,16 @@ export const LoginPage = function ({
   const errorMessage =
     (error && oAuthErrors[decodeURIComponent(error)]) ||
     "Impossible de se connecter";
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  // members who used ProConnect with their personal email, or without MFA,
+  // before it became mandatory
+  const legacyEmailLoginHint =
+    legacyEmailLogin?.mode === "transition" &&
+    (error === "UnknownMember" ||
+      error === "MfaRequired" ||
+      error === "ExtEmailNotAllowed")
+      ? " Pendant la transition, tu peux encore te connecter par email avec le formulaire ci-dessous."
+      : "";
 
   const connectForm = (
     <div
@@ -166,6 +191,14 @@ export const LoginPage = function ({
         />
       </div>
       {fakeProConnect && <FakeProConnectForm next={next} />}
+      {/* legacy-email-login: remove with src/lib/auth/legacyEmailLogin */}
+      {legacyEmailLogin && (
+        <LegacyEmailLoginForm
+          mode={legacyEmailLogin.mode}
+          endDate={legacyEmailLogin.endDate}
+          next={next}
+        />
+      )}
       <p className="fr-text--sm">
         Accès à ta boîte perdu ou impossible de te connecter ?{" "}
         <Link href="/support">Consulte la page d'aide</Link>
@@ -182,7 +215,7 @@ export const LoginPage = function ({
               className="fr-mb-8v"
               severity="warning"
               closable={false}
-              description={errorMessage}
+              description={`${errorMessage}${legacyEmailLoginHint}`}
               title="Erreur"
             />
           </div>

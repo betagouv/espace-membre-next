@@ -12,6 +12,14 @@ export const normalizeLoginEmail = (
   return normalized;
 };
 
+// former Dimail domain, still synced in dinum_emails. These addresses will be
+// migrated to prenom.nom.ext@beta.gouv.fr : ProConnect must be used with the
+// member's @beta.gouv.fr alias, not with this domain.
+export const LEGACY_EXT_DOMAIN = "ext.beta.gouv.fr";
+
+export const isLegacyExtEmail = (email: string | null | undefined) =>
+  !!normalizeLoginEmail(email)?.endsWith(`@${LEGACY_EXT_DOMAIN}`);
+
 // Returns at most 2 users matching the email on primary_email or a linked
 // dinum_emails row (mailbox or alias). secondary_email (personal email) is
 // deliberately NOT a login identifier : members log in with ProConnect using

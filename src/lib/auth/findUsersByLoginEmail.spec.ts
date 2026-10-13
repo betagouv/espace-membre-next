@@ -3,6 +3,7 @@ import { expect } from "chai";
 import {
   findUsersByLoginEmail,
   findUsersUsingEmail,
+  isLegacyExtEmail,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
 import customPostgresAdapter from "@/lib/pgAdpter";
@@ -28,6 +29,15 @@ const getUuid = async (username: string) =>
       .where("username", "=", username)
       .executeTakeFirstOrThrow()
   ).uuid;
+
+describe("isLegacyExtEmail", () => {
+  it("should only match the legacy ext.beta.gouv.fr domain", () => {
+    expect(isLegacyExtEmail(" Prenom.Nom@EXT.beta.gouv.fr")).to.be.true;
+    expect(isLegacyExtEmail("prenom.nom.ext@beta.gouv.fr")).to.be.false;
+    expect(isLegacyExtEmail("prenom.nom@beta.gouv.fr")).to.be.false;
+    expect(isLegacyExtEmail(null)).to.be.false;
+  });
+});
 
 describe("normalizeLoginEmail", () => {
   it("should trim and lowercase a valid email", () => {

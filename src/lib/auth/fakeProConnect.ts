@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import {
   findUsersByLoginEmail,
+  isLegacyExtEmail,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
 
@@ -28,6 +29,9 @@ export const authorizeFakeProConnect = async (
     throw new Error("FakeProConnectDisabled");
   }
   const email = normalizeLoginEmail(credentials?.email);
+  if (isLegacyExtEmail(email)) {
+    throw new Error("ExtEmailNotAllowed");
+  }
   const dbUsers = await findUsersByLoginEmail(email);
   if (!email || dbUsers.length !== 1) {
     console.log(

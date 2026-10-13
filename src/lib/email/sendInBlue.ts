@@ -20,6 +20,9 @@ import {
 } from "@/lib/email/email";
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  EMAIL_LOGIN: 0,
+  EMAIL_LEGACY_LOGIN_REMINDER: 0,
   EMAIL_CREATED_DIMAIL: 0,
   EMAIL_STARTUP_ASK_PHASE: 15,
   EMAIL_VERIFICATION_WAITING: 0,

@@ -85,6 +85,19 @@ describe("fake ProConnect login (development only)", () => {
       });
     });
 
+    it("refuses a legacy @ext.beta.gouv.fr address, like ProConnect", async () => {
+      env.NODE_ENV = "development";
+      try {
+        await authorizeFakeProConnect({
+          email: "prenom.nom@ext.beta.gouv.fr",
+        });
+        expect.fail("Should have thrown");
+      } catch (e: any) {
+        expect(e.message).to.equal("ExtEmailNotAllowed");
+      }
+      expect(findUsersStub.called).to.be.false;
+    });
+
     it("refuses an email matching no member", async () => {
       env.NODE_ENV = "development";
       findUsersStub.resolves([]);

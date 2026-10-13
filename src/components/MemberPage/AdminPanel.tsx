@@ -5,6 +5,8 @@ import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
 import { MemberPageProps } from "./MemberPage";
 import { EmailStatusCode } from "@/models/member";
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+import { LegacyEmailLoginException } from "@/components/LegacyEmailLogin/LegacyEmailLoginException";
 
 export const AdminPanel = ({
   userInfos,
@@ -23,6 +25,8 @@ export const AdminPanel = ({
         userInfos={userInfos}
       ></BlocConfigurerEmailPrincipal>
       <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
+      {/* legacy-email-login: remove with src/lib/auth/legacyEmailLogin */}
+      <LegacyEmailLoginException username={userInfos.username} />
       <br />
       <h3>Évènements</h3>
       <MemberEventList userId={userInfos.username} />

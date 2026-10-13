@@ -27,8 +27,8 @@ export default async function Page() {
         Une fois ta fiche validée, ta boîte @beta.gouv.fr est créée
         automatiquement. Tu reçois alors sur ton adresse personnelle un lien
         d'accès temporaire à ta boîte. Dans cette nouvelle boîte, un email
-        t'invite à te connecter à l'espace-membre avec ProConnect pour
-        finaliser ton inscription.
+        t'invite à te connecter à l'espace-membre avec ProConnect pour finaliser
+        ton inscription.
       </p>
       <p>
         Si tu n'as rien reçu, vérifie tes spams puis rapproche-toi de la
@@ -56,8 +56,8 @@ export default async function Page() {
         </li>
         <li>
           Si ta fiche n'est pas encore validée par ton incubateur, ou si ta
-          boîte @beta.gouv.fr est en cours de création, la connexion est
-          refusée : réessaie un peu plus tard.
+          boîte @beta.gouv.fr est en cours de création, la connexion est refusée
+          : réessaie un peu plus tard.
         </li>
         <li>
           La connexion exige une double authentification : si ton fournisseur

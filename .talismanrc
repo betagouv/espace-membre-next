@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: cc2dcc54c5affe24cbfeea3aaf11d7a389bfc29b327a7cbe4fadda6470735cde
+  checksum: 8c5abacb4d10f1674a882841bb7937eba4a14fdf4535251c2adb439644fe12ee
 - filename: .env.test
   checksum: ac4a41141b6012a11636e64642152bbc339bf10380b564d35fe33870531d732a
 - filename: .github/workflows/nodejs.yml
@@ -17,6 +17,8 @@ fileignoreconfig:
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
 - filename: e2e/auth.valid.member.setup.ts
   checksum: 7a239296ed02a1826845830e31700a724aec621fccf6a078a3cdff565b578e17
+- filename: e2e/legacy-email-login.spec.ts
+  checksum: 2f389a5151bd6f122fe87a095c39e02918794a60e100e17d780f0478d7584431
 - filename: migrations/20260618000001_add_startups_incubators_table.ts
   checksum: bede298828d3b776caa717960fd6afb95f5f344a158246e265309e14d6dfa5ab
 - filename: package-lock.json
@@ -29,6 +31,8 @@ fileignoreconfig:
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/app/(public)/login/page.tsx
   checksum: 20924a45d0763b0ac98b53f4f2953fbfbd54e636b4accf8d05c84c35a9b3c5ab
+- filename: src/app/(public)/signin/SiginClientPage.tsx
+  checksum: d212a7c30ff0eacc1cdddbedf34c5cc115ef21bef8bd9cbc4f1b319025ede3a4
 - filename: src/app/(public)/support/page.tsx
   checksum: a2f36bfa4def238ff23bcadac869c4c3779259ebc795ae30fd92379ae76680a8
 - filename: src/app/api/member/actions/__tests__/validateNewMember.test.ts
@@ -57,6 +61,14 @@ fileignoreconfig:
   checksum: 3482e0b52c661f24a115fad091f54289876651d8250a2e3fb8d691726221e7b4
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
+- filename: src/lib/auth/legacyEmailLogin/README.md
+  checksum: 5be4ff5e2690c6b31d08e8c131616994be8cbae10430e2731164459112b1c4c2
+- filename: src/lib/auth/legacyEmailLogin/legacyEmailLogin.spec.ts
+  checksum: cf1cdbd865f0f70f29cdccf3dc342808ba29763ccfa164a9c1afec7290dd824c
+- filename: src/lib/auth/legacyEmailLogin/rateLimit.spec.ts
+  checksum: 16b4ca44ac4c4d1bace11f35869652b2bd40d22c15c68005e641edc344a3e44c
+- filename: src/lib/auth/legacyEmailLogin/rateLimit.ts
+  checksum: 41f42d4254634f2533eb387646180343cd1a9ba6d90296dbf66503fc76d8ca91
 - filename: src/lib/checklists/offboarding.yml
   checksum: 384a97d6f52970048feb3e4f140a4c9993a190c15acb431cb3035001f3f3f755
 - filename: src/lib/checklists/onboarding.yml
