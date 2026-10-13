@@ -25,11 +25,17 @@ export const FORMATION_THEMATIQUES: string[] = [
   "Tech",
   "Accessibilité",
   "Université d'été",
+  // Repère les formations du parcours d'embarquement : sans elle, les journées
+  // d'embarquement se rangeaient dans « Divers », où personne ne les cherche.
+  "Parcours d'embarquement",
 ];
 
 // Alignées sur les Choice de la colonne Grist Formats.Audience.
 export const FORMATION_AUDIENCES: string[] = [
   "Tout public",
+  // Sert au rappel bimensuel envoyé aux personnes arrivées depuis moins de
+  // six mois : c'est ce tag qui décide qu'une formation leur est destinée.
+  "Nouveaux membres",
   "Dev",
   "Designer",
   "PO-PM",
@@ -40,15 +46,40 @@ export const FORMATION_AUDIENCES: string[] = [
   "Autres",
 ];
 
+/**
+ * Libellé affiché d'une audience, quand il diffère de sa valeur Grist.
+ *
+ * « Nouveaux membres » s'affiche « Nouveaux arrivants », comme le filtre du
+ * catalogue : le même tag portait deux noms selon l'écran. La valeur, elle,
+ * ne change pas — n8n filtre dessus pour le rappel aux nouveaux arrivants, et
+ * la renommer dans Grist le priverait de ses destinataires.
+ */
+const FORMATION_AUDIENCE_LIBELLES: Record<string, string> = {
+  "Nouveaux membres": "Nouveaux arrivants",
+};
+
+export const libelleAudience = (audience: string): string =>
+  FORMATION_AUDIENCE_LIBELLES[audience] ?? audience;
+
 // Durées proposées par le formulaire (reprises d'Airtable), convertie en
 // heures pour la colonne numérique Grist Formats.Duree.
+//
+// Les plus courtes servent aux e-learning, souvent des modules de quelques
+// minutes. Une durée absente de cette liste ne peut pas être reprise par le
+// formulaire de modification, qui la remplacerait sans prévenir : chaque durée
+// enregistrée doit donc y figurer.
 export const FORMATION_DUREES: { label: string; hours: number }[] = [
+  { label: "10 min", hours: 10 / 60 },
+  { label: "15 min", hours: 15 / 60 },
+  { label: "20 min", hours: 20 / 60 },
   { label: "30 min", hours: 0.5 },
+  { label: "40 min", hours: 40 / 60 },
   { label: "1h", hours: 1 },
   { label: "1h30", hours: 1.5 },
   { label: "2h", hours: 2 },
   { label: "2h30", hours: 2.5 },
   { label: "2h45", hours: 2.75 },
+  { label: "3h", hours: 3 },
   { label: "Une demi-journée", hours: 4 },
   { label: "Une journée", hours: 8 },
 ];
@@ -72,6 +103,8 @@ export const GRIST_FORMATIONS_COLUMNS = {
   duree: "Duree",
   statut: "Statut",
   lienAdmin: "Lien_admin",
+  // Lieu d'une formation en présentiel, comme Lien_admin l'est à distance.
+  adresse: "Adresse",
   lienSupport: "Lien_support",
   lienFeedback: "Lien_feedback",
   animateur: "Animateur",
@@ -209,3 +242,13 @@ export const uidEvenementInscription = (
 
 export const uidEvenementAnimation = (sessionId: number | string) =>
   `formation-${sessionId}-animation@beta.gouv.fr`;
+
+/**
+ * Événement annoncé à l'agenda de la communauté, un par date.
+ *
+ * Distinct des invitations nominatives : celles-ci s'adressent à une personne,
+ * celui-ci annonce la séance à qui consulte l'agenda. Supprimer la date doit
+ * retirer les deux.
+ */
+export const uidEvenementPublic = (sessionId: number | string) =>
+  `formation-${sessionId}-public@beta.gouv.fr`;

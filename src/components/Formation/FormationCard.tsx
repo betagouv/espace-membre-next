@@ -16,11 +16,13 @@ export default function FormationCard({
   isMemberRegistered: boolean;
   isMemberOnWaitingList: boolean;
 }) {
+  // Les pastilles partent en tableau dans `start` : React réclame une clé à
+  // chaque élément. Les deux cas s'excluent, une clé commune suffit.
   let badges: ReactNode[] = [];
   if (isMemberRegistered) {
     if (!isMemberOnWaitingList) {
       badges.push(
-        <ul className="fr-badges-group">
+        <ul key="inscription" className="fr-badges-group">
           <li>
             <Badge severity="success" as="span">
               Inscrit
@@ -30,7 +32,7 @@ export default function FormationCard({
       );
     } else {
       badges.push(
-        <ul className="fr-badges-group">
+        <ul key="inscription" className="fr-badges-group">
           <li>
             <Badge as="span">Inscrit sur liste d'attente</Badge>
           </li>

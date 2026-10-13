@@ -145,8 +145,9 @@ function formatToFormation(
     const placesRestantes = s["Places_restantes"];
 
     return {
-      // Le modèle vient d'Airtable : `airtable_id` sert d'identifiant d'URL,
-      // on y met l'id de ligne Grist le temps que les deux sources coexistent.
+      // Le nom `airtable_id` est un héritage du modèle Airtable : il sert
+      // toujours d'identifiant d'URL à la carte du catalogue, et porte l'id de
+      // ligne Grist du format — Airtable n'est plus lu nulle part.
       id: String(format.id),
       airtable_id: String(format.id),
       name: String(f[GRIST_FORMATIONS_COLUMNS.titre] ?? ""),
@@ -180,6 +181,7 @@ function formatToFormation(
         String(f[GRIST_FORMATIONS_COLUMNS.lienAdmin] ?? "") || undefined,
       lienSupport:
         String(f[GRIST_FORMATIONS_COLUMNS.lienSupport] ?? "") || undefined,
+      adresse: String(f[GRIST_FORMATIONS_COLUMNS.adresse] ?? "") || undefined,
       lienFeedback:
         String(f[GRIST_FORMATIONS_COLUMNS.lienFeedback] ?? "") || undefined,
       duree: Number(f[GRIST_FORMATIONS_COLUMNS.duree] ?? 0) || undefined,
@@ -206,6 +208,26 @@ function formatToFormation(
     } satisfies Formation;
   }
 }
+
+/**
+ * Une formation telle qu'on peut l'envoyer au navigateur de n'importe quel
+ * membre.
+ *
+ * Le lien de visioconférence ne part qu'aux inscrit·es, dans leur invitation :
+ * l'agenda de la communauté l'omet exprès, sinon on rejoindrait sans
+ * s'inscrire — ou sans place. Or tout ce qu'on passe à un composant client est
+ * sérialisé dans la page, qu'il l'affiche ou non : il faut le retirer avant.
+ * Le panneau de gestion, réservé à qui gère la formation, garde la version
+ * complète.
+ */
+export const sansLiensDeVisio = (formation: Formation): Formation => ({
+  ...formation,
+  lienAdmin: undefined,
+  sessions: formation.sessions?.map((session) => ({
+    ...session,
+    lienVisioAdmin: undefined,
+  })),
+});
 
 export type GristInscription = {
   sessionId: string;

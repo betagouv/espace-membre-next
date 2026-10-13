@@ -39,6 +39,7 @@ import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode } from "@/models/member";
 import {
   FORMATION_DUREES,
+  FORMATION_MODALITE,
   FORMATION_STATUT,
   GRIST_ANNULATIONS_COLUMNS,
   GRIST_FORMATIONS_COLUMNS,
@@ -47,6 +48,7 @@ import {
   GRIST_SESSIONS_COLUMNS,
   uidEvenementAnimation,
   uidEvenementInscription,
+  uidEvenementPublic,
 } from "@/models/formationsGrist";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
@@ -63,6 +65,35 @@ import {
 const PARIS_TZ = "Europe/Paris";
 const parisDateToEpochSeconds = (value: string): number =>
   Math.floor(fromZonedTime(value, PARIS_TZ).getTime() / 1000);
+
+/**
+ * Ce qui, selon la modalité, dit où se tient la formation.
+ *
+ * Chaque modalité n'a qu'une réponse : la visio à distance, l'adresse en
+ * présentiel, le lien de la formation en e-learning — qui n'a pas non plus de
+ * limite de places. Les formulaires masquent le reste, mais une valeur saisie
+ * avant de changer de modalité peut encore arriver : on ne l'enregistre pas,
+ * elle resterait là sans que personne la voie ni puisse la corriger.
+ */
+const selonModalite = (parsed: {
+  modalite: FORMATION_MODALITE;
+  lienVisioAdmin?: string;
+  adresse?: string;
+  capacite?: number;
+}) => ({
+  lienVisioAdmin:
+    parsed.modalite === FORMATION_MODALITE.DISTANCIEL
+      ? (parsed.lienVisioAdmin ?? "")
+      : "",
+  adresse:
+    parsed.modalite === FORMATION_MODALITE.PRESENTIEL
+      ? (parsed.adresse ?? "")
+      : "",
+  capacite:
+    parsed.modalite === FORMATION_MODALITE.E_LEARNING
+      ? null
+      : (parsed.capacite ?? null),
+});
 
 // La table Membres est indexée sur le ghid (= username). Renvoie l'id de ligne,
 // ou 0 (référence vide côté Grist) si la personne n'y est pas. Simple lecture :
@@ -150,6 +181,9 @@ export const submitFormationProposal = withErrorHandling(
         : [];
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+    // Un e-learning est ouvert en continu : il n'a pas de date.
+    const isELearning = parsed.modalite === FORMATION_MODALITE.E_LEARNING;
+    const lieu = selonModalite(parsed);
 
     const fields: GristRecordFields = {
       [GRIST_FORMATIONS_COLUMNS.titre]: parsed.titre,
@@ -158,11 +192,13 @@ export const submitFormationProposal = withErrorHandling(
       // Les ChoiceList passent par l'API records au format ["L", ...valeurs].
       [GRIST_FORMATIONS_COLUMNS.thematiques]: ["L", ...parsed.thematiques],
       [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
-      [GRIST_FORMATIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+      [GRIST_FORMATIONS_COLUMNS.capacite]: lieu.capacite,
       [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
       [GRIST_FORMATIONS_COLUMNS.referent]: referentRowId,
       [GRIST_FORMATIONS_COLUMNS.statut]: statut,
-      [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
+      [GRIST_FORMATIONS_COLUMNS.lienAdmin]: lieu.lienVisioAdmin,
+      [GRIST_FORMATIONS_COLUMNS.adresse]: lieu.adresse,
+      // Pour un e-learning, l'adresse où le suivre.
       [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
       [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
       [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
@@ -184,8 +220,8 @@ export const submitFormationProposal = withErrorHandling(
     // Date déjà fixée : on crée aussi la session. L'animateur·ice est relié·e à
     // la table Membres via la partie locale de son adresse Tchap, qui vaut le
     // ghid ; introuvable, la session reste sans référence, le texte du Format
-    // fait foi.
-    if (parsed.dateDebut) {
+    // fait foi. Jamais pour un e-learning, qui n'a pas de date.
+    if (!isELearning && parsed.dateDebut) {
       const animateurRowId = await findMembreRowId(session.user.id);
       const sessionFields: GristRecordFields = {
         [GRIST_SESSIONS_COLUMNS.format]: formatRowId,
@@ -197,8 +233,8 @@ export const submitFormationProposal = withErrorHandling(
         // et de la durée. La durée choisie dans la liste en est la seule
         // source, il n'y a pas de date de fin à saisir.
         [GRIST_SESSIONS_COLUMNS.dureeIndicative]: dureeHeures,
-        [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: parsed.lienVisioAdmin ?? "",
-        [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+        [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]: lieu.lienVisioAdmin,
+        [GRIST_SESSIONS_COLUMNS.capacite]: lieu.capacite,
         [GRIST_SESSIONS_COLUMNS.organisateur]: referentRowId,
         [GRIST_SESSIONS_COLUMNS.animateurIce]: animateurRowId
           ? ["L", animateurRowId]
@@ -341,31 +377,6 @@ export const registerToFormationSession = withErrorHandling(
 );
 
 /**
- * Modifie une formation.
- *
- * Réservé à l'équipe d'animation et à la personne qui l'anime : le droit est
- * recalculé ici à partir de la formation enregistrée, jamais reçu du client.
- * Le statut n'est pas modifiable par ce chemin — une proposition ne se valide
- * pas elle-même.
- */
-/**
- * Désinscription d'une session.
- *
- * La ligne d'inscription est supprimée, puis la liste d'attente est recalculée :
- * une place qui se libère doit profiter à la personne qui attend depuis le plus
- * longtemps, sans intervention manuelle.
- */
-/**
- * Note les événements d'agenda à retirer.
- *
- * Écrit avant la suppression des lignes qu'ils concernent : une fois celles-ci
- * effacées, plus rien ne dirait quoi enlever de l'agenda. Le workflow n8n lit
- * cette table et fait le ménage.
- *
- * Un échec ici ne doit pas empêcher la suppression demandée : l'utilisateur a
- * cliqué, l'action doit aboutir. On perd le nettoyage de l'agenda, pas plus.
- */
-/**
  * Adresse à laquelle écrire à un membre.
  *
  * `session.user.email` est celle du fournisseur d'identité — primaire, ou
@@ -394,6 +405,16 @@ async function adresseDeContact(user: {
   return user.email ?? "";
 }
 
+/**
+ * Note les événements d'agenda à retirer.
+ *
+ * Écrit avant la suppression des lignes qu'ils concernent : une fois celles-ci
+ * effacées, plus rien ne dirait quoi enlever de l'agenda. Le workflow n8n lit
+ * cette table et fait le ménage.
+ *
+ * Un échec ici ne doit pas empêcher la suppression demandée : l'utilisateur a
+ * cliqué, l'action doit aboutir. On perd le nettoyage de l'agenda, pas plus.
+ */
 async function noterSuppressionsAgenda(
   docId: string,
   entrees: { uid: string; contexte: string }[],
@@ -415,6 +436,13 @@ async function noterSuppressionsAgenda(
   }
 }
 
+/**
+ * Désinscription d'une session.
+ *
+ * La ligne d'inscription est supprimée, puis la liste d'attente est recalculée :
+ * une place qui se libère doit profiter à la personne qui attend depuis le plus
+ * longtemps, sans intervention manuelle.
+ */
 export const unregisterFromFormationSession = withErrorHandling(
   async (sessionId: string) => {
     const session = await getServerSession(authOptions);
@@ -599,6 +627,14 @@ export const scheduleFormationSessions = withErrorHandling(
         "Seule l'équipe animation ou la personne qui anime peut programmer des dates.",
       );
     }
+    // Une date n'a pas de sens pour un e-learning, ouvert en continu : elle
+    // ferait apparaître au catalogue une séance qui n'existe pas.
+    if (formation.isELearning) {
+      throw new BusinessError(
+        "ELearningSansDate",
+        "Un e-learning est ouvert en continu : il n'a pas de date à programmer.",
+      );
+    }
 
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
@@ -733,8 +769,16 @@ export const updateFormationSession = withErrorHandling(
  * orphelines, rattachées à une session qui n'existe plus, qui gonfleraient les
  * compteurs sans correspondre à rien.
  *
- * Rien n'est prévenu automatiquement : c'est à la personne qui annule de
- * prévenir les inscrits, d'où le décompte renvoyé.
+ * Les inscrit·es sont prévenu·es sans intervention : avant toute suppression,
+ * une ligne est écrite dans la table Annulations (titre, horaire, adresses de
+ * toutes les inscriptions, liste d'attente comprise), que le workflow n8n lit
+ * pour envoyer le mail d'annulation. Sans aucune adresse, pas de ligne. Les
+ * événements d'agenda à retirer sont notés de la même façon dans
+ * Suppressions_agenda : l'invitation de chaque inscrit·e, l'événement
+ * d'animation et l'annonce à l'agenda de la communauté.
+ *
+ * Un échec d'écriture dans Annulations interrompt la suppression ; côté
+ * agenda, il est ignoré (voir noterSuppressionsAgenda).
  *
  * @returns le nombre d'inscriptions supprimées avec la date.
  */
@@ -825,6 +869,10 @@ export const deleteFormationSession = withErrorHandling(
         uid: uidEvenementAnimation(sessionRowId),
         contexte: `Date supprimée : ${formation.name} (animation)`,
       },
+      {
+        uid: uidEvenementPublic(sessionRowId),
+        contexte: `Date supprimée : ${formation.name} (agenda communauté)`,
+      },
     ]);
 
     // Les inscriptions d'abord : si la suppression de la session échouait
@@ -844,6 +892,14 @@ export const deleteFormationSession = withErrorHandling(
   },
 );
 
+/**
+ * Modifie une formation.
+ *
+ * Réservé à l'équipe d'animation et à la personne qui l'anime : le droit est
+ * recalculé ici à partir de la formation enregistrée, jamais reçu du client.
+ * Le statut n'est pas modifiable par ce chemin — une proposition ne se valide
+ * pas elle-même.
+ */
 export const updateFormation = withErrorHandling(
   async (data: formationUpdateSchemaType) => {
     const session = await getServerSession(authOptions);
@@ -877,6 +933,8 @@ export const updateFormation = withErrorHandling(
 
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+    // Changer de modalité change aussi ce qui dit où se tient la formation.
+    const lieu = selonModalite(parsed);
 
     await updateGristRecords(
       config.GRIST_FORMATIONS_DOC_ID,
@@ -893,9 +951,10 @@ export const updateFormation = withErrorHandling(
               ...parsed.thematiques,
             ],
             [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
-            [GRIST_FORMATIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+            [GRIST_FORMATIONS_COLUMNS.capacite]: lieu.capacite,
             [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
-            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
+            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: lieu.lienVisioAdmin,
+            [GRIST_FORMATIONS_COLUMNS.adresse]: lieu.adresse,
             [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
             [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
             [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,

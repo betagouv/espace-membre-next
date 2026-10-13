@@ -50,10 +50,15 @@ export const getImageFile = (value: unknown): File | undefined => {
   return undefined;
 };
 
+// `url()` accepte tout ce que `new URL()` sait lire, `javascript:` compris.
+// Le lien d'un e-learning devient un bouton sur la fiche : sans cette
+// restriction, un lien déposé par un membre exécuterait du script chez qui
+// clique, à commencer par l'équipe d'animation venue modérer.
 const optionalUrl = z
   .string()
   .trim()
   .url("Lien invalide, il doit commencer par https://")
+  .regex(/^https?:\/\//i, "Lien invalide, il doit commencer par https://")
   .or(z.literal(""))
   .optional();
 
@@ -77,12 +82,12 @@ export const formationProposalSchema = z
     audience: z
       .array(z.enum(FORMATION_AUDIENCES as [string, ...string[]]))
       .min(1, "Choisis au moins une audience"),
-    // Si la date est déjà fixée : une session est créée avec la formation.
-    dateDebut: z
-      .string({ required_error: "La date est requise" })
-      .trim()
-      .min(1, "La date est requise"),
+    // Une session est créée avec la formation, à cette date. Facultative ici
+    // parce qu'un e-learning n'en a pas : la règle est dans le superRefine.
+    dateDebut: z.string().trim().optional(),
     lienVisioAdmin: optionalUrl,
+    // Lieu d'une formation en présentiel : adresse, bâtiment, salle.
+    adresse: z.string().trim().max(300, "300 caractères maximum").optional(),
     duree: z.enum(
       FORMATION_DUREES.map((d) => d.label) as [string, ...string[]],
       {
@@ -98,6 +103,8 @@ export const formationProposalSchema = z
       .min(1, "Au moins une place")
       .max(500, "Nombre trop élevé")
       .optional(),
+    // Pour un e-learning, c'est l'adresse où suivre la formation : les
+    // e-learning repris de l'existant l'ont déjà dans cette colonne.
     lienSupport: optionalUrl,
     lienFeedback: optionalUrl,
     animateur: z
@@ -117,6 +124,21 @@ export const formationProposalSchema = z
   })
   .superRefine((data, ctx) => {
     requireVisioWhenRemote(data, ctx);
+    requireAdresseWhenPresentiel(data, ctx);
+    requireLienWhenELearning(data, ctx);
+
+    // Un e-learning est ouvert en continu : pas de date, donc pas de session.
+    // Toute autre formation naît avec sa première date.
+    if (
+      data.modalite !== FORMATION_MODALITE.E_LEARNING &&
+      !data.dateDebut?.trim()
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dateDebut"],
+        message: "La date est requise",
+      });
+    }
 
     const image = getImageFile(data.image);
     // Une illustration choisie dans la banque dispense d'en envoyer une.
@@ -150,11 +172,6 @@ export type formationProposalSchemaType = z.infer<
 >;
 
 /**
- * Modification d'une formation existante. Reprend les champs du dépôt, sans
- * l'image ni les dates : la session se gère à part, et remplacer l'illustration
- * demande un nouvel envoi de fichier.
- */
-/**
  * Le lien de visioconférence n'a de sens qu'à distance, mais il y devient
  * indispensable : sans lui, personne ne sait où se connecter.
  */
@@ -174,16 +191,65 @@ const requireVisioWhenRemote = (
   }
 };
 
+/**
+ * En présentiel, l'adresse tient le rôle du lien de visioconférence : sans
+ * elle, personne ne sait où aller.
+ */
+const requireAdresseWhenPresentiel = (
+  data: { modalite?: FORMATION_MODALITE; adresse?: string },
+  ctx: z.RefinementCtx,
+) => {
+  if (
+    data.modalite === FORMATION_MODALITE.PRESENTIEL &&
+    !data.adresse?.trim()
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["adresse"],
+      message: "L'adresse est requise pour une formation en présentiel",
+    });
+  }
+};
+
+/**
+ * Un e-learning n'a ni date ni salle : son lien est le seul moyen d'y
+ * accéder, sans lui la fiche ne mène nulle part.
+ */
+const requireLienWhenELearning = (
+  data: { modalite?: FORMATION_MODALITE; lienSupport?: string },
+  ctx: z.RefinementCtx,
+) => {
+  if (
+    data.modalite === FORMATION_MODALITE.E_LEARNING &&
+    !data.lienSupport?.trim()
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["lienSupport"],
+      message: "Le lien de la formation est requis pour un e-learning",
+    });
+  }
+};
+
+/**
+ * Modification d'une formation existante. Reprend les champs du dépôt, sans
+ * l'image ni les dates : la session se gère à part, et remplacer l'illustration
+ * demande un nouvel envoi de fichier.
+ */
 export const formationUpdateSchema = formationProposalSchema
   .innerType()
   .omit({ image: true, imageId: true, dateDebut: true })
   .extend({
     formationId: z.string().min(1),
   })
-  // `innerType()` laisse les refinements du schéma de dépôt derrière lui : la
-  // règle du lien visio doit être rappelée ici, sinon elle ne s'appliquerait
-  // qu'à la création.
-  .superRefine(requireVisioWhenRemote);
+  // `innerType()` laisse les refinements du schéma de dépôt derrière lui : les
+  // règles de lien doivent être rappelées ici, sinon elles ne
+  // s'appliqueraient qu'à la création.
+  .superRefine((data, ctx) => {
+    requireVisioWhenRemote(data, ctx);
+    requireAdresseWhenPresentiel(data, ctx);
+    requireLienWhenELearning(data, ctx);
+  });
 
 export type formationUpdateSchemaType = z.infer<typeof formationUpdateSchema>;
 
