@@ -2,7 +2,15 @@ import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
 
-import { getUserNameFromEmail } from "./sync-dinum-emails";
+import { db } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
+import { createData, deleteData } from "__tests__/utils/fakeData";
+
+import {
+  getUserNameFromEmail,
+  setEmailsActives,
+  setEmailsSuspendeds,
+} from "./sync-dinum-emails";
 
 describe("getUserNameFromEmail", () => {
   it("should extract username from simple email", () => {
@@ -49,196 +57,259 @@ describe("getUserNameFromEmail", () => {
 });
 
 describe("syncDinumEmailsJob", () => {
+  const domain = "sync-test.beta.gouv.fr";
+  const member = {
+    username: "sync.member",
+    primary_email: "sync.member@numerique.gouv.fr",
+    missions: [],
+  };
+  const other = {
+    username: "sync.other",
+    primary_email: "sync.other@numerique.gouv.fr",
+    missions: [],
+  };
   let getAllMailboxesStub: sinon.SinonStub;
   let getAllAliasesStub: sinon.SinonStub;
-  let dbStub: any;
   let syncDinumEmailsJob: (domain: string) => Promise<void>;
+  let memberUuid: string;
+  let otherUuid: string;
 
-  beforeEach(() => {
+  const getUuid = async (username: string) =>
+    (
+      await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", username)
+        .executeTakeFirstOrThrow()
+    ).uuid;
+  const getRow = (email: string) =>
+    db
+      .selectFrom("dinum_emails")
+      .selectAll()
+      .where("email", "=", email)
+      .executeTakeFirst();
+  const dimailAnswers = (
+    mailboxes: { email: string; imap_active: "yes" | "no" }[],
+    aliases: { username: string; destination: string }[] = [],
+  ) => {
+    getAllMailboxesStub.resolves({
+      success: true,
+      mailboxes: mailboxes.map((m) => ({ type: "mailbox", ...m })),
+    });
+    getAllAliasesStub.resolves({
+      success: true,
+      aliases: aliases.map((a) => ({ ...a, domain })),
+    });
+  };
+
+  beforeEach(async () => {
     getAllMailboxesStub = sinon.stub();
     getAllAliasesStub = sinon.stub();
-    dbStub = {
-      selectFrom: sinon.stub().returns({
-        select: sinon.stub().returns({
-          where: sinon
-            .stub()
-            .returns({ executeTakeFirst: sinon.stub().returns({}) }),
-        }),
-      }),
-      insertInto: sinon.stub().returns({
-        values: sinon.stub().returns({
-          onConflict: sinon.stub().returns({
-            execute: sinon.stub().resolves(),
-          }),
-        }),
-      }),
-    };
-
-    const somemodule = proxyquire("./sync-dinum-emails", {
+    syncDinumEmailsJob = proxyquire("./sync-dinum-emails", {
       "@/lib/dimail/client": {
         getAllMailboxes: getAllMailboxesStub,
         getAllAliases: getAllAliasesStub,
       },
-      "@/lib/kysely": {
-        db: dbStub,
-      },
-    });
-
-    syncDinumEmailsJob = somemodule.syncDinumEmailsJob;
+    }).syncDinumEmailsJob;
+    await createData({ users: [member, other] });
+    memberUuid = await getUuid(member.username);
+    otherUuid = await getUuid(other.username);
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     sinon.restore();
+    await db
+      .deleteFrom("dinum_emails")
+      .where("email", "ilike", `%@${domain}`)
+      .execute();
+    await deleteData({ users: [member, other] });
   });
 
-  it("should sync dinum emails correctly without duplicates", async () => {
-    // Set environment variable
-    process.env.DIMAIL_MAILBOX_DOMAIN = "test.com";
-
-    // Mock getAllMailboxes response
-    getAllMailboxesStub.resolves({
-      success: true,
-      mailboxes: [
-        { type: "mailbox", email: "user1@test.com", status: "active" },
-        { type: "mailbox", email: "user2@test.com", status: "inactive" },
+  it("should store mailboxes and aliases, attached by username, without duplicates", async () => {
+    dimailAnswers(
+      [
+        { email: `sync.member@${domain}`, imap_active: "yes" },
+        { email: `sync.other@${domain}`, imap_active: "no" },
+        { email: `sync.member@${domain}`, imap_active: "yes" },
       ],
-    });
-
-    // Mock getAllAliases response
-    getAllAliasesStub.resolves({
-      success: true,
-      aliases: [
-        {
-          username: "alias1",
-          domain: "test.com",
-          destination: "user1@test.com",
-        },
-        {
-          username: "alias2",
-          domain: "test.com",
-          destination: "user2@test.com",
-        },
-      ],
-    });
-
-    await syncDinumEmailsJob("test.com");
-
-    // Assert that insertInto was called with "dinum_emails"
-    expect(dbStub.insertInto.calledWith("dinum_emails")).to.be.true;
-
-    // Get the values method
-    const valuesStub = dbStub.insertInto().values;
-    expect(valuesStub.calledOnce).to.be.true;
-
-    // Get the inserted data
-    const insertedData = valuesStub.firstCall.args[0];
-
-    // Expected data: 2 mailboxes + 2 aliases = 4 items
-    expect(insertedData).to.have.length(4);
-
-    // Check mailboxes
-    const mailbox1 = insertedData.find(
-      (item: any) => item.email === "user1@test.com",
+      [{ username: "contact", destination: `sync.member@${domain}` }],
     );
-    expect(mailbox1).to.deep.include({
+    await syncDinumEmailsJob(domain);
+    const member = await getRow(`sync.member@${domain}`);
+    expect(member).to.include({
       type: "mailbox",
-      email: "user1@test.com",
-      status: "active",
-      destination: null,
-    });
-
-    const mailbox2 = insertedData.find(
-      (item: any) => item.email === "user2@test.com",
-    );
-    expect(mailbox2).to.deep.include({
-      type: "mailbox",
-      email: "user2@test.com",
-      status: "inactive",
-      destination: null,
-    });
-
-    // Check aliases
-    const alias1 = insertedData.find(
-      (item: any) => item.email === "alias1@test.com",
-    );
-    expect(alias1).to.deep.include({
-      type: "alias",
-      email: "alias1@test.com",
-      destination: "user1@test.com",
       status: "enabled",
+      user_id: memberUuid,
     });
-
-    const alias2 = insertedData.find(
-      (item: any) => item.email === "alias2@test.com",
-    );
-    expect(alias2).to.deep.include({
+    expect(await getRow(`sync.other@${domain}`)).to.include({
+      status: "disabled",
+      user_id: otherUuid,
+    });
+    expect(await getRow(`contact@${domain}`)).to.include({
       type: "alias",
-      email: "alias2@test.com",
-      destination: "user2@test.com",
-      status: "enabled",
+      destination: `sync.member@${domain}`,
     });
-
-    // Assert that onConflict was called
-    const onConflictStub = dbStub.insertInto().values().onConflict;
-    expect(onConflictStub.calledOnce).to.be.true;
-
-    // Assert that execute was called
-    const executeStub = dbStub.insertInto().values().onConflict().execute;
-    expect(executeStub.calledOnce).to.be.true;
+    const count = await db
+      .selectFrom("dinum_emails")
+      .select((eb) => eb.fn.countAll().as("n"))
+      .where("email", "ilike", `%@${domain}`)
+      .executeTakeFirstOrThrow();
+    expect(Number(count.n)).to.equal(3);
   });
 
-  it("should filter out duplicate emails", async () => {
-    process.env.DIMAIL_MAILBOX_DOMAIN = "test.com";
-
-    // Mock responses with a duplicate email
-    getAllMailboxesStub.resolves({
-      success: true,
-      mailboxes: [
-        { type: "mailbox", email: "user1@test.com", status: "active" },
-      ],
-    });
-
-    getAllAliasesStub.resolves({
-      success: true,
-      aliases: [
-        {
-          username: "user1",
-          domain: "test.com",
-          destination: "somewhere@test.com",
-        }, // Same email as mailbox
-      ],
-    });
-
-    await syncDinumEmailsJob("test.com");
-
-    const insertedData = dbStub.insertInto().values.firstCall.args[0];
-
-    // Should only have 1 item, the mailbox (first in array)
-    expect(insertedData).to.have.length(1);
-    expect(insertedData[0]).to.deep.include({
-      type: "mailbox",
-      email: "user1@test.com",
-      status: "active",
-      destination: null,
+  it("should keep the member an admin attached an address to", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: `sync.member@${domain}`,
+        type: "mailbox",
+        status: "enabled",
+        user_id: otherUuid,
+        user_id_locked_by: "an.admin",
+        user_id_locked_at: new Date(),
+      })
+      .execute();
+    dimailAnswers([{ email: `sync.member@${domain}`, imap_active: "no" }]);
+    await syncDinumEmailsJob(domain);
+    expect(await getRow(`sync.member@${domain}`)).to.include({
+      user_id: otherUuid,
+      status: "disabled",
     });
   });
 
-  it("should handle empty responses", async () => {
-    process.env.DIMAIL_MAILBOX_DOMAIN = "test.com";
+  const knownMailboxes = ["a", "b", "c", "d", "e"].map((local) => ({
+    email: `${local}@${domain}`,
+    imap_active: "yes" as const,
+  }));
 
-    getAllMailboxesStub.resolves({
-      success: true,
-      mailboxes: [],
-    });
+  it("should mark deleted the addresses Dimail no longer knows", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: `gone@${domain}`,
+        type: "mailbox",
+        status: "enabled",
+        user_id: memberUuid,
+      })
+      .execute();
+    dimailAnswers(knownMailboxes, [
+      { username: "contact", destination: `a@${domain}` },
+    ]);
+    await syncDinumEmailsJob(domain);
+    expect((await getRow(`gone@${domain}`))?.status).to.equal("deleted");
+    expect((await getRow(`a@${domain}`))?.status).to.equal("enabled");
+  });
 
-    getAllAliasesStub.resolves({
-      success: true,
-      aliases: [],
-    });
+  it("should not delete the aliases when Dimail returns no alias at all", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: `contact@${domain}`,
+        type: "alias",
+        status: "enabled",
+        destination: `a@${domain}`,
+      })
+      .execute();
+    dimailAnswers(knownMailboxes, []);
+    await syncDinumEmailsJob(domain);
+    expect((await getRow(`contact@${domain}`))?.status).to.equal("enabled");
+  });
 
-    await syncDinumEmailsJob("test.com");
+  it("should not delete when too many rows of a type disappear at once", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values(
+        ["x", "y", "z"].map((local) => ({
+          email: `${local}@${domain}`,
+          type: "mailbox",
+          status: "enabled",
+        })),
+      )
+      .execute();
+    dimailAnswers([{ email: `a@${domain}`, imap_active: "yes" }]);
+    await syncDinumEmailsJob(domain);
+    expect((await getRow(`x@${domain}`))?.status).to.equal("enabled");
+  });
 
-    const insertedData = dbStub.insertInto().values.firstCall.args[0];
-    expect(insertedData).to.have.length(0);
+  it("should not mark anything deleted on a failed or empty Dimail answer", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({ email: `kept@${domain}`, type: "mailbox", status: "enabled" })
+      .execute();
+    getAllMailboxesStub.resolves({ success: false });
+    getAllAliasesStub.resolves({ success: true, aliases: [] });
+    await syncDinumEmailsJob(domain);
+    dimailAnswers([]);
+    await syncDinumEmailsJob(domain);
+    expect((await getRow(`kept@${domain}`))?.status).to.equal("enabled");
+  });
+});
+
+describe("primary email status from the Dimail mailboxes", () => {
+  const domain = "status-test.beta.gouv.fr";
+  const intra = {
+    username: "status.intra",
+    primary_email: "status.intra@ademe.gouv.fr",
+    missions: [],
+  };
+  let uuid: string;
+
+  const setStatus = (status: EmailStatusCode) =>
+    db
+      .updateTable("users")
+      .set({ primary_email_status: status })
+      .where("uuid", "=", uuid)
+      .execute();
+  const getStatus = async () =>
+    (
+      await db
+        .selectFrom("users")
+        .select("primary_email_status")
+        .where("uuid", "=", uuid)
+        .executeTakeFirstOrThrow()
+    ).primary_email_status;
+  const addMailbox = (local: string, status: string) =>
+    db
+      .insertInto("dinum_emails")
+      .values({
+        email: `${local}@${domain}`,
+        type: "mailbox",
+        status,
+        user_id: uuid,
+      })
+      .execute();
+
+  beforeEach(async () => {
+    await createData({ users: [intra] });
+    uuid = (
+      await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", intra.username)
+        .executeTakeFirstOrThrow()
+    ).uuid;
+  });
+
+  afterEach(async () => {
+    await db.deleteFrom("dinum_emails").where("user_id", "=", uuid).execute();
+    await deleteData({ users: [intra] });
+  });
+
+  it("should suspend a member whose mailboxes are all disabled, whatever the primary email", async () => {
+    await setStatus(EmailStatusCode.EMAIL_ACTIVE);
+    await addMailbox("status.intra", "disabled");
+    await setEmailsSuspendeds();
+    expect(await getStatus()).to.equal(EmailStatusCode.EMAIL_SUSPENDED);
+  });
+
+  it("should keep or set active a member with at least one enabled mailbox", async () => {
+    await setStatus(EmailStatusCode.EMAIL_ACTIVE);
+    await addMailbox("status.intra.old", "disabled");
+    await addMailbox("status.intra", "enabled");
+    await setEmailsSuspendeds();
+    expect(await getStatus()).to.equal(EmailStatusCode.EMAIL_ACTIVE);
+    await setStatus(EmailStatusCode.EMAIL_SUSPENDED);
+    await setEmailsActives();
+    expect(await getStatus()).to.equal(EmailStatusCode.EMAIL_ACTIVE);
   });
 });

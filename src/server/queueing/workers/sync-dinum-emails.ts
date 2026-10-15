@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/node";
+
 import { getAllMailboxes, getAllAliases } from "@/lib/dimail/client";
 import { db } from "@/lib/kysely";
 import { EmailStatusCode } from "@/models/member";
@@ -26,6 +28,71 @@ export const getUserIdByEmail = async (email: string) => {
   const user = await query.executeTakeFirst();
   return (user && user.uuid) || null;
 };
+// above this share of the live rows of a type disappearing at once, the Dimail
+// answer is considered incomplete and nothing is marked deleted
+const MAX_DELETED_SHARE = 0.2;
+
+const markMissingRowsDeleted = async ({
+  domain,
+  isAlias,
+  knownEmails,
+}: {
+  domain: string;
+  isAlias: boolean;
+  knownEmails: string[];
+}) => {
+  const label = `sync dinum_emails table for ${domain} (${isAlias ? "aliases" : "mailboxes"})`;
+  if (!knownEmails.length) {
+    console.log(`${label}: empty Dimail list, deleted rows not updated`);
+    return;
+  }
+  const known = knownEmails.map((email) => email.toLowerCase());
+  const liveRows = () =>
+    db
+      .selectFrom("dinum_emails")
+      .where("email", "ilike", `%@${domain}`)
+      .where((eb) =>
+        isAlias
+          ? eb("type", "=", "alias")
+          : eb.or([eb("type", "is", null), eb("type", "!=", "alias")]),
+      )
+      .where((eb) =>
+        eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
+      );
+  const [{ live }, { missing }] = await Promise.all([
+    liveRows()
+      .select((eb) => eb.fn.countAll<number>().as("live"))
+      .executeTakeFirstOrThrow(),
+    liveRows()
+      .where((eb) => eb(eb.fn("lower", ["email"]), "not in", known))
+      .select((eb) => eb.fn.countAll<number>().as("missing"))
+      .executeTakeFirstOrThrow(),
+  ]);
+  if (Number(live) && Number(missing) / Number(live) > MAX_DELETED_SHARE) {
+    const message = `${label}: ${missing}/${live} rows missing from Dimail, deletion skipped`;
+    console.error(message);
+    Sentry.captureMessage(message);
+    return;
+  }
+  const deleted = await db
+    .updateTable("dinum_emails")
+    .set({ status: "deleted", updated_at: new Date() })
+    .where("email", "ilike", `%@${domain}`)
+    .where((eb) =>
+      isAlias
+        ? eb("type", "=", "alias")
+        : eb.or([eb("type", "is", null), eb("type", "!=", "alias")]),
+    )
+    .where((eb) =>
+      eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
+    )
+    .where((eb) => eb(eb.fn("lower", ["email"]), "not in", known))
+    .executeTakeFirst();
+  console.log(
+    `${label}: ${Number(deleted.numUpdatedRows)} rows marked deleted`,
+  );
+};
+
 /**
  * update dinum_emails table from dimail
  */
@@ -75,40 +142,68 @@ export async function syncDinumEmailsJob(domain: string) {
     `sync dinum_emails table for ${domain}: ${allAccounts.length} accounts`,
   );
 
-  return db
-    .insertInto("dinum_emails")
-    .values(allAccounts)
-    .onConflict((c) =>
-      c.column("email").doUpdateSet({
-        status: (eb) => eb.ref("excluded.status"),
-        destination: (eb) => eb.ref("excluded.destination"),
-        type: (eb) => eb.ref("excluded.type"),
-        updated_at: (eb) => eb.fn("now"),
-        user_id: (eb) => eb.ref("excluded.user_id"),
-      }),
-    )
-    .execute();
+  if (allAccounts.length) {
+    await db
+      .insertInto("dinum_emails")
+      .values(allAccounts)
+      .onConflict((c) =>
+        c.column("email").doUpdateSet({
+          status: (eb) => eb.ref("excluded.status"),
+          destination: (eb) => eb.ref("excluded.destination"),
+          type: (eb) => eb.ref("excluded.type"),
+          updated_at: (eb) => eb.fn("now"),
+          // a row attached to a member by an admin keeps that member : the
+          // username/primary email heuristic above can pick the wrong one
+          user_id: (eb) =>
+            eb
+              .case()
+              .when("dinum_emails.user_id_locked_by", "is not", null)
+              .then(eb.ref("dinum_emails.user_id"))
+              .else(eb.ref("excluded.user_id"))
+              .end(),
+        }),
+      )
+      .execute();
+  }
+
+  // rows Dimail no longer knows are kept for history but marked deleted, which
+  // stops them from being a login address. Each list is handled on its own, and
+  // only when it was read : a failed call or an empty list for one type would
+  // otherwise mark every row of that type deleted.
+  if (mailboxesResult.success) {
+    await markMissingRowsDeleted({
+      domain,
+      isAlias: false,
+      knownEmails: mailboxes.map((m) => m.email),
+    });
+  }
+  if (aliasesResult.success) {
+    await markMissingRowsDeleted({
+      domain,
+      isAlias: true,
+      knownEmails: aliases.map((a) => a.email),
+    });
+  }
 }
 
-const setEmailsActives = async () => {
-  const emailsToMarkAsActive = await db
+// The email status of a member follows their Dimail mailbox, even when their
+// primary email is elsewhere (an agent with their administration address as
+// primary and a @beta.gouv.fr mailbox) : active as soon as one of their
+// mailboxes is enabled, suspended when they all are disabled.
+const enabledMailboxOwners = () =>
+  db
     .selectFrom("dinum_emails")
-    .select(["user_id", "email"])
+    .select("user_id")
     .where("user_id", "is not", null)
     .where("type", "=", "mailbox")
-    .where("status", "=", "enabled")
-    .execute();
+    .where("status", "=", "enabled");
 
+const setEmailsActives = async () => {
   const updateUsersEmailsActive = await db
     .updateTable("users")
     .set("primary_email_status", EmailStatusCode.EMAIL_ACTIVE)
     .where("primary_email_status", "=", EmailStatusCode.EMAIL_SUSPENDED)
-    .where("primary_email", "like", "%@beta.gouv.fr")
-    .where(
-      "uuid",
-      "in",
-      emailsToMarkAsActive.map((r) => r.user_id),
-    )
+    .where("uuid", "in", enabledMailboxOwners())
     .returning("username")
     .execute();
 
@@ -121,33 +216,32 @@ const setEmailsActives = async () => {
 };
 
 const setEmailsSuspendeds = async () => {
-  const emailsToMarkAsSuspended = await db
-    .selectFrom("dinum_emails")
-    .select(["user_id", "email"])
-    .where("user_id", "is not", null)
-    .where("type", "=", "mailbox")
-    .where("status", "=", "disabled")
-    .execute();
-
   const updateUsersEmailSuspended = await db
     .updateTable("users")
     .set("primary_email_status", EmailStatusCode.EMAIL_SUSPENDED)
     .where("primary_email_status", "=", EmailStatusCode.EMAIL_ACTIVE)
-    .where("primary_email", "like", "%@beta.gouv.fr")
     .where(
       "uuid",
       "in",
-      emailsToMarkAsSuspended.map((r) => r.user_id),
+      db
+        .selectFrom("dinum_emails")
+        .select("user_id")
+        .where("user_id", "is not", null)
+        .where("type", "=", "mailbox")
+        .where("status", "=", "disabled"),
     )
+    .where("uuid", "not in", enabledMailboxOwners())
     .returning("username")
     .execute();
   console.log(
-    `Users emails marked as suspended: ${updateUsersEmailSuspended.map((x) => x.username).length}`,
+    `Users emails marked as suspended: ${updateUsersEmailSuspended.length}`,
   );
   console.log(
     updateUsersEmailSuspended.map((r) => ` - ${r.username}`).join("\n"),
   );
 };
+
+export { setEmailsActives, setEmailsSuspendeds };
 
 export const startSync = async () => {
   console.log("start job sync dinum_emails tables");

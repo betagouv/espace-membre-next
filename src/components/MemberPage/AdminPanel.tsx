@@ -1,5 +1,6 @@
 import BlocConfigurerEmailPrincipal from "./Email/BlocConfigurerEmailPrincipal";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
+import { DinumEmailsAdmin } from "./Email/DinumEmailsAdmin";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
@@ -23,6 +24,7 @@ export const AdminPanel = ({
         userInfos={userInfos}
       ></BlocConfigurerEmailPrincipal>
       <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
+      <DinumEmailsAdmin username={userInfos.username} />
       <br />
       <h3>Évènements</h3>
       <MemberEventList userId={userInfos.username} />

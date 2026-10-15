@@ -43,6 +43,10 @@ export const findUsersByLoginEmail = async (
                 "is not",
                 null,
               ),
+            )
+            // an address removed from Dimail no longer logs in
+            .where((eb) =>
+              eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
             ),
         ),
       ]),

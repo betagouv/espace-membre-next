@@ -113,6 +113,8 @@ export interface DinumEmails {
   type: string | null;
   updated_at: Generated<Timestamp>;
   user_id: string | null;
+  user_id_locked_at: Timestamp | null;
+  user_id_locked_by: string | null;
   uuid: Generated<string>;
 }
 
