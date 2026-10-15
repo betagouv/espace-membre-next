@@ -63,11 +63,13 @@ export const pgBossWorker: {
 // fail silently without doing/throwing anything (we also start listening for events before pushing them)
 export async function startBossClientInstance(): Promise<PgBoss> {
   return await getBossClientInstance(async () => {
+    console.log("startBossClientInstance");
     for (const job of pgBossWorker) {
+      console.log("bossClient.work", job.topic);
       await bossClient.work(job.topic, handlerWrapper(job.worker));
     }
     console.log(
-      `Setup ${pgBossWorker.length} workers :\n${pgBossWorker
+      `Setup ${pgBossWorker.length} workers : ${pgBossWorker
         .map((job) => job.topic)
         .join("\n")}`,
     );

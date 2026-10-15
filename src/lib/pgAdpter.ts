@@ -8,6 +8,7 @@ import {
   VerificationToken,
 } from "next-auth/adapters";
 
+import { findUsersByLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
 import { db } from "@/lib/kysely";
 
 export const createVerificationToken = async ({
@@ -69,16 +70,12 @@ export default function customPostgresAdapter(): Adapter {
     const getUserByEmail = async (
       email: string,
     ): Promise<AdapterUser | null> => {
-      const dbUser = await db
-        .selectFrom("users")
-        .selectAll()
-        .where((eb) =>
-          eb.or([
-            eb(sql`LOWER(users.secondary_email)`, "=", email),
-            eb(sql`LOWER(users.primary_email)`, "=", email),
-          ]),
-        )
-        .executeTakeFirst();
+      const dbUsers = await findUsersByLoginEmail(email);
+      if (dbUsers.length > 1) {
+        console.log(`several db users match this email`);
+        return null;
+      }
+      const dbUser = dbUsers[0];
       if (!dbUser || (!dbUser.primary_email && !dbUser.secondary_email)) {
         console.log(`db user does not exists`);
         return null;

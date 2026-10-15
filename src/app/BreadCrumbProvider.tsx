@@ -16,7 +16,10 @@ const InfoContext = createContext<{
 
 // Exporter un fournisseur de contexte
 export const BreadCrumbProvider = ({ children }) => {
-  const [currentPage, setCurrentPage] = useState("/");
+  // Vide, et non "/" : les fils d'Ariane écrivent `currentPage || repli`,
+  // et un "/" initial est une valeur vraie qui s'affichait telle quelle sur
+  // les pages qui ne remplissent pas le contexte.
+  const [currentPage, setCurrentPage] = useState("");
   const [currentItemId, setCurrentItemId] = useState<string | null>(null);
 
   return (

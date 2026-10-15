@@ -153,6 +153,18 @@ const columns: GristColumn[] = [
     fields: { label: "Nom du workspace (Tally)", type: "Text" },
   },
   {
+    id: GRIST_OPS_COLUMNS.emailEquipe,
+    fields: { label: "Email de l'équipe (PeerTube)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.nomChaine,
+    fields: { label: "Nom de la chaîne (PeerTube)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.nomCompte,
+    fields: { label: "Nom du compte (PeerTube)", type: "Text" },
+  },
+  {
     id: GRIST_OPS_COLUMNS.incubateur,
     fields: { label: "Incubateur", type: "Text" },
   },

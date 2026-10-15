@@ -186,7 +186,7 @@ export const MemberStatus = ({
       />
       <Button
         linkProps={{
-          href: "/services",
+          href: "/services/ops",
         }}
       >
         Demandes d'accès aux outils

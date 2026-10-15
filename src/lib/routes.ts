@@ -29,6 +29,7 @@ export const routes = {
   keskispasse: () => `/keskispasse`,
   eventsList: () => `/events`,
   formationList: () => `/formations`,
+  formationProposal: () => `/formations/proposer`,
   formationDetails: () => `/formations/.*`,
   verifyMember: () => `/verify`,
   organizationList: () => `/organizations`,
@@ -81,6 +82,7 @@ export const routeTitles: {
   keskispasse: () => "Qu'est-ce qui se passe ?",
   eventsList: () => "Événements à venir",
   formationList: () => "Catalogue des formations",
+  formationProposal: () => "Proposer une formation",
   formationDetails: (id?: string) => `Formation ${id}`,
   verifyMember: () => "Vérifie les informations de ton compte",
   incubatorDetailsEdit: (id?: string) => `Modifier la fiche incubateur de ${id}`,
@@ -93,5 +95,5 @@ export const routeTitles: {
   teamDetails: () => "Fiche équipe",
   serviceList: () => "Mes outils",
   opsRequest: () => "Demandes OPS",
-  segurAccessRequest: () => "Demande d'accès au bâtiment Ségur",
+  segurAccessRequest: () => "Demande d'accès aux bureaux Ségur",
 };

@@ -10,48 +10,62 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { submitSegurRequest } from "@/app/api/demandes/segur/actions";
+import { routes } from "@/lib/routes";
 import {
   segurRequestSchema,
   segurRequestSchemaType,
 } from "@/models/actions/segurRequest";
 import { AlertMessageType } from "@/models/common";
 import {
+  derniereDateFin,
+  premiereDateVenue,
+  SEGUR_CONTACT_DELAI_COURT,
+  SEGUR_DELAI_MINIMUM_HEURES,
+  SEGUR_DUREE_MAXIMUM_MOIS,
   SEGUR_JOURS,
   SEGUR_PERIODE_CHOICES,
-  SEGUR_SALLE_REUNION_CHOICES,
 } from "@/models/segur";
 
 interface SegurRequestFormProps {
   defaultValues?: Partial<segurRequestSchemaType>;
 }
 
+const ChampCourt = ({ children }: { children: React.ReactNode }) => (
+  <div className={fr.cx("fr-grid-row")}>
+    <div className={fr.cx("fr-col-12", "fr-col-md-6")}>{children}</div>
+  </div>
+);
+
 export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
   const {
     register,
     handleSubmit,
-    control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<segurRequestSchemaType>({
     resolver: zodResolver(segurRequestSchema),
     mode: "onChange",
-    defaultValues,
-  });
-  const {
-    fields: membres,
-    append,
-    remove,
-  } = useFieldArray({
-    control,
-    name: "autresMembres",
+    defaultValues: {
+      ...defaultValues,
+    },
   });
   const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>();
+
+  // Calculée une fois au montage : recalculer à chaque frappe ferait bouger la
+  // borne du champ sous les doigts du demandeur.
+  const dateMinimum = React.useMemo(() => premiereDateVenue(), []);
+  const dateDebut = watch("dateDebut");
+  // La date de fin se borne à la date de début choisie : trois mois après elle,
+  // et jamais avant elle.
+  const dateFinMaximum = dateDebut ? derniereDateFin(dateDebut) : null;
 
   const onSubmit = async (data: segurRequestSchemaType) => {
     if (isSaving) {
@@ -106,124 +120,93 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
         />
       )}
       <p className="fr-text--sm">
-        👋 Les membres de la communauté beta.gouv.fr ont la possibilité de
-        travailler ponctuellement dans l'open space situé à la DINUM - 20 avenue
-        de Ségur, Paris. Ce formulaire te permet de faire une demande d'accès à
-        ces bureaux. Il ne permet pas d'obtenir un badge permanent.
+        Les membres de la communauté beta.gouv.fr peuvent travailler
+        ponctuellement dans l'open space de la DINUM (20 avenue de Ségur,
+        Paris). Ce formulaire permet de faire une demande d'accès à ces bureaux.
+        Il ne permet pas d'obtenir un badge permanent.
       </p>
       <Alert
         className="fr-mb-4v"
         severity="info"
         small
-        description="Toutes les informations demandées ci-dessous sont obligatoires pour assurer le bon traitement de ta demande."
+        description="Toutes les informations sont obligatoires."
       />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Prénom et Nom"
-          state={errors.prenomNom ? "error" : undefined}
-          stateRelatedMessage={errors.prenomNom?.message}
-          nativeInputProps={{ ...register("prenomNom") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Prénom et Nom"
+            state={errors.prenomNom ? "error" : undefined}
+            stateRelatedMessage={errors.prenomNom?.message}
+            nativeInputProps={{ ...register("prenomNom") }}
+          />
+        </ChampCourt>
 
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Adresse mail professionnelle"
-          hintText="@beta.gouv.fr ou @xxx.gouv.fr"
-          state={errors.email ? "error" : undefined}
-          stateRelatedMessage={errors.email?.message}
-          nativeInputProps={{ type: "email", ...register("email") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Adresse mail professionnelle"
+            hintText="@beta.gouv.fr ou @xxx.gouv.fr"
+            state={errors.email ? "error" : undefined}
+            stateRelatedMessage={errors.email?.message}
+            nativeInputProps={{ type: "email", ...register("email") }}
+          />
+        </ChampCourt>
 
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Nom de ta Startup"
-          state={errors.startupName ? "error" : undefined}
-          stateRelatedMessage={errors.startupName?.message}
-          nativeInputProps={{ ...register("startupName") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Nom de ta Startup"
+            state={errors.startupName ? "error" : undefined}
+            stateRelatedMessage={errors.startupName?.message}
+            nativeInputProps={{ ...register("startupName") }}
+          />
+        </ChampCourt>
 
-        <div className={fr.cx("fr-mb-4w")}>
-          <p className={fr.cx("fr-text--md", "fr-mb-1w")}>
-            <strong>Autres membres de ton équipe</strong> (si vous venez à
-            plusieurs)
-          </p>
-          {membres.map((membre, index) => (
-            <div
-              key={membre.id}
-              className={fr.cx(
-                "fr-grid-row",
-                "fr-grid-row--gutters",
-                "fr-mb-2w",
-              )}
-              style={{ alignItems: "flex-end" }}
-            >
-              <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
-                <Input
-                  label="Prénom et Nom"
-                  state={
-                    errors.autresMembres?.[index]?.prenomNom
-                      ? "error"
-                      : undefined
-                  }
-                  stateRelatedMessage={
-                    errors.autresMembres?.[index]?.prenomNom?.message
-                  }
-                  nativeInputProps={{
-                    ...register(`autresMembres.${index}.prenomNom`),
-                  }}
-                />
-              </div>
-              <div className={fr.cx("fr-col-12", "fr-col-md-5")}>
-                <Input
-                  label="Adresse mail"
-                  state={
-                    errors.autresMembres?.[index]?.email ? "error" : undefined
-                  }
-                  stateRelatedMessage={
-                    errors.autresMembres?.[index]?.email?.message
-                  }
-                  nativeInputProps={{
-                    type: "email",
-                    ...register(`autresMembres.${index}.email`),
-                  }}
-                />
-              </div>
-              <div className={fr.cx("fr-col-12", "fr-col-md-2", "fr-mb-2w")}>
-                <Button
-                  priority="tertiary"
-                  onClick={() => remove(index)}
-                  nativeButtonProps={{ type: "button" }}
-                >
-                  Retirer
-                </Button>
-              </div>
-            </div>
-          ))}
-          <Button
-            priority="secondary"
-            onClick={() => append({ prenomNom: "", email: "" })}
-            nativeButtonProps={{ type: "button" }}
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-2w")}
+            label="Date souhaitée de venue"
+            hintText={`Au moins ${SEGUR_DELAI_MINIMUM_HEURES} h après le dépôt de la demande.`}
+            state={errors.dateDebut ? "error" : undefined}
+            stateRelatedMessage={errors.dateDebut?.message}
+            nativeInputProps={{
+              type: "date",
+              min: dateMinimum,
+              ...register("dateDebut"),
+            }}
+          />
+        </ChampCourt>
+
+        <p className={fr.cx("fr-text--sm", "fr-mb-4w")}>
+          Besoin de venir dans moins de {SEGUR_DELAI_MINIMUM_HEURES} h ? Ce
+          formulaire ne permet pas de la traiter à temps : écris directement à{" "}
+          <Link
+            className={fr.cx("fr-link")}
+            href={routes.communityMember({
+              username: SEGUR_CONTACT_DELAI_COURT.username,
+            })}
           >
-            + Ajouter une personne
-          </Button>
-        </div>
+            {SEGUR_CONTACT_DELAI_COURT.prenom}
+          </Link>
+          .
+        </p>
 
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Date souhaitée de venue"
-          state={errors.dateDebut ? "error" : undefined}
-          stateRelatedMessage={errors.dateDebut?.message}
-          nativeInputProps={{ type: "date", ...register("dateDebut") }}
-        />
-
-        <Input
-          className={fr.cx("fr-mb-4w")}
-          label="Date de fin de la venue"
-          state={errors.dateFin ? "error" : undefined}
-          stateRelatedMessage={errors.dateFin?.message}
-          nativeInputProps={{ type: "date", ...register("dateFin") }}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Date de fin de la venue"
+            hintText={`Au plus ${SEGUR_DUREE_MAXIMUM_MOIS} mois après la date de venue.`}
+            state={errors.dateFin ? "error" : undefined}
+            stateRelatedMessage={errors.dateFin?.message}
+            nativeInputProps={{
+              type: "date",
+              min: dateDebut || dateMinimum,
+              ...(dateFinMaximum ? { max: dateFinMaximum } : {}),
+              ...register("dateFin"),
+            }}
+          />
+        </ChampCourt>
 
         <Input
           className={fr.cx("fr-mb-4w")}
@@ -234,23 +217,14 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
           nativeTextAreaProps={{ ...register("precisions") }}
         />
 
-        <RadioButtons
-          className={fr.cx("fr-mb-4w")}
-          legend="Souhaites-tu faire une demande de salle de réunion ? (dans la limite des disponibilités)"
-          state={errors.salleReunion ? "error" : undefined}
-          stateRelatedMessage={errors.salleReunion?.message}
-          options={SEGUR_SALLE_REUNION_CHOICES.map((choice) => ({
-            label: choice,
-            nativeInputProps: {
-              value: choice,
-              ...register("salleReunion"),
-            },
-          }))}
-        />
+        <h2 className={fr.cx("fr-h4", "fr-mt-4w")}>Demande récurrente</h2>
+        <p className={fr.cx("fr-text--sm", "fr-mb-2w")}>
+          À remplir seulement si tu viens plusieurs fois sur la période.
+        </p>
 
         <Checkbox
           className={fr.cx("fr-mb-4w")}
-          legend="Si tu souhaites faire une demande récurrente, merci de préciser les jours concernés"
+          legend="Jours concernés"
           options={SEGUR_JOURS.map((jour) => ({
             label: jour,
             nativeInputProps: {

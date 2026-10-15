@@ -21,7 +21,6 @@ import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups"
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import frontConfig from "@/lib/frontConfig";
 
-
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
 
@@ -278,7 +277,7 @@ export function DashboardPage(props: DashboardPageProps) {
         <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
           <Tile
             className={fr.cx("fr-tile--sm")}
-            title="Demande d'accès au bâtiment Ségur"
+            title="Demandes Ségur"
             desc="Demander un accès au bâtiment Ségur."
             orientation="horizontal"
             imageUrl={(cityHall as StaticImageData).src}

@@ -94,6 +94,8 @@ const oAuthErrors = {
   UnknownMember:
     "Membre inconnu dans la communauté, veuillez contacter votre équipe référente.",
   ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
+  TooManyAttempts:
+    "Trop de tentatives de connexion pour cette adresse, réessaie dans quelques minutes.",
 };
 
 export const LoginPage = function () {
@@ -153,6 +155,8 @@ export const LoginPage = function () {
           setFormErrors(oAuthErrors["UnknownMember"]);
         } else if (data.error === "Error: ExpiredMember") {
           setFormErrors(oAuthErrors["ExpiredMember"]);
+        } else if (data.error === "Error: TooManyAttempts") {
+          setFormErrors(oAuthErrors["TooManyAttempts"]);
         } else {
           setFormErrors(data.error);
         }

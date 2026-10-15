@@ -36,6 +36,7 @@ export function BreadCrumbs() {
   const serviceLink = "/services";
   const formationLink = routes["formationList"]();
   const eventsLink = routes["eventsList"]();
+  const formationProposalLink = routes["formationProposal"]();
   const formationDetailLink = routes["formationDetails"]();
   const verifyLink = routes["verifyMember"]();
 
@@ -301,6 +302,16 @@ export function BreadCrumbs() {
       text: routeTitles.formationList(),
       isActive: isCurrentPath(pathname, formationLink),
       items: [
+        // Avant la page de détail : « /formations/proposer » satisfait aussi
+        // son motif fourre-tout, qui l'étiquetterait alors avec le titre de la
+        // formation précédemment consultée.
+        {
+          href: formationProposalLink,
+          // Le titre dépend de qui dépose (créer ou proposer) : la page le
+          // pousse dans le contexte, le libellé de route sert de repli.
+          text: currentPage || routeTitles.formationProposal(),
+          isActive: hasPathnameThisMatch(pathname, formationProposalLink),
+        },
         {
           href: pathname,
           text: currentPage || pathname,
@@ -341,8 +352,12 @@ export function BreadCrumbs() {
 
   const tree = findActiveItem(MenuItems);
 
+  // Une page hors du menu donne un arbre vide : le fil se réduirait à
+  // « Accueil », sans rien indiquer de la position courante. On n'en affiche
+  // pas plutôt que d'en afficher un tronqué.
   return (
-    pathname !== "/dashboard" && (
+    pathname !== "/dashboard" &&
+    tree.length > 0 && (
       <Breadcrumb
         currentPageLabel={tree[tree.length - 1]?.text}
         homeLinkProps={{

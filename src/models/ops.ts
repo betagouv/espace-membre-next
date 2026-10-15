@@ -15,6 +15,7 @@ export enum OPS_DEMANDE_TYPE {
   MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
   TALLY = "Création d'un compte tally",
   WELCOME_TO_THE_JUNGLE = "Ajout d'un compte Welcome to the Jungle",
+  PEERTUBE = "Création d'un compte PeerTube",
   AUTRE = "Autre",
 }
 
@@ -30,8 +31,32 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.UPDOWN,
   OPS_DEMANDE_TYPE.TALLY,
   OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE,
+  OPS_DEMANDE_TYPE.PEERTUBE,
   OPS_DEMANDE_TYPE.AUTRE,
 ];
+
+// Libellés affichés dans le formulaire. Ils sont séparés des valeurs de
+// l'enum parce que celles-ci partent telles quelles dans la colonne "Demande"
+// de Grist, sur laquelle les automatisations n8n filtrent : les renommer
+// casserait les workflows et rendrait invalides les lignes déjà enregistrées.
+// La question porte déjà le verbe, le libellé nomme donc juste la ressource.
+export const OPS_DEMANDE_LABELS: Record<OPS_DEMANDE_TYPE, string> = {
+  [OPS_DEMANDE_TYPE.SCALINGO_APP]: "App Scalingo",
+  [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]:
+    "Ressources cloud (Clever Cloud, OVH, Scaleway)",
+  [OPS_DEMANDE_TYPE.DNS_DOMAIN]: "Domaine ou zone DNS (OVH)",
+  [OPS_DEMANDE_TYPE.DNS_RECORD]: "Record DNS sur un domaine OVH (CNAME, A…)",
+  [OPS_DEMANDE_TYPE.BREVO]: "Compte Brevo",
+  [OPS_DEMANDE_TYPE.MATOMO]: "Compte Matomo",
+  [OPS_DEMANDE_TYPE.SENTRY]: "Compte Sentry",
+  [OPS_DEMANDE_TYPE.UPDOWN]: "Site à surveiller (updown.io)",
+  [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: "Certificat SSL Certigna",
+  [OPS_DEMANDE_TYPE.MAILING_LIST]: "Mailing list @beta.gouv.fr",
+  [OPS_DEMANDE_TYPE.TALLY]: "Compte Tally",
+  [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: "Compte Welcome to the Jungle",
+  [OPS_DEMANDE_TYPE.PEERTUBE]: "Compte PeerTube",
+  [OPS_DEMANDE_TYPE.AUTRE]: "Autre",
+};
 
 // Per-demande conditional fields. Keys map to the zod schema and form inputs.
 export interface OpsField {
@@ -39,8 +64,9 @@ export interface OpsField {
   label: string;
   hint?: string;
   type?: "text" | "email" | "textarea" | "select" | "startup";
-  // Options for the "select" type (rendered as radio buttons).
-  options?: string[];
+  // Options for the "select" type (rendered as radio buttons). Each option
+  // carries its own description, shown under its label.
+  options?: { value: string; label?: string; hint?: string }[];
   // Default-checked option for the "select" type.
   defaultValue?: string;
   required?: boolean;
@@ -63,6 +89,9 @@ export type OpsFieldKey =
   | "siteName"
   | "projetRattachement"
   | "nomWorkspace"
+  | "emailEquipe"
+  | "nomChaine"
+  | "nomCompte"
   | "commentaires";
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
@@ -70,15 +99,26 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   zoneScalingo: {
     key: "zoneScalingo",
     label: "Zone Scalingo",
-    hint: "osc-secnum-fr1 est recommandé (zone SecNumCloud, plus sécurisée). Choisis osc-fr1 uniquement si tu es en dev/preprod et n'exploite pas de données sensibles.",
+    // La description tient sous chaque option plutôt que dans un hint unique :
+    // il fallait sinon garder les deux zones en tête pour trancher.
     type: "select",
-    options: ["osc-secnum-fr1", "osc-fr1"],
+    options: [
+      {
+        value: "osc-secnum-fr1",
+        label: "osc-secnum-fr1 (recommandé)",
+        hint: "Zone SecNumCloud, plus sécurisée.",
+      },
+      {
+        value: "osc-fr1",
+        hint: "Uniquement pour les environnements qui n'exploitent pas de données sensibles (dev, preprod...)",
+      },
+    ],
     defaultValue: "osc-secnum-fr1",
     required: true,
   },
   emailCollaborateur: {
     key: "emailCollaborateur",
-    label: "Email à indiquer en collaborateur",
+    label: "Email collaborateur",
     type: "email",
     required: true,
   },
@@ -114,8 +154,11 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   },
   startupId: {
     key: "startupId",
-    label: "Produit concerné",
-    hint: "Sélectionne le produit (startup) : sert à créer/rattacher l'équipe Sentry ou le site Matomo.",
+    // « Produit concerné » se confondait avec le « Projet concerné » posé en
+    // tête de formulaire. Ce champ-ci ne demande pas un contexte : il désigne
+    // la cible de ce qui va être créé.
+    label: "Produit à rattacher",
+    hint: "Le compte est créé au nom de ce produit du référentiel beta.gouv.fr (équipe Sentry, site Matomo…).",
     type: "startup",
     required: true,
   },
@@ -128,7 +171,7 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   projetRattachement: {
     key: "projetRattachement",
     label: "Projet à relier (optionnel)",
-    hint: "Nom du produit/startup auquel rattacher cette app.",
+    hint: "Projet/produit auquel rattacher cette app",
     required: false,
     warnOnInput:
       "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",
@@ -137,6 +180,24 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     key: "nomWorkspace",
     label: "Nom du workspace",
     hint: "Nom du workspace Tally à créer.",
+    required: true,
+  },
+  emailEquipe: {
+    key: "emailEquipe",
+    label: "Email de l'équipe",
+    hint: "Une adresse partagée : le compte ne doit pas dépendre d'une seule personne.",
+    type: "email",
+    required: true,
+  },
+  nomChaine: {
+    key: "nomChaine",
+    label: "Nom de la chaîne",
+    required: true,
+  },
+  nomCompte: {
+    key: "nomCompte",
+    label: "Nom du compte",
+    hint: "Différent du nom de la chaîne, et sans tiret.",
     required: true,
   },
   commentaires: {
@@ -151,9 +212,9 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
 export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.SCALINGO_APP]: [
     "nomApp",
+    "projetRattachement",
     "zoneScalingo",
     "emailCollaborateur",
-    "projetRattachement",
     "commentaires",
   ],
   [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]: ["commentaires"],
@@ -162,6 +223,7 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.BREVO]: ["startupId", "emailAssocier", "commentaires"],
   [OPS_DEMANDE_TYPE.MATOMO]: [
     "startupId",
+    "emailAssocier",
     "urlSite",
     "siteName",
     "commentaires",
@@ -174,6 +236,12 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   ],
   [OPS_DEMANDE_TYPE.TALLY]: ["nomWorkspace", "commentaires"],
   [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: ["emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.PEERTUBE]: [
+    "emailEquipe",
+    "nomChaine",
+    "nomCompte",
+    "commentaires",
+  ],
   [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
   [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
   [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],
@@ -231,6 +299,9 @@ export const GRIST_OPS_COLUMNS = {
   urlSurveiller: "Url_surveiller",
   emailsNotifier: "Emails_notifier",
   nomWorkspace: "Nom_workspace",
+  emailEquipe: "Email_equipe",
+  nomChaine: "Nom_chaine",
+  nomCompte: "Nom_compte",
   // Incubateur du produit sélectionné (dérivé server-side du startupId).
   incubateur: "Incubateur",
 } as const;
@@ -251,5 +322,8 @@ export const OPS_FIELD_TO_GRIST_COLUMN: Record<OpsFieldKey, string> = {
   siteName: GRIST_OPS_COLUMNS.siteName,
   projetRattachement: GRIST_OPS_COLUMNS.projetRattachement,
   nomWorkspace: GRIST_OPS_COLUMNS.nomWorkspace,
+  emailEquipe: GRIST_OPS_COLUMNS.emailEquipe,
+  nomChaine: GRIST_OPS_COLUMNS.nomChaine,
+  nomCompte: GRIST_OPS_COLUMNS.nomCompte,
   commentaires: GRIST_OPS_COLUMNS.notes,
 };

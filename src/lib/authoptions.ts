@@ -13,6 +13,11 @@ import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/lib/utils";
 import { getJwtTokenForUser } from "@/lib/session";
 import { EMAIL_TYPES } from "@/lib/email/email";
+import { checkRateLimit } from "@/lib/rateLimit";
+import {
+  findUsersByLoginEmail,
+  normalizeLoginEmail,
+} from "@/lib/auth/findUsersByLoginEmail";
 
 async function sendVerificationRequest(params) {
   const { identifier, url } = params;
@@ -88,36 +93,18 @@ export const authOptions: NextAuthOptions = {
             },
           ).then((r) => r.text());
           const userinfo = jwt.decode(userInfoRequest) as ProConnectProfile;
-          const dbUser = await db
-            .selectFrom("users")
-            .select(["username"])
-            .where(({ eb, fn }) =>
-              eb.or([
-                eb("primary_email", "ilike", userinfo.email),
-                eb("secondary_email", "ilike", userinfo.email),
-                eb(
-                  "users.uuid",
-                  "in",
-                  eb
-                    .selectFrom("dinum_emails")
-                    .select("user_id")
-                    .distinct()
-                    .where(({ eb }) =>
-                      eb("email", "ilike", userinfo.email).and(
-                        "user_id",
-                        "is not",
-                        null,
-                      ),
-                    ),
-                ),
-              ]),
-            )
-            .executeTakeFirst();
-          if (!dbUser) {
-            console.log(`ProConnect: no member found for ${userinfo.email}`);
+          const dbUsers = await findUsersByLoginEmail(userinfo?.email);
+          if (dbUsers.length !== 1) {
+            console.log(
+              `ProConnect: ${dbUsers.length} member(s) found for ${userinfo?.email}`,
+            );
             throw new Error("UnknownMember");
           }
-          return { ...userinfo, id: dbUser.username };
+          return {
+            ...userinfo,
+            email: normalizeLoginEmail(userinfo.email)!,
+            id: dbUsers[0].username,
+          };
         },
       },
 
@@ -164,8 +151,25 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ user, account, email }) {
       if (user.id) {
+        // Only the initial login-form submission (`verificationRequest`) can be
+        // sprayed by an unauthenticated caller against arbitrary addresses at
+        // zero cost — it mails whoever is asked about and writes a token to the
+        // DB before this point returns. The redemption phase below (the emailed
+        // link actually being clicked) isn't spray-able the same way, since it
+        // requires a real token from that inbox, so it isn't rate-limited here.
+        if (email?.verificationRequest) {
+          const { allowed } = checkRateLimit(
+            `login-request:${user.id}`,
+            3,
+            15 * 60_000,
+          );
+          if (!allowed) {
+            console.log(`Too many login attempts for ${user.id}`);
+            throw new Error("TooManyAttempts");
+          }
+        }
         const dbUser = await getUserInfos({
           username: user.id,
           options: {

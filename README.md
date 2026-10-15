@@ -121,7 +121,7 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 > `Europe/Paris`. Les heures ci-dessous sont donc correctes en hiver
 > (UTC = heure de Paris − 1h) et décalées d'une heure en été (heure d'été, UTC+2).
 > Ces jobs ne s'exécutent que sur l'app dédiée `espace-membre-cron` (garde
-> `[[ "$APP" = "espace-membre-cron" ]]`), planifiée via [`cron.json`](./cron.json)
+> `sh -c '[ "$APP" = "espace-membre-cron" ] && ...'`), planifiée via [`cron.json`](./cron.json)
 > (Scalingo Scheduler).
 
 > ⚠️ **Scalingo plafonne le nombre d'entrées de `cron.json` à cinq.** Une sixième

@@ -1,76 +1,45 @@
 "use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FormationCard from "./FormationCard";
-import { Formation, FormationInscription } from "@/models/formation";
+import { comparerAuCatalogue } from "@/lib/formationOrder";
+// Import de type seulement : le module lit la configuration serveur, il n'a
+// rien à faire dans le code envoyé au navigateur.
+import type { GristInscription } from "@/lib/formationsGrist";
+import { Formation } from "@/models/formation";
+import {
+  FORMATION_THEMATIQUES,
+  libelleAudience,
+} from "@/models/formationsGrist";
 
-// FIXME: there is no reason to hardcode all of these – should be
-// dynamically built with the API results.
 type AudienceCategoryType = {
   label: string;
   type: "audience" | "category" | "type";
-  value:
-    | "Design"
-    | "Accessibilité"
-    | "Divers"
-    | "Communication"
-    | "Marketing"
-    | "Tech"
-    | "Produit"
-    | "Nouveaux membres"
-    | "ELearning"
-    | "Université d'été";
+  // Sert aussi dans l'URL (?filter=Design,Tech) : changer une valeur casse les
+  // liens déjà partagés.
+  value: string;
 };
+// Les thématiques viennent de la liste partagée avec le formulaire et la
+// colonne Grist : une thématique ajoutée là-bas devient un filtre ici, au lieu
+// de rester introuvable au catalogue.
 const tags: AudienceCategoryType[] = [
   {
-    label: "Nouveaux arrivants",
+    label: libelleAudience("Nouveaux membres"),
     type: "audience",
     value: "Nouveaux membres",
   },
-  {
-    label: "Design",
-    type: "category",
-    value: "Design",
-  },
-  {
-    label: "Université d'été",
-    type: "category",
-    value: "Université d'été",
-  },
-  {
-    label: "Accessibilité",
-    type: "category",
-    value: "Accessibilité",
-  },
-  {
-    label: "Divers",
-    type: "category",
-    value: "Divers",
-  },
-  {
-    label: "Communication",
-    type: "category",
-    value: "Communication",
-  },
-
-  {
-    label: "Marketing",
-    type: "category",
-    value: "Marketing",
-  },
-  {
-    label: "Tech",
-    type: "category",
-    value: "Tech",
-  },
-  {
-    label: "Produit",
-    type: "category",
-    value: "Produit",
-  },
+  ...FORMATION_THEMATIQUES.map(
+    (thematique): AudienceCategoryType => ({
+      label: thematique,
+      type: "category",
+      value: thematique,
+    }),
+  ),
+  // L'e-learning est une modalité, pas une thématique Grist : il reste à part.
   {
     label: "E-learning",
     type: "type",
@@ -95,7 +64,9 @@ export default function FormationList({
   inscriptions,
   formations,
 }: {
-  inscriptions: FormationInscription[];
+  // Inscriptions du membre, par session : c'est à une date qu'on s'inscrit,
+  // pas au format.
+  inscriptions: GristInscription[];
   formations: Formation[];
 }) {
   const router = useRouter();
@@ -138,18 +109,37 @@ export default function FormationList({
       setSelectedFilters([...selectedFilters, tag]);
     }
   };
+  // Au catalogue on choisit une séance, pas un sujet : une formation
+  // programmée cinq fois occupe cinq cartes, chacune avec sa date et ses
+  // places. Une formation sans date garde une carte, qui l'annonce.
+  const formationsParDate: Formation[] = formations.flatMap((formation) => {
+    const sessions = formation.sessions ?? [];
+    if (sessions.length === 0) return [formation];
+    return sessions.map((session) => ({
+      ...formation,
+      sessionId: session.id,
+      start: session.start,
+      startDate: session.start,
+      formation_date: session.start,
+      maxSeats: session.maxSeats,
+      availableSeats: session.availableSeats ?? 0,
+    }));
+  });
+
   const filteredFormations: Formation[] = selectedFilters.length
-    ? formations.filter((formation) => {
+    ? formationsParDate.filter((formation) => {
         return selectedFilters.reduce((acc, filter) => {
           return !!(applyFilter(formation, filter) && acc);
         }, true);
       })
-    : formations;
-  filteredFormations.sort((a, b) => {
-    return (a.start && b.start && a.start.getTime() - b.start.getTime()) || 0;
-  });
+    : formationsParDate;
+  filteredFormations.sort(comparerAuCatalogue);
   return (
     <div>
+      {/* Titre de section : les cartes sont en h3, il leur faut un h2, et sans
+          bandeau « Mes prochaines formations » il n'y en aurait aucun entre
+          le h1 et elles. Même graisse que le bandeau, pour ne pas peser. */}
+      <h2 className={fr.cx("fr-h6", "fr-mb-1w")}>Formations à venir</h2>
       <ul className="fr-tags-group fr-my-2w">
         {tags.map((tag) => (
           <li key={tag.value}>
@@ -168,29 +158,28 @@ export default function FormationList({
       </ul>
       {!!filteredFormations.length && (
         <div className="fr-grid-row fr-grid-row--gutters">
-          {filteredFormations.map((formation) => (
-            <div
-              key={formation.id}
-              className="fr-col-md-4 fr-col-lg-4 fr-col-sm-12"
-            >
-              <FormationCard
-                formation={formation}
-                isMemberRegistered={
-                  !!inscriptions.find(
-                    (inscription) =>
-                      inscription.formation === formation.airtable_id,
-                  )
-                }
-                isMemberOnWaitingList={
-                  !!inscriptions.find(
-                    (inscription) =>
-                      inscription.formation === formation.airtable_id &&
-                      inscription.isInWaitingList,
-                  )
-                }
-              />
-            </div>
-          ))}
+          {filteredFormations.map((formation) => {
+            // Chaque carte est une date : on n'est « Inscrit » qu'à celle où
+            // l'on s'est inscrit, pas à toutes les dates du même format. Une
+            // carte sans date n'a pas de session, donc pas d'inscription.
+            const inscription = formation.sessionId
+              ? inscriptions.find((i) => i.sessionId === formation.sessionId)
+              : undefined;
+            return (
+              <div
+                // Une même formation revient autant de fois qu'elle a de
+                // dates : la date fait partie de l'identité de la carte.
+                key={`${formation.id}-${formation.sessionId ?? "sans-date"}`}
+                className="fr-col-md-4 fr-col-lg-4 fr-col-sm-12"
+              >
+                <FormationCard
+                  formation={formation}
+                  isMemberRegistered={!!inscription}
+                  isMemberOnWaitingList={!!inscription?.onWaitingList}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
       {!filteredFormations.length && (
