@@ -1,4 +1,18 @@
 <mj-text>
+  <% if (typeof resend !== "undefined" && resend) { %>
+  <h1>Nouveau lien d'accès à ta boîte <%= email %></h1>
+
+  <p>
+    Un nouveau lien d'accès temporaire à ton webmail t'a été envoyé par le
+    support. Il est valable 1h et utilisable 3 fois :
+    <a href="<%= webmailUrl %>">accéder à mon webmail</a>.
+  </p>
+
+  <p>
+    Pense à définir un mot de passe une fois connecté, pour ne plus dépendre de
+    ce lien.
+  </p>
+  <% } else { %>
   <h1>Ton email <%= email %> est prêt !</h1>
 
   <p>Et maintenant ?</p>
@@ -20,6 +34,7 @@
     Dans les prochains jours tu recevras un email pour te présenter les
     prochaines étapes de ton embarquement au sein de la communauté.
   </p>
+  <% } %>
 
   <p>Bonne journée</p>
 </mj-text>

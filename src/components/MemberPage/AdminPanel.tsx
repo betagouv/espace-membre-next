@@ -1,5 +1,6 @@
 import BlocConfigurerEmailPrincipal from "./Email/BlocConfigurerEmailPrincipal";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
+import { ResendWebmailAccess } from "./Email/ResendWebmailAccess";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
@@ -21,6 +22,7 @@ export const AdminPanel = ({
       <h3>Emails</h3>
       <BlocConfigurerEmailPrincipal isAdmin={true} userInfos={userInfos} />
       <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
+      <ResendWebmailAccess username={userInfos.username} />
       {/* legacy-email-login: remove with src/lib/auth/legacyEmailLogin */}
       <LegacyEmailLoginException username={userInfos.username} />
       <br />

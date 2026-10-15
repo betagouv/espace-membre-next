@@ -62,7 +62,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
   // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   EMAIL_LOGIN: LoginEmailTitle(),
   EMAIL_LEGACY_LOGIN_REMINDER: LegacyEmailLoginReminderTitle(),
-  EMAIL_CREATED_DIMAIL: EmailCreatedDimailTitle(),
+  EMAIL_CREATED_DIMAIL: EmailCreatedDimailTitle as SubjectFunction,
   EMAIL_STARTUP_ASK_PHASE: "",
   EMAIL_VERIFICATION_WAITING: VerificationWaitingEmailTitle(),
   EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),

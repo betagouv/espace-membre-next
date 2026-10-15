@@ -110,7 +110,7 @@ fileignoreconfig:
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: 9984a43d1096596c3e87f3333e733f6ade807f2017132469f9acc8cec9a0f344
 - filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.mjml.ejs
-  checksum: b609d42897009197b4e2c28f5e3de1505ca483377b308d4541904bbf00970c05
+  checksum: 45fcad68f655124550d0870606b10fb310e3f79ac459563e8703ce51bd4f0fb7
 - filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.tsx
   checksum: 92e8908b1d03cb63c51d8a56aa909ebaeab6f0ca3078ae044110019a0f9f2a16
 - filename: src/server/views/templates/emails/VerificationWaitingEmail/VerificationWaitingEmail.mjml.ejs

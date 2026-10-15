@@ -387,6 +387,7 @@ describe("create-dimail-mail", () => {
     expect(mockSendEmail.firstCall.args[0].variables).to.deep.equal({
       email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
       webmailUrl: "https://messagerie.numerique.gouv.fr/code/test-access-code",
+      resend: false,
     });
     expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
       "EMAIL_ACTIVE",

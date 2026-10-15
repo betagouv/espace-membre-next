@@ -36,6 +36,39 @@ créé un email dimail pour un utilisateur
  - met à jour le primary_email_status en ACTIVE
 
 */
+// Access code to the webmail, sent to the personal email : the member has no
+// password yet. Generated on the mailbox's own domain (a legacy mailbox is on
+// ext.beta.gouv.fr), usable 3 times within the hour the email announces.
+export const WEBMAIL_ACCESS_CODE_SECONDS = 3600;
+
+export async function sendWebmailAccessCode({
+  mailboxEmail,
+  toEmail,
+  resend = false,
+}: {
+  mailboxEmail: string;
+  toEmail: string;
+  resend?: boolean;
+}) {
+  const [userName, domainName] = mailboxEmail.split("@");
+  const mailboxCode = await createMailboxCode({
+    domain_name: domainName,
+    user_name: userName,
+    maxuse: 3,
+    expires_in: WEBMAIL_ACCESS_CODE_SECONDS,
+  });
+  const webmailUrl = `${process.env.DIMAIL_WEBMAIL_URL || "https://messagerie.numerique.gouv.fr"}/code/${mailboxCode.code}`;
+  await sendEmail({
+    toEmail: [toEmail],
+    type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+    variables: {
+      email: mailboxEmail,
+      webmailUrl,
+      resend,
+    },
+  });
+}
+
 export async function createDimailMailboxForUser(
   userUuid: string,
   { status = EmailStatusCode.EMAIL_ACTIVE }: { status?: EmailStatusCode } = {},
@@ -123,22 +156,7 @@ export async function createDimailMailboxForUser(
   }
 
   try {
-    // génère un code d'accès valable 3 fois pour l'accès à la mailbox
-    const mailboxCode = await createMailboxCode({
-      domain_name: DIMAIL_MAILBOX_DOMAIN,
-      user_name: userName,
-      maxuse: 3,
-    });
-    const webmailUrl = `${process.env.DIMAIL_WEBMAIL_URL || "https://messagerie.numerique.gouv.fr"}/code/${mailboxCode.code}`;
-    // envoi email invitation avec le lien d'accès
-    await sendEmail({
-      toEmail: [secondaryEmail],
-      type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
-      variables: {
-        email: mailboxEmail,
-        webmailUrl,
-      },
-    });
+    await sendWebmailAccessCode({ mailboxEmail, toEmail: secondaryEmail });
   } catch (e: any) {
     console.error(
       `Error sending DIMAIL access link for ${mailboxEmail}: ${e.status || ""} ${e.message}`,
