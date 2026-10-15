@@ -1,6 +1,10 @@
 // Temporary magic link login, kept for the migration of existing members to
 // ProConnect + MFA. See README.md in this folder to remove it.
-export { getLegacyEmailLoginConfig, isLegacyEmailLoginEnabled } from "./config";
+export {
+  assertLegacyEmailLoginConfig,
+  getLegacyEmailLoginConfig,
+  isLegacyEmailLoginEnabled,
+} from "./config";
 export type { LegacyEmailLoginMode } from "./config";
 export {
   canUseLegacyEmailLogin,

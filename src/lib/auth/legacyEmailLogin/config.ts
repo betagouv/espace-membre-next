@@ -30,3 +30,29 @@ export const getLegacyEmailLoginConfig = () => {
 
 export const isLegacyEmailLoginEnabled = () =>
   getLegacyEmailLoginConfig().mode !== "off";
+
+// A forgotten or mistyped variable silently falls back to "off", which locks
+// every existing member out at deploy time : the server refuses to start
+// instead. "off" must be set explicitly.
+export const assertLegacyEmailLoginConfig = () => {
+  const rawMode = process.env.LEGACY_EMAIL_LOGIN_MODE;
+  const errors: string[] = [];
+  if (!MODES.includes(rawMode as LegacyEmailLoginMode)) {
+    errors.push(
+      `LEGACY_EMAIL_LOGIN_MODE must be one of ${MODES.join(", ")} (got "${rawMode ?? ""}")`,
+    );
+  }
+  if (rawMode === "transition") {
+    for (const key of [
+      "LEGACY_EMAIL_LOGIN_CUTOFF_DATE",
+      "LEGACY_EMAIL_LOGIN_END_DATE",
+    ]) {
+      if (!parseDate(process.env[key])) {
+        errors.push(`${key} must be a valid date in transition mode`);
+      }
+    }
+  }
+  if (errors.length) {
+    throw new Error(`Invalid legacy email login config: ${errors.join("; ")}`);
+  }
+};

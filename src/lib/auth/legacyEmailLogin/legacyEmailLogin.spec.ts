@@ -13,7 +13,10 @@ import * as emailConfig from "@/server/config/email.config";
 import { createData, deleteData } from "__tests__/utils/fakeData";
 
 import { findUsersBySecondaryEmail } from "./adapter";
-import { getLegacyEmailLoginConfig } from "./config";
+import {
+  assertLegacyEmailLoginConfig,
+  getLegacyEmailLoginConfig,
+} from "./config";
 import {
   canUseLegacyEmailLogin,
   EXCEPTION_EVENT,
@@ -99,6 +102,21 @@ describe("legacyEmailLogin", () => {
       expect(getLegacyEmailLoginConfig().mode).to.equal("off");
       setEnv({ LEGACY_EMAIL_LOGIN_MODE: "on" });
       expect(getLegacyEmailLoginConfig().mode).to.equal("off");
+    });
+
+    it("should refuse to start without an explicit and complete config", () => {
+      setEnv({});
+      expect(() => assertLegacyEmailLoginConfig()).to.throw(
+        "LEGACY_EMAIL_LOGIN_MODE",
+      );
+      setEnv({ LEGACY_EMAIL_LOGIN_MODE: "transition" });
+      expect(() => assertLegacyEmailLoginConfig()).to.throw(
+        "LEGACY_EMAIL_LOGIN_CUTOFF_DATE",
+      );
+      setEnv({ LEGACY_EMAIL_LOGIN_MODE: "off" });
+      expect(() => assertLegacyEmailLoginConfig()).not.to.throw();
+      setEnv(transitionEnv);
+      expect(() => assertLegacyEmailLoginConfig()).not.to.throw();
     });
 
     it("should fall back to off in transition without a cutoff date", () => {

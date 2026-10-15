@@ -3,8 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
-import { FAKE_PROCONNECT_PROVIDER_ID } from "@/lib/auth/fakeProConnect";
-import { hasRequiredProConnectAcr } from "@/lib/auth/proConnectAcr";
+import { assertMfaSession } from "@/lib/auth/sessionMfa";
 import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
@@ -22,9 +21,7 @@ import { EXCEPTION_EVENT, getLegacyEmailLoginException } from "./eligibility";
 const MAX_EXCEPTION_DAYS = 30;
 
 // granting exceptions reopens the email login, which bypasses the MFA : it
-// requires an admin who logged in with ProConnect + MFA. The provider alone is
-// not enough : sessions opened before MFA was required also say "proconnect",
-// so the acr of their id_token is checked.
+// requires an admin who logged in with ProConnect + MFA
 const getUserUuidAsAdmin = async (username: string) => {
   const session = await getServerSession(authOptions);
   if (
@@ -33,16 +30,7 @@ const getUserUuidAsAdmin = async (username: string) => {
   ) {
     throw new AuthorizationError();
   }
-  const hasMfaSession =
-    session.user.provider === FAKE_PROCONNECT_PROVIDER_ID ||
-    (session.user.provider === "proconnect" &&
-      hasRequiredProConnectAcr(session.user.id_token));
-  if (!hasMfaSession) {
-    throw new BusinessError(
-      "proConnectRequired",
-      "Reconnecte-toi avec ProConnect pour gérer les autorisations de connexion par email.",
-    );
-  }
+  assertMfaSession(session, "gérer les autorisations de connexion par email");
   const user = await db
     .selectFrom("users")
     .select("uuid")

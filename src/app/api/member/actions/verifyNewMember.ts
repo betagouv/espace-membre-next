@@ -12,6 +12,7 @@ import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
 import { authOptions } from "@/lib/authoptions";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { AdminEmailNotAllowedError, BusinessError } from "@/lib/error";
+import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
 
 // when the user verifies its membership (from AccountVerifyClientPage)
 // the email account (mailbox or public service email) has already been set up
@@ -43,6 +44,22 @@ export async function verifyNewMember(
     isAdminEmail(data.secondary_email)
   ) {
     throw new AdminEmailNotAllowedError();
+  }
+
+  // a server action error message is replaced by a generic one in
+  // production : the refusal is returned so the member can read it
+  try {
+    await assertSecondaryEmailChangeAllowed({
+      session,
+      userUuid: session.user.uuid,
+      currentEmail: dbUser.secondary_email,
+      newEmail: data.secondary_email,
+    });
+  } catch (error) {
+    if (error instanceof BusinessError) {
+      return { success: false, message: error.message };
+    }
+    throw error;
   }
 
   await updateMember(

@@ -33,6 +33,8 @@ setup(
         uuid: rows[0].uuid,
         name: rows[0].fullname,
         provider: "proconnect",
+        // the session expiry is anchored to the login time (src/lib/session.ts)
+        loginAt: Math.floor(Date.now() / 1000),
       },
       secret,
       { algorithm: "HS512", expiresIn: "1 day" },

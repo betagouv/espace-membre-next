@@ -62,7 +62,7 @@ fileignoreconfig:
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
 - filename: src/lib/auth/legacyEmailLogin/README.md
-  checksum: f996be76ceaf728f5b1ff24a1a8b3cf1f86898459f07edb7d11b2dae00a9f55e
+  checksum: dab6c026efab00477b6e7e49ef354e76dbc699e434c4db9c11fbfec1bb1b9d3b
 - filename: src/lib/auth/legacyEmailLogin/legacyEmailLogin.spec.ts
   checksum: cf1cdbd865f0f70f29cdccf3dc342808ba29763ccfa164a9c1afec7290dd824c
 - filename: src/lib/auth/legacyEmailLogin/rateLimit.spec.ts

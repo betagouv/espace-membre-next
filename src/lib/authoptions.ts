@@ -9,7 +9,11 @@ import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/lib/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { checkUserIsExpired } from "@/lib/utils";
-import { getJwtTokenForUser } from "@/lib/session";
+import {
+  getJwtTokenForUser,
+  isSessionLoginExpired,
+  SESSION_MAX_AGE_SECONDS,
+} from "@/lib/session";
 import {
   findUsersByLoginEmail,
   isLegacyExtEmail,
@@ -21,6 +25,7 @@ import {
   isFakeProConnectEnabled,
 } from "@/lib/auth/fakeProConnect";
 import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
+import { switchLegacyExtPrimaryEmail } from "@/lib/auth/switchLegacyExtPrimaryEmail";
 import {
   hasRequiredProConnectAcr,
   proConnectAcrClaims,
@@ -138,6 +143,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
+    maxAge: SESSION_MAX_AGE_SECONDS,
   },
   secret: config.secret,
   pages: {
@@ -155,7 +161,7 @@ export const authOptions: NextAuthOptions = {
           const decoded = jwt.verify(token, config.secret, {
             algorithm: "HS512",
           } as VerifyOptions);
-          if (!decoded["uuid"]) {
+          if (!decoded["uuid"] || isSessionLoginExpired(decoded["loginAt"])) {
             return null;
           }
           return decoded as JwtPayload;
@@ -171,7 +177,7 @@ export const authOptions: NextAuthOptions = {
     // only emitted once the login succeeded (account resolved and linked, magic
     // link redeemed), unlike the signIn callback which can still be followed by
     // a refusal
-    async signIn({ user, account }) {
+    async signIn({ user, account, profile }) {
       if (!user?.id) {
         return;
       }
@@ -204,6 +210,14 @@ export const authOptions: NextAuthOptions = {
           }),
         )
         .execute();
+      if (loginProvider === "proconnect_mfa") {
+        // the adapter user carries the stored email, not the one ProConnect
+        // returned : the OAuth profile has it (the user, for the fake provider)
+        await switchLegacyExtPrimaryEmail({
+          username: user.id,
+          loginEmail: profile?.email ?? user.email,
+        });
+      }
     },
   },
   callbacks: {
@@ -282,6 +296,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user, account, profile, isNewUser, session }) {
       if (account) {
+        token.loginAt = Math.floor(Date.now() / 1000);
         token.id_token = account.id_token;
         token.id = user?.id;
         token.uuid = user?.uuid;

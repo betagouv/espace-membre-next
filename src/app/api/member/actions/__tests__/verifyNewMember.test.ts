@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import jwt from "jsonwebtoken";
 import sinon from "sinon";
 import * as nextAuth from "next-auth/next";
 import * as controllerUtils from "@/lib/utils";
@@ -17,10 +18,13 @@ describe("verifyNewMember", () => {
   let getUserBasicInfoStub: sinon.SinonStub;
   let getBossClientInstanceStub: sinon.SinonStub;
 
+  // new members verify their fiche after a ProConnect + MFA login
   const mockSession = {
     user: {
       id: "johndoe",
-      uuid: "user-uuid-123",
+      uuid: "00000000-0000-4000-8000-000000000123",
+      provider: "proconnect",
+      id_token: jwt.sign({ acr: "eidas1-mfa" }, "test"),
     },
   };
 

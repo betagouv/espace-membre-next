@@ -8,6 +8,7 @@ import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { isPublicServiceEmail, isAdminEmail, userInfos } from "@/lib/utils";
 import { authOptions } from "@/lib/authoptions";
+import { assertMfaSession } from "@/lib/auth/sessionMfa";
 import {
   findUsersUsingEmail,
   normalizeLoginEmail,
@@ -36,6 +37,9 @@ export async function managePrimaryEmailForUser({
   if (!user.authorizations.canChangeEmails && !session.user.isAdmin) {
     throw new AuthorizationError();
   }
+  // the primary email is the ProConnect login identifier : changing it from a
+  // magic link session would let whoever holds that session keep the account
+  assertMfaSession(session, "modifier l'email principal");
   const primaryEmail = normalizeLoginEmail(rawPrimaryEmail);
   if (!primaryEmail) {
     throw new BusinessError(
