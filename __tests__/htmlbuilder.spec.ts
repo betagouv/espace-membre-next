@@ -69,6 +69,33 @@ describe(`Test EMAIL_CREATED_DIMAIL`, () => {
   });
 });
 
+describe(`Test EMAIL_CREATED_DIMAIL resend`, () => {
+  it(`renders a new access link from the support, without the arrival text`, async () => {
+    const webmailUrl = "http://webmail-url/code/new-code";
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+      variables: {
+        email: "jean.paul@beta.gouv.fr",
+        webmailUrl,
+        resend: true,
+      },
+    });
+    emailBody.should.include(webmailUrl);
+    emailBody.should.include("Nouveau lien d");
+    emailBody.should.not.include("Et maintenant");
+    htmlBuilder
+      .renderSubjectForType({
+        type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+        variables: {
+          email: "jean.paul@beta.gouv.fr",
+          webmailUrl,
+          resend: true,
+        },
+      })
+      .should.include("Nouveau lien");
+  });
+});
+
 describe(`Test EMAIL_STARTUP_NEW_MEMBER_ARRIVAL`, () => {
   it(`email EMAIL_STARTUP_NEW_MEMBER_ARRIVAL renders the new member and startup name`, async () => {
     const emailBody: string = await htmlBuilder.renderContentForType({

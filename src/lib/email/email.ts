@@ -61,6 +61,8 @@ export type EmailCreatedDimail = {
   variables: {
     email: string;
     webmailUrl: string;
+    // a new access link sent by the support, not the arrival email
+    resend?: boolean;
   };
 };
 
