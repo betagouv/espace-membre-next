@@ -167,6 +167,45 @@ export const authOptions: NextAuthOptions = {
       return null;
     },
   },
+  events: {
+    // only emitted once the login succeeded (account resolved and linked, magic
+    // link redeemed), unlike the signIn callback which can still be followed by
+    // a refusal
+    async signIn({ user, account }) {
+      if (!user?.id) {
+        return;
+      }
+      // distinct from the former `login.proconnect`, recorded before MFA
+      // was required
+      // legacy-email-login: the "email" branch goes with src/lib/auth/legacyEmailLogin
+      const loginProvider =
+        account?.provider === "proconnect" ||
+        account?.provider === FAKE_PROCONNECT_PROVIDER_ID
+          ? "proconnect_mfa"
+          : "email";
+      const dbUser = await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", user.id)
+        .executeTakeFirst();
+      if (!dbUser) {
+        return;
+      }
+      await db
+        .insertInto("user_events")
+        .values({
+          field_id: `login.${loginProvider}`,
+          user_id: dbUser.uuid,
+          date: new Date(),
+        })
+        .onConflict((oc) =>
+          oc.column("field_id").column("user_id").doUpdateSet({
+            date: new Date(),
+          }),
+        )
+        .execute();
+    },
+  },
   callbacks: {
     // legacy-email-login: drop `email` with src/lib/auth/legacyEmailLogin
     async signIn({ user, account, profile, email }) {
@@ -218,33 +257,6 @@ export const authOptions: NextAuthOptions = {
           provider: account?.provider,
           dbUser,
         });
-        // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
-        // the magic link is only requested here, the login happens when it
-        // is redeemed
-        if (email?.verificationRequest) {
-          return true;
-        }
-        // distinct from the former `login.proconnect`, recorded before MFA
-        // was required
-        // legacy-email-login: the "email" branch goes with src/lib/auth/legacyEmailLogin
-        const loginProvider =
-          account?.provider === "proconnect" ||
-          account?.provider === FAKE_PROCONNECT_PROVIDER_ID
-            ? "proconnect_mfa"
-            : "email";
-        await db
-          .insertInto("user_events")
-          .values({
-            field_id: `login.${loginProvider}`,
-            user_id: dbUser.uuid,
-            date: new Date(),
-          })
-          .onConflict((oc) =>
-            oc.column("field_id").column("user_id").doUpdateSet({
-              date: new Date(),
-            }),
-          )
-          .execute();
         return true;
       } else {
         return false;

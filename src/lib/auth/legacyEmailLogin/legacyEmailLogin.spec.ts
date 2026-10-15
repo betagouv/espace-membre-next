@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import jwt from "jsonwebtoken";
 import sinon from "sinon";
 
 import * as nextAuth from "next-auth/next";
@@ -233,6 +234,28 @@ describe("legacyEmailLogin", () => {
       expect(sentToMember()).to.have.length(0);
     });
 
+    it("should write to both addresses and never give a personal one to ProConnect", async () => {
+      setEnv(transitionEnv);
+      await db
+        .updateTable("users")
+        .set({
+          primary_email: "Perso.Legacy@gmail.com",
+          secondary_email: "autre.perso@example.com",
+        })
+        .where("uuid", "=", user.uuid)
+        .execute();
+      await sendLegacyEmailLoginReminders();
+      const calls = sendEmailStub
+        .getCalls()
+        .filter((c) => c.args[0].toEmail.includes("perso.legacy@gmail.com"));
+      expect(calls).to.have.length(1);
+      expect(calls[0].args[0].toEmail).to.deep.equal([
+        "perso.legacy@gmail.com",
+        "autre.perso@example.com",
+      ]);
+      expect(calls[0].args[0].variables.loginEmail).to.be.null;
+    });
+
     describe("legacy @ext.beta.gouv.fr members", () => {
       const extEmail = "legacy.email.login@ext.beta.gouv.fr";
       const sentToExt = () =>
@@ -369,10 +392,14 @@ describe("legacy email login admin actions", () => {
 
   afterEach(() => sinon.restore());
 
-  const asSession = (provider: string) =>
-    sinon
-      .stub(nextAuth, "getServerSession")
-      .resolves({ user: { id: admin, provider } } as any);
+  const asSession = (provider: string, acr?: string) =>
+    sinon.stub(nextAuth, "getServerSession").resolves({
+      user: {
+        id: admin,
+        provider,
+        id_token: acr ? jwt.sign({ acr }, "test") : undefined,
+      },
+    } as any);
 
   it("should refuse an admin who logged in with a magic link", async () => {
     asSession("email");
@@ -381,11 +408,76 @@ describe("legacy email login admin actions", () => {
     expect(res.message).to.include("ProConnect");
   });
 
-  it("should let an admin logged in with ProConnect through", async () => {
-    asSession("proconnect");
+  it("should refuse a ProConnect session opened without MFA", async () => {
+    // sessions opened before MFA was required (acr eidas1)
+    asSession("proconnect", "eidas1");
+    const res = await safeGetLegacyEmailLoginStatus("someone");
+    expect(res.success).to.be.false;
+    expect(res.message).to.include("ProConnect");
+  });
+
+  it("should let an admin logged in with ProConnect + MFA through", async () => {
+    asSession("proconnect", "eidas1-mfa");
     const res = await safeGetLegacyEmailLoginStatus("someone");
     // past the session check : the member does not exist
     expect(res.success).to.be.false;
     expect(res.message).to.equal("Membre introuvable");
+  });
+});
+
+describe("login events", () => {
+  const username = "login.event.member";
+  const getLoginEvents = async (uuid: string) =>
+    (
+      await db
+        .selectFrom("user_events")
+        .select("field_id")
+        .where("user_id", "=", uuid)
+        .execute()
+    ).map((e) => e.field_id);
+  let uuid: string;
+
+  beforeEach(async () => {
+    await createData({
+      users: [
+        {
+          username,
+          primary_email: `${username}@beta.gouv.fr`,
+          missions: member.missions,
+        },
+      ],
+    });
+    uuid = (
+      await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", username)
+        .executeTakeFirstOrThrow()
+    ).uuid;
+  });
+
+  afterEach(async () => {
+    await db.deleteFrom("user_events").where("user_id", "=", uuid).execute();
+    await deleteData({ users: [{ username }] as any });
+  });
+
+  it("should record the ProConnect + MFA login once it succeeded", async () => {
+    await authOptions.events!.signIn!({
+      user: { id: username } as any,
+      account: { provider: "proconnect" } as any,
+    });
+    expect(await getLoginEvents(uuid)).to.deep.equal(["login.proconnect_mfa"]);
+  });
+
+  it("should record nothing in the signIn callback, which can still be followed by a refusal", async () => {
+    const allowed = await authOptions.callbacks!.signIn!({
+      user: { id: username } as any,
+      account: {
+        provider: "proconnect",
+        id_token: jwt.sign({ acr: "eidas1-mfa" }, "test"),
+      } as any,
+    });
+    expect(allowed).to.be.true;
+    expect(await getLoginEvents(uuid)).to.deep.equal([]);
   });
 });

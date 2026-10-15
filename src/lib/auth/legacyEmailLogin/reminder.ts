@@ -10,6 +10,7 @@ import { EMAIL_TYPES } from "@/lib/email/email";
 import { db } from "@/lib/kysely";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import { getBaseUrl } from "@/lib/url";
+import { isPublicServiceEmail } from "@/lib/utils";
 import { sendEmail } from "@/server/config/email.config";
 
 import { getLegacyEmailLoginConfig } from "./config";
@@ -20,14 +21,19 @@ export const REMINDED_EVENT = "legacy_email_login.reminded";
 // a cron run twice in the same week (retry, manual run) must not mail twice
 const MIN_DAYS_BETWEEN_REMINDERS = 6;
 
-// the address to give ProConnect. A legacy @ext.beta.gouv.fr primary email is
-// refused by ProConnect : their Dimail alias on the main domain is used instead,
-// if they have one.
+// the address to give ProConnect, never a personal one : the primary email if
+// it is a public service address, else a mailbox or alias of the member on the
+// main Dimail domain. A legacy @ext.beta.gouv.fr address is refused by
+// ProConnect (and accepted by isPublicServiceEmail, as any *.gouv.fr).
 const getProConnectLoginEmail = async (user: {
   uuid: string;
   primary_email: string | null;
 }) => {
-  if (!isLegacyExtEmail(user.primary_email)) {
+  if (
+    user.primary_email &&
+    !isLegacyExtEmail(user.primary_email) &&
+    (await isPublicServiceEmail(user.primary_email))
+  ) {
     return user.primary_email;
   }
   const alias = await db
@@ -100,8 +106,15 @@ export async function sendLegacyEmailLoginReminders({
   let sent = 0;
   let extWithoutAlias = 0;
   for (const user of users) {
-    const toEmail = user.primary_email || user.secondary_email;
-    if (!toEmail || !isMemberReadyToLogin(user)) {
+    // the primary mailbox may be suspended : the personal email gets it too
+    const toEmail = [
+      ...new Set(
+        [user.primary_email, user.secondary_email]
+          .map((email) => email?.trim().toLowerCase())
+          .filter((email): email is string => !!email),
+      ),
+    ];
+    if (!toEmail.length || !isMemberReadyToLogin(user)) {
       continue;
     }
     const loginEmail = await getProConnectLoginEmail(user);
@@ -113,7 +126,7 @@ export async function sendLegacyEmailLoginReminders({
     try {
       await sendEmail({
         type: EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER,
-        toEmail: [toEmail],
+        toEmail,
         variables: {
           fullname: user.fullname,
           endDate: formatDate(endDate),

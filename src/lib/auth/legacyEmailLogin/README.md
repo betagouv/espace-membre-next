@@ -24,7 +24,7 @@ Le job `job:remind-legacy-email-login` (cron du lundi `0 9 * * MON`, en UTC) éc
 
 `npm run report:legacy-email-login` (lecture seule) compte les membres actifs pas encore migrés par catégorie. Avec `--list`, il liste ceux qui sont à risque à la coupure.
 
-Au passage en `off`, faire tourner `SESSION_SECRET` pour invalider les sessions ouvertes par email (elles durent 7 jours).
+Au déploiement de la PR, faire tourner `SESSION_SECRET` : les sessions ouvertes avant, par ProConnect sans MFA ou par email, restent sinon valides 7 jours. Au passage en `off`, faire tourner `SESSION_SECRET` pour invalider les sessions ouvertes par email (elles durent 7 jours).
 
 ## Données
 
