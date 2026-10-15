@@ -6,6 +6,7 @@ import {
   isLegacyExtEmail,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
+import { findUsersByPendingPrimaryEmail } from "@/lib/auth/pendingPrimaryEmail";
 
 export const FAKE_PROCONNECT_PROVIDER_ID = "fake-proconnect";
 
@@ -32,7 +33,10 @@ export const authorizeFakeProConnect = async (
   if (isLegacyExtEmail(email)) {
     throw new Error("ExtEmailNotAllowed");
   }
-  const dbUsers = await findUsersByLoginEmail(email);
+  let dbUsers = await findUsersByLoginEmail(email);
+  if (dbUsers.length === 0) {
+    dbUsers = await findUsersByPendingPrimaryEmail(email);
+  }
   if (!email || dbUsers.length !== 1) {
     console.log(
       `Fake ProConnect: ${dbUsers.length} member(s) found for ${credentials?.email}`,

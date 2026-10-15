@@ -19,11 +19,7 @@ export const AdminPanel = ({
     <div className="fr-mb-8v">
       <h2>Actions admin</h2>
       <h3>Emails</h3>
-      <BlocConfigurerEmailPrincipal
-        isAdmin={true}
-        canChangeEmails={authorizations.canChangeEmails}
-        userInfos={userInfos}
-      ></BlocConfigurerEmailPrincipal>
+      <BlocConfigurerEmailPrincipal isAdmin={true} userInfos={userInfos} />
       <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
       {/* legacy-email-login: remove with src/lib/auth/legacyEmailLogin */}
       <LegacyEmailLoginException username={userInfos.username} />

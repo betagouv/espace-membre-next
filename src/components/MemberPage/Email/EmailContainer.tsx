@@ -187,10 +187,7 @@ export default function EmailContainer({
 
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          <BlocConfigurerEmailPrincipal
-            canChangeEmails={canChangeEmails}
-            userInfos={userInfos}
-          />
+          <BlocConfigurerEmailPrincipal userInfos={userInfos} />
 
           <BlocConfigurerEmailSecondaire
             canChangeEmails={canChangeEmails}

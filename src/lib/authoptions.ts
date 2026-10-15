@@ -27,6 +27,10 @@ import {
 import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
 import { switchLegacyExtPrimaryEmail } from "@/lib/auth/switchLegacyExtPrimaryEmail";
 import {
+  findUsersByPendingPrimaryEmail,
+  promotePendingPrimaryEmail,
+} from "@/lib/auth/pendingPrimaryEmail";
+import {
   hasRequiredProConnectAcr,
   proConnectAcrClaims,
 } from "@/lib/auth/proConnectAcr";
@@ -116,7 +120,11 @@ export const authOptions: NextAuthOptions = {
             console.log(`ProConnect: legacy ext address ${userinfo?.email}`);
             return refuse("ExtEmailNotAllowed");
           }
-          const dbUsers = await findUsersByLoginEmail(userinfo?.email);
+          let dbUsers = await findUsersByLoginEmail(userinfo?.email);
+          // a new primary email waiting to be confirmed by this login
+          if (dbUsers.length === 0) {
+            dbUsers = await findUsersByPendingPrimaryEmail(userinfo?.email);
+          }
           if (dbUsers.length !== 1) {
             console.log(
               `ProConnect: ${dbUsers.length} member(s) found for ${userinfo?.email}`,
@@ -213,10 +221,14 @@ export const authOptions: NextAuthOptions = {
       if (loginProvider === "proconnect_mfa") {
         // the adapter user carries the stored email, not the one ProConnect
         // returned : the OAuth profile has it (the user, for the fake provider)
-        await switchLegacyExtPrimaryEmail({
+        const loginEmail = profile?.email ?? user.email;
+        const promoted = await promotePendingPrimaryEmail({
           username: user.id,
-          loginEmail: profile?.email ?? user.email,
+          loginEmail,
         });
+        if (!promoted) {
+          await switchLegacyExtPrimaryEmail({ username: user.id, loginEmail });
+        }
       }
     },
   },
@@ -270,6 +282,8 @@ export const authOptions: NextAuthOptions = {
         await checkLegacyEmailLoginAllowed({
           provider: account?.provider,
           dbUser,
+          requestedEmail: account?.providerAccountId,
+          isVerificationRequest: !!email?.verificationRequest,
         });
         return true;
       } else {
