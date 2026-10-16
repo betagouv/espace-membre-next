@@ -11,10 +11,8 @@ L'espace membre de l’incubateur
   - accès aux outils (sentry, matomo)
 - exploration de la communauté
 - afficher les formations et évènements
-- connexion uniquement via ProConnect, avec l'adresse principale du membre
-  (boîte `@beta.gouv.fr` ou adresse du service public). L'email personnel
-  (`secondary_email`) ne permet pas de se connecter. Double authentification
-  obligatoire, aide sur `/support`
+- connexion via ProConnect avec double authentification, aide sur `/support`.
+  Personas, parcours et règles de l'email principal : [connexion.md](connexion.md)
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 
