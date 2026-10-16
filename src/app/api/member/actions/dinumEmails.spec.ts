@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import jwt from "jsonwebtoken";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
@@ -33,8 +34,10 @@ describe("dinum_emails manual attachment", () => {
       .selectAll()
       .where("email", "=", email)
       .executeTakeFirstOrThrow();
-  const asUser = (id: string) =>
-    getServerSessionStub.resolves({ user: { id } } as any);
+  const asUser = (id: string, acr = "eidas1-mfa") =>
+    getServerSessionStub.resolves({
+      user: { id, provider: "proconnect", id_token: jwt.sign({ acr }, "test") },
+    } as any);
 
   beforeEach(async () => {
     sinon.stub(config, "ESPACE_MEMBRE_ADMIN").value([admin]);
@@ -122,6 +125,25 @@ describe("dinum_emails manual attachment", () => {
     }
   });
 
+  it("should refuse an address pending as another member's primary email", async () => {
+    asUser(admin);
+    await db
+      .updateTable("users")
+      .set({
+        pending_primary_email: email,
+        pending_primary_email_expires_at: new Date(Date.now() + 3600 * 1000),
+      })
+      .where("uuid", "=", otherUuid)
+      .execute();
+    const res = await actions.safeAttachDinumEmailToMember(
+      member.username,
+      email,
+      { confirmMove: true },
+    );
+    expect(res.success).to.be.false;
+    expect(res.message).to.include("en attente");
+  });
+
   it("should release a locked address back to the sync", async () => {
     asUser(admin);
     await actions.safeAttachDinumEmailToMember(member.username, email, {
@@ -129,6 +151,22 @@ describe("dinum_emails manual attachment", () => {
     });
     const res = await actions.safeReleaseDinumEmail(member.username, email);
     expect(res.success, res.message).to.be.true;
+    expect((await getRow()).user_id_locked_by).to.be.null;
+  });
+
+  it("should refuse an address removed from Dimail", async () => {
+    await db
+      .updateTable("dinum_emails")
+      .set({ status: "deleted" })
+      .where("email", "=", email)
+      .execute();
+    asUser(admin);
+    const res = await actions.safeAttachDinumEmailToMember(
+      member.username,
+      email,
+      { confirmMove: true },
+    );
+    expect(res.success).to.be.false;
     expect((await getRow()).user_id_locked_by).to.be.null;
   });
 
@@ -152,5 +190,17 @@ describe("dinum_emails manual attachment", () => {
       "unknown@attach-test.beta.gouv.fr",
     );
     expect(res.success).to.be.false;
+  });
+
+  it("should refuse an admin whose session has no second factor", async () => {
+    asUser(admin, "eidas1");
+    const res = await actions.safeAttachDinumEmailToMember(
+      member.username,
+      email,
+      { confirmMove: true },
+    );
+    expect(res.success).to.be.false;
+    expect(res.message).to.include("ProConnect");
+    expect((await getRow()).user_id).to.equal(otherUuid);
   });
 });

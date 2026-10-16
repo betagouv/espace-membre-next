@@ -1,30 +1,28 @@
-// Shared retry utility for email operations and other async tasks
-// Provides exponential backoff retry logic matching the original pgboss retry behavior
-
 const MAX_RETRIES = 5;
 
+// exponential backoff : waits baseDelayMs, then twice as long at each attempt
 export async function withRetry<T>(
   operation: () => Promise<T>,
-  retryLimit: number = MAX_RETRIES,
-  operationName: string = "operation",
+  {
+    retryLimit = MAX_RETRIES,
+    operationName = "operation",
+    baseDelayMs = 1000,
+  }: { retryLimit?: number; operationName?: string; baseDelayMs?: number } = {},
 ): Promise<T> {
-  // Enforce max retry limit
-  retryLimit = Math.min(retryLimit, MAX_RETRIES);
-
-  let lastError: Error | undefined;
-  for (let attempt = 1; attempt <= retryLimit; attempt++) {
+  const attempts = Math.max(1, Math.min(retryLimit, MAX_RETRIES));
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
       return await operation();
     } catch (error) {
-      lastError = error as Error;
+      lastError = error;
       console.error(`Attempt ${attempt} failed for ${operationName}:`, error);
-      if (attempt < retryLimit) {
-        // Exponential backoff: wait 1s, 2s, 4s, etc.
+      if (attempt < attempts) {
         await new Promise((resolve) =>
-          setTimeout(resolve, 1000 * Math.pow(2, attempt - 1))
+          setTimeout(resolve, baseDelayMs * Math.pow(2, attempt - 1)),
         );
       }
     }
   }
-  throw lastError || new Error(`${operationName} failed after ${retryLimit} attempts`);
+  throw lastError;
 }

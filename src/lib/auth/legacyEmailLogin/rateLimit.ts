@@ -1,7 +1,7 @@
 /**
  * Minimal in-memory fixed-window rate limiter.
  *
- * This is correct as long as the app runs as a single process — currently
+ * This is correct as long as the app runs as a single process: currently
  * `scalingo.json` has `web.quantity: 1`. If this ever scales to more than one
  * web dyno, move the counters to a shared store (Postgres, already used
  * everywhere else in this app, or Redis) instead: an in-memory Map is not
