@@ -27,7 +27,8 @@ const MIN_MINUTES_BETWEEN_SENDS = 5;
 
 // The member's mailbox. The sync attaches mailboxes by username or primary
 // email, which can pick a namesake : the mailbox must be the primary email,
-// the destination of the primary alias, or carry the member's username.
+// the destination of the primary alias, carry the member's username, or have
+// been attached by an admin.
 const getMemberMailbox = async (user: {
   uuid: string;
   username: string;
@@ -35,7 +36,7 @@ const getMemberMailbox = async (user: {
 }) => {
   const rows = await db
     .selectFrom("dinum_emails")
-    .select(["email", "type", "status", "destination"])
+    .select(["email", "type", "status", "destination", "user_id_locked_by"])
     .where("user_id", "=", user.uuid)
     .where((eb) =>
       eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
@@ -51,7 +52,8 @@ const getMemberMailbox = async (user: {
       (row) =>
         row.email.toLowerCase() === primary ||
         row.email.toLowerCase() === primaryAlias?.destination?.toLowerCase() ||
-        getUserNameFromEmail(row.email.toLowerCase()) === user.username,
+        getUserNameFromEmail(row.email.toLowerCase()) === user.username ||
+        !!row.user_id_locked_by,
     )
     .sort(
       (a, b) =>

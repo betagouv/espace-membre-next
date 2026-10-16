@@ -67,6 +67,13 @@ async function attachDinumEmailToMember(
       .where(({ eb, fn }) =>
         eb(fn("lower", ["dinum_emails.email"]), "=", email),
       )
+      // a lock on a row removed from Dimail would survive its re-creation
+      .where((eb) =>
+        eb.or([
+          eb("dinum_emails.status", "is", null),
+          eb("dinum_emails.status", "!=", "deleted"),
+        ]),
+      )
       .executeTakeFirst());
   if (!row) {
     throw new BusinessError(

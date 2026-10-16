@@ -154,6 +154,22 @@ describe("dinum_emails manual attachment", () => {
     expect((await getRow()).user_id_locked_by).to.be.null;
   });
 
+  it("should refuse an address removed from Dimail", async () => {
+    await db
+      .updateTable("dinum_emails")
+      .set({ status: "deleted" })
+      .where("email", "=", email)
+      .execute();
+    asUser(admin);
+    const res = await actions.safeAttachDinumEmailToMember(
+      member.username,
+      email,
+      { confirmMove: true },
+    );
+    expect(res.success).to.be.false;
+    expect((await getRow()).user_id_locked_by).to.be.null;
+  });
+
   it("should refuse a non admin on every action, and an unknown address", async () => {
     asUser(member.username);
     let res = await actions.safeAttachDinumEmailToMember(

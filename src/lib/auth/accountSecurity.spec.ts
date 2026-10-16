@@ -120,6 +120,10 @@ describe("account security with members in database", () => {
 
   afterEach(async () => {
     await db
+      .deleteFrom("accounts")
+      .where("userId", "in", [owner.username, other.username])
+      .execute();
+    await db
       .deleteFrom("dinum_emails")
       .where("user_id", "in", [ownerUuid, otherUuid])
       .execute();
@@ -128,6 +132,41 @@ describe("account security with members in database", () => {
       .where("action_on_username", "=", owner.username)
       .execute();
     await deleteData({ users: [owner, other] });
+  });
+
+  it("should ignore a ProConnect account linked to another member", async () => {
+    await db
+      .insertInto("accounts")
+      .values([
+        {
+          provider: "proconnect",
+          type: "oauth",
+          providerAccountId: other.username,
+          userId: owner.username,
+        },
+        {
+          provider: "proconnect",
+          type: "oauth",
+          providerAccountId: owner.username,
+          userId: owner.username,
+        },
+      ])
+      .execute();
+    const { getUserByAccount } = customPostgresAdapter();
+    expect(
+      await getUserByAccount!({
+        provider: "proconnect",
+        providerAccountId: other.username,
+      }),
+    ).to.be.null;
+    expect(
+      (
+        await getUserByAccount!({
+          provider: "proconnect",
+          providerAccountId: owner.username,
+        })
+      )?.id,
+    ).to.equal(owner.username);
   });
 
   describe("assertSecondaryEmailChangeAllowed", () => {

@@ -135,6 +135,24 @@ describe("resend webmail access", () => {
     expect(sendWebmailAccessCodeStub.notCalled).to.be.true;
   });
 
+  it("should accept a mailbox an admin attached by hand, whatever its name", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: "homonyme.autre@beta.gouv.fr",
+        type: "mailbox",
+        status: "enabled",
+        user_id: uuid,
+        user_id_locked_by: "an.admin",
+        user_id_locked_at: new Date(),
+      })
+      .execute();
+    expect((await resend()).success).to.be.true;
+    expect(sendWebmailAccessCodeStub.firstCall.args[0].mailboxEmail).to.equal(
+      "homonyme.autre@beta.gouv.fr",
+    );
+  });
+
   it("should refuse a second link within 5 minutes, and record the destination", async () => {
     await addMailbox();
     expect((await resend()).success).to.be.true;

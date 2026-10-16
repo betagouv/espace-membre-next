@@ -90,6 +90,10 @@ export default function customPostgresAdapter(): Adapter {
         .selectAll()
         .where("a.provider", "=", provider)
         .where("a.providerAccountId", "=", providerAccountId)
+        // the account id is the username resolved from the login address : a
+        // row pointing to another member (linked from someone else's session)
+        // must never open that member's account
+        .whereRef("a.userId", "=", "a.providerAccountId")
         .executeTakeFirst();
       if (!dbUser) {
         return null;
