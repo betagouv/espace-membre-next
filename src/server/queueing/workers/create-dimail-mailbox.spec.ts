@@ -373,6 +373,22 @@ describe("create-dimail-mail", () => {
     expect(mockUpdateTable.called).to.be.false;
   });
 
+  it("on retry, should not recreate a mailbox already recorded and should send the access link", async () => {
+    mockExistingMailbox.resolves({
+      email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+    });
+
+    const result = await createDimailMailboxForUser(userTestUuid);
+
+    expect(result).to.equal(`john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`);
+    expect(mockCreateMailbox.called).to.be.false;
+    expect(mockCreateMailboxCode.calledOnce).to.be.true;
+    expect(mockSendEmail.calledOnce).to.be.true;
+    expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
+      "EMAIL_ACTIVE",
+    );
+  });
+
   describe("onboardNewMemberMailbox", () => {
     const onboardingUser = {
       uuid: userTestUuid,
