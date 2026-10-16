@@ -54,7 +54,11 @@ export async function buildMemberPageProps({
       .select("matrix_id")
       .where("user_id", "=", dbUser.uuid)
       .executeTakeFirst(),
-    getUserChecklists(user.userInfos.uuid, baseInfo.domaine),
+    getUserChecklists(
+      user.userInfos.uuid,
+      baseInfo.domaine,
+      baseInfo.created_at,
+    ),
     getUserIncubators(dbUser.uuid),
   ]);
 

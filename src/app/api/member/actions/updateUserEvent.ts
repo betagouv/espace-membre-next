@@ -11,7 +11,10 @@ import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { authOptions } from "@/lib/authoptions";
-import { getChecklistObject } from "@/lib/checklists/getChecklistObject";
+import {
+  allowedChecklists,
+  getChecklistObject,
+} from "@/lib/checklists/getChecklistObject";
 import {
   AuthorizationError,
   BusinessError,
@@ -40,15 +43,18 @@ const updateUserEventSchema = z.object({
  * avoir notifié Sentry, et on refuse toute écriture. C'est ce qui rend sûr le
  * fait de tirer la restriction du yml : un yml cassé bloque tout, il ne peut
  * pas servir à faire sauter la garde.
+ *
+ * Tous les yml sont lus, quel que soit le domaine du membre : un item propre
+ * aux intrapreneur·es doit rester inscriptible, y compris par l'équipe
+ * d'animation depuis la fiche d'un autre membre.
  */
 async function getChecklistItemIds(): Promise<{
   writable: Set<string>;
   restricted: Set<string>;
 }> {
-  const checklists = await Promise.all([
-    getChecklistObject("onboarding"),
-    getChecklistObject("offboarding"),
-  ]);
+  const checklists = await Promise.all(
+    allowedChecklists.map((type) => getChecklistObject(type)),
+  );
   const writable = new Set<string>();
   const restricted = new Set<string>();
   for (const checklist of checklists) {
