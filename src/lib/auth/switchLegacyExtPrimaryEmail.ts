@@ -5,6 +5,7 @@ import {
 } from "@/lib/auth/findUsersByLoginEmail";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 
 // A primary email on the legacy @ext.beta.gouv.fr domain cannot be used with
@@ -36,6 +37,7 @@ export const switchLegacyExtPrimaryEmail = async ({
     .select("email")
     .where("user_id", "=", user.uuid)
     .where(({ eb, fn }) => eb(fn("lower", ["email"]), "=", email))
+    .where(isLive)
     .executeTakeFirst();
   if (!ownAddress) {
     return false;

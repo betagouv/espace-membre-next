@@ -2,6 +2,7 @@ import PgBoss from "pg-boss";
 import * as Sentry from "@sentry/nextjs";
 
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
@@ -110,13 +111,14 @@ export async function createDimailMailboxForUser(
 
   // a previous attempt may have created the mailbox then failed (access code,
   // email...) : creating it again would end in a 409, so resume from the
-  // mailbox recorded in dinum_emails
+  // mailbox recorded in dinum_emails. A row removed from Dimail is not resumed.
   const existingMailbox = await db
     .selectFrom("dinum_emails")
     .select("email")
     .where("email", "=", `${userName}@${DIMAIL_MAILBOX_DOMAIN}`)
     .where("user_id", "=", userUuid)
     .where("type", "=", "mailbox")
+    .where(isLive)
     .executeTakeFirst();
 
   let mailboxEmail: string;
@@ -150,7 +152,11 @@ export async function createDimailMailboxForUser(
         status: "ok",
         user_id: userUuid,
       })
-      .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
+      .onConflict((oc) =>
+        oc
+          .column("email")
+          .doUpdateSet({ status: "enabled", user_id: userUuid }),
+      )
       .execute();
   }
 

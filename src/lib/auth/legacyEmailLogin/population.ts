@@ -4,6 +4,7 @@ import {
 } from "@/lib/auth/findUsersByLoginEmail";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import { isPublicServiceEmail } from "@/lib/utils";
 
@@ -75,6 +76,7 @@ export async function reportLegacyEmailLoginPopulation() {
     .selectFrom("dinum_emails")
     .select(["user_id", "email"])
     .where("user_id", "is not", null)
+    .where(isLive)
     .execute();
   const dinumEmailsByUser = new Map<string, string[]>();
   for (const row of dinumEmails) {

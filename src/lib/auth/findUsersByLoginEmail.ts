@@ -1,4 +1,5 @@
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -52,7 +53,8 @@ export const findUsersByLoginEmail = async (
                 "is not",
                 null,
               ),
-            ),
+            )
+            .where(isLive),
         ),
       ]),
     )
