@@ -93,16 +93,29 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 > `Europe/Paris`. Les heures ci-dessous sont donc correctes en hiver
 > (UTC = heure de Paris − 1h) et décalées d'une heure en été (heure d'été, UTC+2).
 > Ces jobs ne s'exécutent que sur l'app dédiée `espace-membre-cron` (garde
-> `[[ "$APP" = "espace-membre-cron" ]]`), planifiée via [`cron.json`](./cron.json)
-> (Scalingo Scheduler).
+> `[ "$APP" = "espace-membre-cron" ]`).
 
-| fréquence (UTC)    | commande                                    | description                                                              |
-| ------------------ | ------------------------------------------- | ------------------------------------------------------------------------ |
-| `0 18 * * MON-FRI` | `npm run export-to-www`                     | Exporte les données vers le site beta.gouv.fr                            |
-| `0 3 * * *`        | `npm run job:sync-matrix-accounts`          | Indexe les comptes Matrix (Tchap) des utilisateurs                       |
-| `0 8 * * *`        | `npm run job:clean-teams-members`           | Supprime les membres expirés des équipes incubateurs                     |
-| `0 8-18 * * *`     | `npm run job:sync-dinum-emails`             | Met à jour la table `dinum_emails` depuis l'API Dimail                   |
-| `0 * * * *`        | `npm run job:recreate-email-if-user-active` | Recrée/réactive l'email des comptes actifs repassés en `EMAIL_SUSPENDED` |
+Scalingo limite une app à 5 tâches cron. [`cron.json`](./cron.json) déclare donc
+5 créneaux fixes, qui lancent chacun `npm run cron -- <créneau>`. Les jobs
+rattachés à chaque créneau sont listés dans `CRON_SLOTS`
+([`src/scripts/cron/jobs.ts`](./src/scripts/cron/jobs.ts)) : ajouter ou déplacer
+un job ne touche pas `cron.json`.
+
+Les jobs d'un créneau tournent l'un après l'autre, dans l'ordre déclaré. Un job
+en échec n'empêche pas les suivants. Chaque échec part dans Sentry (tag
+`cron_job`) et la commande sort en erreur si au moins un job a échoué. Un job
+plus rare que son créneau doit être idempotent ou vérifier lui-même s'il doit
+tourner.
+
+| créneau           | fréquence (UTC)    | jobs                            | description                                                              |
+| ----------------- | ------------------ | ------------------------------- | ------------------------------------------------------------------------ |
+| `hourly`          | `0 * * * *`        | `recreate-email-if-user-active` | Recrée/réactive l'email des comptes actifs repassés en `EMAIL_SUSPENDED` |
+| `business-hours`  | `0 8-18 * * *`     | `sync-dinum-emails`             | Met à jour la table `dinum_emails` depuis l'API Dimail                   |
+| `nightly`         | `0 3 * * *`        | `sync-matrix-accounts`          | Indexe les comptes Matrix (Tchap) des utilisateurs                       |
+| `morning`         | `0 8 * * *`        | `clean-teams-members`           | Supprime les membres expirés des équipes incubateurs                     |
+| `weekday-evening` | `0 18 * * MON-FRI` | `export-to-www`                 | Exporte les données vers le site beta.gouv.fr                            |
+
+Pour lancer un job seul à la main : `npm run cron -- --job <nom>`.
 
 Un seul job reste géré par [pg-boss](https://github.com/timgit/pg-boss), déclenché
 à la demande (et non planifié) : `create-dimail-mailbox`, qui crée une boite mail
@@ -153,7 +166,7 @@ Déclenché automatiquement à l'approche puis au passage de la date de fin de m
 ### Retour d'un utilisateur (self-healing)
 
 Si un utilisateur redevient actif (nouvelle mission) après être passé en
-`EMAIL_SUSPENDED`, le job horaire `job:recreate-email-if-user-active`
+`EMAIL_SUSPENDED`, le job horaire `recreate-email-if-user-active`
 (voir [Cron Jobs](#cron-jobs)) le détecte et :
 
 - réactive sa boite Dimail existante (repasse `imap_active` à `yes` et le statut à
