@@ -47,10 +47,9 @@ export const checkLegacyEmailLoginAllowed = async ({
   if (provider !== LEGACY_EMAIL_PROVIDER_ID) {
     return;
   }
-  // the shared adapter also resolves a pending primary email, which must only
-  // log in through ProConnect : the link is refused unless the typed address
-  // is one of the member's login or personal addresses. The token is only ever
-  // sent to the typed address, so checking the request is enough.
+  // the shared adapter also resolves pending primary emails, which must log in
+  // through ProConnect only. The token goes to the typed address, so checking
+  // the request is enough.
   if (isVerificationRequest) {
     const matches = [
       ...(await findUsersByLoginEmail(requestedEmail)),

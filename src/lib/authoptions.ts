@@ -121,7 +121,6 @@ export const authOptions: NextAuthOptions = {
             return refuse("ExtEmailNotAllowed");
           }
           let dbUsers = await findUsersByLoginEmail(userinfo?.email);
-          // a new primary email waiting to be confirmed by this login
           if (dbUsers.length === 0) {
             dbUsers = await findUsersByPendingPrimaryEmail(userinfo?.email);
           }

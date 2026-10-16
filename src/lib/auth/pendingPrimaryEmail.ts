@@ -9,10 +9,8 @@ import { db } from "@/lib/kysely";
 import { isPublicServiceEmail } from "@/lib/utils";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 
-// A new primary email (the ProConnect login identifier) is never written
-// directly : it is stored as pending, accepted as a login address by
-// ProConnect only, and becomes the primary email once the member logged in
-// with it with ProConnect + MFA, which proves they own it.
+// a new primary email stays pending until a ProConnect + MFA login with it
+// proves ownership
 export const PENDING_PRIMARY_EMAIL_DAYS = 7;
 
 export const findUsersByPendingPrimaryEmail = async (
