@@ -102,24 +102,6 @@ describe("recreateEmailIfUserActive", () => {
     expect(await getStatus()).to.equal(EmailStatusCode.EMAIL_ACTIVE);
   });
 
-  it("should reactivate the mailbox of a member whose primary email is elsewhere, without creating one", async () => {
-    await setPrimary("recreate.member@ademe.gouv.fr");
-    await addRow({ email: "recreate.member@beta.gouv.fr", type: "mailbox" });
-    await recreateEmailIfUserActive();
-    expect(patchMailboxStub.firstCall.args[0]).to.include({
-      domain_name: "beta.gouv.fr",
-      user_name: "recreate.member",
-    });
-    expect(createMailboxStub.notCalled).to.be.true;
-  });
-
-  it("should create a mailbox for a member who has none", async () => {
-    await setPrimary("recreate.member@beta.gouv.fr");
-    await recreateEmailIfUserActive();
-    expect(patchMailboxStub.notCalled).to.be.true;
-    expect(createMailboxStub.calledWith(uuid)).to.be.true;
-  });
-
   it("should ignore rows removed from Dimail, and create a mailbox when none is left", async () => {
     await setPrimary("recreate.member@beta.gouv.fr");
     await addRow({
@@ -132,7 +114,7 @@ describe("recreateEmailIfUserActive", () => {
     expect(createMailboxStub.calledWith(uuid)).to.be.true;
   });
 
-  it("should prefer the current domain over the legacy ext one", async () => {
+  it("should reactivate a mailbox on the current domain first when the primary email is elsewhere, without creating one", async () => {
     await setPrimary("recreate.member@ademe.gouv.fr");
     await addRow({
       email: "recreate.member.ext@ext.beta.gouv.fr",
@@ -142,7 +124,9 @@ describe("recreateEmailIfUserActive", () => {
     await recreateEmailIfUserActive();
     expect(patchMailboxStub.firstCall.args[0]).to.include({
       domain_name: "beta.gouv.fr",
+      user_name: "recreate.member",
     });
+    expect(createMailboxStub.notCalled).to.be.true;
   });
 
   it("should leave the member suspended when Dimail refuses the reactivation", async () => {

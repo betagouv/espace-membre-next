@@ -57,9 +57,8 @@ export const DinumEmailsAdmin = ({ username }: { username: string }) => {
   return (
     <Accordion label="Adresses Dimail rattachées à cette fiche">
       <p className="fr-text--sm">
-        La synchronisation rattache les adresses Dimail aux fiches par nom
-        d'utilisateur ou email principal. Une adresse rattachée à la main n'est
-        plus modifiée par la synchronisation.
+        Une adresse rattachée à la main n'est plus modifiée par la
+        synchronisation.
       </p>
       {error && (
         <Alert
@@ -125,7 +124,7 @@ export const DinumEmailsAdmin = ({ username }: { username: string }) => {
       >
         <Input
           label="Rattacher une adresse Dimail à cette fiche"
-          hintText="L'adresse doit déjà exister dans Dimail. Elle est retirée de la fiche à laquelle elle était rattachée."
+          hintText="L'adresse doit déjà exister dans Dimail."
           nativeInputProps={{
             type: "email",
             required: true,

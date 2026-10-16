@@ -1,4 +1,5 @@
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -44,10 +45,7 @@ export const findUsersByLoginEmail = async (
                 null,
               ),
             )
-            // an address removed from Dimail no longer logs in
-            .where((eb) =>
-              eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
-            ),
+            .where(isLive),
         ),
       ]),
     )

@@ -182,7 +182,7 @@ describe("syncDinumEmailsJob", () => {
     imap_active: "yes" as const,
   }));
 
-  it("should mark deleted the addresses Dimail no longer knows", async () => {
+  it("should mark deleted the addresses Dimail no longer knows, and release their lock", async () => {
     await db
       .insertInto("dinum_emails")
       .values({
@@ -190,29 +190,20 @@ describe("syncDinumEmailsJob", () => {
         type: "mailbox",
         status: "enabled",
         user_id: memberUuid,
+        user_id_locked_by: "an.admin",
+        user_id_locked_at: new Date(),
       })
       .execute();
     dimailAnswers(knownMailboxes, [
       { username: "contact", destination: `a@${domain}` },
     ]);
     await syncDinumEmailsJob(domain);
-    expect((await getRow(`gone@${domain}`))?.status).to.equal("deleted");
+    expect(await getRow(`gone@${domain}`)).to.include({
+      status: "deleted",
+      user_id_locked_by: null,
+      user_id_locked_at: null,
+    });
     expect((await getRow(`a@${domain}`))?.status).to.equal("enabled");
-  });
-
-  it("should not delete the aliases when Dimail returns no alias at all", async () => {
-    await db
-      .insertInto("dinum_emails")
-      .values({
-        email: `contact@${domain}`,
-        type: "alias",
-        status: "enabled",
-        destination: `a@${domain}`,
-      })
-      .execute();
-    dimailAnswers(knownMailboxes, []);
-    await syncDinumEmailsJob(domain);
-    expect((await getRow(`contact@${domain}`))?.status).to.equal("enabled");
   });
 
   it("should not delete when too many rows of a type disappear at once", async () => {
@@ -234,7 +225,15 @@ describe("syncDinumEmailsJob", () => {
   it("should not mark anything deleted on a failed or empty Dimail answer", async () => {
     await db
       .insertInto("dinum_emails")
-      .values({ email: `kept@${domain}`, type: "mailbox", status: "enabled" })
+      .values([
+        { email: `kept@${domain}`, type: "mailbox", status: "enabled" },
+        {
+          email: `contact@${domain}`,
+          type: "alias",
+          status: "enabled",
+          destination: `kept@${domain}`,
+        },
+      ])
       .execute();
     getAllMailboxesStub.resolves({ success: false });
     getAllAliasesStub.resolves({ success: true, aliases: [] });
@@ -242,6 +241,7 @@ describe("syncDinumEmailsJob", () => {
     dimailAnswers([]);
     await syncDinumEmailsJob(domain);
     expect((await getRow(`kept@${domain}`))?.status).to.equal("enabled");
+    expect((await getRow(`contact@${domain}`))?.status).to.equal("enabled");
   });
 });
 

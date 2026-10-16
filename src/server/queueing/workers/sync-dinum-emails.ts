@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 
 import { getAllMailboxes, getAllAliases } from "@/lib/dimail/client";
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { EmailStatusCode } from "@/models/member";
 import pAll from "p-all";
 import PgBoss from "pg-boss";
@@ -56,9 +57,7 @@ const markMissingRowsDeleted = async ({
           ? eb("type", "=", "alias")
           : eb.or([eb("type", "is", null), eb("type", "!=", "alias")]),
       )
-      .where((eb) =>
-        eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
-      );
+      .where(isLive);
   const [{ live }, { missing }] = await Promise.all([
     liveRows()
       .select((eb) => eb.fn.countAll<number>().as("live"))
@@ -76,16 +75,21 @@ const markMissingRowsDeleted = async ({
   }
   const deleted = await db
     .updateTable("dinum_emails")
-    .set({ status: "deleted", updated_at: new Date() })
+    .set({
+      status: "deleted",
+      updated_at: new Date(),
+      // a lock set before the deletion would otherwise keep the address on
+      // that member if Dimail ever gives it to someone else
+      user_id_locked_by: null,
+      user_id_locked_at: null,
+    })
     .where("email", "ilike", `%@${domain}`)
     .where((eb) =>
       isAlias
         ? eb("type", "=", "alias")
         : eb.or([eb("type", "is", null), eb("type", "!=", "alias")]),
     )
-    .where((eb) =>
-      eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
-    )
+    .where(isLive)
     .where((eb) => eb(eb.fn("lower", ["email"]), "not in", known))
     .executeTakeFirst();
   console.log(
@@ -166,10 +170,7 @@ export async function syncDinumEmailsJob(domain: string) {
       .execute();
   }
 
-  // rows Dimail no longer knows are kept for history but marked deleted, which
-  // stops them from being a login address. Each list is handled on its own, and
-  // only when it was read : a failed call or an empty list for one type would
-  // otherwise mark every row of that type deleted.
+  // only on a successful read: a failed call would mark every row of that type deleted
   if (mailboxesResult.success) {
     await markMissingRowsDeleted({
       domain,
@@ -186,10 +187,7 @@ export async function syncDinumEmailsJob(domain: string) {
   }
 }
 
-// The email status of a member follows their Dimail mailbox, even when their
-// primary email is elsewhere (an agent with their administration address as
-// primary and a @beta.gouv.fr mailbox) : active as soon as one of their
-// mailboxes is enabled, suspended when they all are disabled.
+// the status follows the mailbox, even when the primary email is an administration address
 const enabledMailboxOwners = () =>
   db
     .selectFrom("dinum_emails")

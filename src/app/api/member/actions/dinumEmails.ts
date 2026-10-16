@@ -47,10 +47,7 @@ async function getMemberDinumEmails(username: string) {
     .execute();
 }
 
-// The sync attaches Dimail addresses to members by username or primary email,
-// which can pick the wrong member : an admin attaches the address by hand and
-// the sync no longer changes it. An address attached to another member is
-// only moved once the admin confirmed it, since it logs into that account.
+// moving an address from another member needs confirmMove: it logs into that account
 async function attachDinumEmailToMember(
   username: string,
   rawEmail: string,
@@ -72,6 +69,24 @@ async function attachDinumEmailToMember(
     throw new BusinessError(
       "unknownDinumEmail",
       "Cette adresse n'existe pas dans Dimail (ou n'a pas encore été synchronisée).",
+    );
+  }
+  // two members matching the same address would both be refused at login
+  const emailOwner = await db
+    .selectFrom("users")
+    .select("username")
+    .where("uuid", "!=", userUuid)
+    .where(({ eb, fn }) =>
+      eb.or([
+        eb(fn("lower", ["primary_email"]), "=", row.email.toLowerCase()),
+        eb(fn("lower", ["secondary_email"]), "=", row.email.toLowerCase()),
+      ]),
+    )
+    .executeTakeFirst();
+  if (emailOwner) {
+    throw new BusinessError(
+      "dinumEmailUsedByAnotherMember",
+      `Cette adresse est l'email principal ou secondaire de la fiche ${emailOwner.username}. Changez d'abord l'adresse de cette fiche.`,
     );
   }
   const previousOwner =

@@ -3,29 +3,21 @@ import * as Sentry from "@sentry/node";
 import { db } from "@/lib/kysely";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { patchMailbox } from "@/lib/dimail/client";
-import * as createDimailMailboxWorker from "../queueing/workers/create-dimail-mailbox";
-// allow tests (rewire) to override this function by exposing a mutable binding
-let createDimailMailboxForUser =
-  createDimailMailboxWorker.createDimailMailboxForUser;
+import { createDimailMailboxForUser } from "../queueing/workers/create-dimail-mailbox";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 
-// The mailbox to reactivate : the primary email itself when it is a mailbox,
-// the destination of the primary email when it is an alias to one of the
-// member's mailboxes (a @beta.gouv.fr alias pointing to a @ext.beta.gouv.fr
-// mailbox), else one of the member's mailboxes : current domain first, then
-// disabled ones first. Rows removed from Dimail are ignored.
+// a @beta.gouv.fr primary email can be an alias to a @ext.beta.gouv.fr mailbox
 const liveMailboxes = (uuid: string) =>
   db
     .selectFrom("dinum_emails")
     .select("email")
     .where("user_id", "=", uuid)
     .where("type", "=", "mailbox")
-    .where((eb) =>
-      eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
-    );
+    .where(isLive);
 
-export const getMailboxToReactivate = async (
+const getMailboxToReactivate = async (
   uuid: string,
   primaryEmail: string | null,
 ) => {
@@ -37,9 +29,7 @@ export const getMailboxToReactivate = async (
       .where(({ eb, fn }) =>
         eb(fn("lower", ["email"]), "=", primaryEmail.toLowerCase()),
       )
-      .where((eb) =>
-        eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]),
-      )
+      .where(isLive)
       .executeTakeFirst();
     const target =
       primaryRow?.type === "mailbox"
@@ -93,9 +83,6 @@ export async function recreateEmailIfUserActive() {
   for (const dbUser of dbUsers) {
     try {
       console.log(`recreate email for ${dbUser.username}`);
-      // an existing mailbox is reactivated, even when the primary email is
-      // elsewhere (the status follows the mailbox) : a new one is only
-      // created for a member who has none
       const mailbox = await getMailboxToReactivate(
         dbUser.uuid,
         dbUser.primary_email,

@@ -98,6 +98,30 @@ describe("dinum_emails manual attachment", () => {
     expect(list.data.map((r) => r.email)).to.deep.equal([email]);
   });
 
+  it("should refuse an address that is the primary or secondary email of another member", async () => {
+    asUser(admin);
+    for (const column of ["primary_email", "secondary_email"] as const) {
+      await db
+        .updateTable("users")
+        .set({ [column]: email.toUpperCase() })
+        .where("uuid", "=", otherUuid)
+        .execute();
+      const res = await actions.safeAttachDinumEmailToMember(
+        member.username,
+        email,
+        { confirmMove: true },
+      );
+      expect(res.success).to.be.false;
+      expect(res.message).to.include(other.username);
+      expect((await getRow()).user_id).to.equal(otherUuid);
+      await db
+        .updateTable("users")
+        .set({ [column]: null })
+        .where("uuid", "=", otherUuid)
+        .execute();
+    }
+  });
+
   it("should release a locked address back to the sync", async () => {
     asUser(admin);
     await actions.safeAttachDinumEmailToMember(member.username, email, {

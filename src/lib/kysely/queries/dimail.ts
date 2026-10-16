@@ -4,7 +4,7 @@ import { db, jsonArrayFrom } from "@/lib/kysely";
 import { DB } from "@/@types/db";
 
 // rows removed from Dimail are kept for history only
-const isLive = (eb: ExpressionBuilder<DB, "dinum_emails">) =>
+export const isLive = (eb: ExpressionBuilder<DB, "dinum_emails">) =>
   eb.or([eb("status", "is", null), eb("status", "!=", "deleted")]);
 
 /**
