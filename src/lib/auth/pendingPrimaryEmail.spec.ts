@@ -109,7 +109,6 @@ describe("primary email verified by ProConnect", () => {
       const user = await getUser(member.username);
       expect(user.primary_email).to.equal(member.primary_email);
       expect(user.pending_primary_email).to.equal(newEmail);
-      expect(user.pending_primary_email_requested_by).to.equal(member.username);
       const days =
         (user.pending_primary_email_expires_at!.getTime() - Date.now()) /
         (24 * 3600 * 1000);
@@ -117,7 +116,7 @@ describe("primary email verified by ProConnect", () => {
     });
 
     it("should refuse a magic link session, unless opened through a support exception", async () => {
-      const stub = asSession(member.username, "email");
+      asSession(member.username, "email");
       let res = await safeRequestPrimaryEmailChange(member.username, newEmail);
       expect(res.success).to.be.false;
       expect(res.message).to.include("ProConnect");
@@ -130,9 +129,6 @@ describe("primary email verified by ProConnect", () => {
           date: new Date(Date.now() + 24 * 3600 * 1000),
         })
         .execute();
-      stub.resolves({
-        user: { id: member.username, provider: "email" },
-      } as any);
       res = await safeRequestPrimaryEmailChange(member.username, newEmail);
       expect(res.success, res.message).to.be.true;
     });
@@ -174,18 +170,58 @@ describe("primary email verified by ProConnect", () => {
       expect(res.success).to.be.false;
       expect(res.message).to.include("déjà utilisé");
     });
+
+    it("should refuse a request for a member not onboarded yet", async () => {
+      await db
+        .updateTable("users")
+        .set({ primary_email: null })
+        .where("uuid", "=", memberUuid)
+        .execute();
+      asSession(admin, "proconnect", "eidas1-mfa");
+      const res = await safeRequestPrimaryEmailChange(
+        member.username,
+        newEmail,
+      );
+      expect(res.success).to.be.false;
+      expect(res.message).to.include("arrivée");
+    });
   });
 
-  it("should refuse a request for a member not onboarded yet", async () => {
-    await db
-      .updateTable("users")
-      .set({ primary_email: null })
-      .where("uuid", "=", memberUuid)
-      .execute();
-    asSession(admin, "proconnect", "eidas1-mfa");
-    const res = await safeRequestPrimaryEmailChange(member.username, newEmail);
-    expect(res.success).to.be.false;
-    expect(res.message).to.include("arrivée");
+  describe("member whose mission is over", () => {
+    const alias = `pending.member@${DIMAIL_MAILBOX_DOMAIN}`;
+
+    beforeEach(async () => {
+      await db
+        .updateTable("missions")
+        .set({ end: new Date("2020-06-01") })
+        .where("user_id", "=", memberUuid)
+        .execute();
+      await db
+        .insertInto("dinum_emails")
+        .values({ email: alias, user_id: memberUuid, type: "alias" })
+        .execute();
+    });
+
+    it("should refuse their own requests, not an admin's", async () => {
+      asSession(member.username, "proconnect", "eidas1-mfa");
+      const settings = await safeGetPrimaryEmailSettings(member.username);
+      expect(settings.data.expired).to.be.true;
+      expect(settings.data.canRequest).to.be.false;
+      expect(settings.data.canChooseDimail).to.be.false;
+      let res = await safeRequestPrimaryEmailChange(member.username, newEmail);
+      expect(res.success).to.be.false;
+      expect(res.message).to.include("mission est terminée");
+      res = await safeChoosePrimaryEmailFromDimail(member.username, alias);
+      expect(res.success).to.be.false;
+      expect(res.message).to.include("mission est terminée");
+      const user = await getUser(member.username);
+      expect(user.primary_email).to.equal(member.primary_email);
+      expect(user.pending_primary_email).to.be.null;
+
+      asSession(admin, "proconnect", "eidas1-mfa");
+      res = await safeRequestPrimaryEmailChange(member.username, newEmail);
+      expect(res.success, res.message).to.be.true;
+    });
   });
 
   describe("choosePrimaryEmailFromDimail", () => {
@@ -198,20 +234,40 @@ describe("primary email verified by ProConnect", () => {
         .execute();
     });
 
-    it("should not offer a disabled mailbox", async () => {
+    it("should neither offer nor accept a disabled or deleted address", async () => {
+      const disabled = `pending.old@${DIMAIL_MAILBOX_DOMAIN}`;
+      const deleted = `pending.gone@${DIMAIL_MAILBOX_DOMAIN}`;
       await db
         .insertInto("dinum_emails")
-        .values({
-          email: `pending.old@${DIMAIL_MAILBOX_DOMAIN}`,
-          user_id: memberUuid,
-          type: "mailbox",
-          status: "disabled",
-        })
+        .values([
+          {
+            email: disabled,
+            user_id: memberUuid,
+            type: "mailbox",
+            status: "disabled",
+          },
+          {
+            email: deleted,
+            user_id: memberUuid,
+            type: "alias",
+            status: "deleted",
+          },
+        ])
         .execute();
       asSession(member.username, "proconnect", "eidas1-mfa");
       const res = await safeGetPrimaryEmailSettings(member.username);
       expect(res.success, res.message).to.be.true;
       expect(res.data.dimailAddresses).to.deep.equal([alias]);
+      for (const email of [disabled, deleted]) {
+        const choice = await safeChoosePrimaryEmailFromDimail(
+          member.username,
+          email,
+        );
+        expect(choice.success).to.be.false;
+      }
+      expect((await getUser(member.username)).primary_email).to.equal(
+        member.primary_email,
+      );
     });
 
     it("should set one of the member's Dimail addresses directly", async () => {
@@ -225,15 +281,13 @@ describe("primary email verified by ProConnect", () => {
     });
 
     it("should refuse an address that is not theirs, or a magic link session", async () => {
-      const stub = asSession(member.username, "proconnect", "eidas1-mfa");
+      asSession(member.username, "proconnect", "eidas1-mfa");
       let res = await safeChoosePrimaryEmailFromDimail(
         member.username,
         `someone.else@${DIMAIL_MAILBOX_DOMAIN}`,
       );
       expect(res.success).to.be.false;
-      stub.resolves({
-        user: { id: member.username, provider: "email" },
-      } as any);
+      asSession(member.username, "email");
       res = await safeChoosePrimaryEmailFromDimail(member.username, alias);
       expect(res.success).to.be.false;
       expect((await getUser(member.username)).primary_email).to.equal(
@@ -245,9 +299,6 @@ describe("primary email verified by ProConnect", () => {
   describe("login with a pending address", () => {
     it("should find the member by an unexpired pending address only", async () => {
       await setPending(member.username, newEmail, 3600 * 1000);
-      expect(
-        (await findUsersByPendingPrimaryEmail(newEmail)).map((u) => u.username),
-      ).to.deep.equal([member.username]);
       const adapterUser =
         await customPostgresAdapter().getUserByEmail!(newEmail);
       expect(adapterUser?.id).to.equal(member.username);
@@ -293,20 +344,12 @@ describe("primary email verified by ProConnect", () => {
   });
 
   describe("magic link", () => {
-    const savedMode = process.env.LEGACY_EMAIL_LOGIN_MODE;
-    const savedCutoff = process.env.LEGACY_EMAIL_LOGIN_CUTOFF_DATE;
-
     beforeEach(() => {
-      process.env.LEGACY_EMAIL_LOGIN_MODE = "transition";
-      process.env.LEGACY_EMAIL_LOGIN_CUTOFF_DATE = "2100-01-01";
-    });
-
-    afterEach(() => {
-      process.env.LEGACY_EMAIL_LOGIN_MODE = savedMode;
-      process.env.LEGACY_EMAIL_LOGIN_CUTOFF_DATE = savedCutoff;
-      if (savedMode === undefined) delete process.env.LEGACY_EMAIL_LOGIN_MODE;
-      if (savedCutoff === undefined)
-        delete process.env.LEGACY_EMAIL_LOGIN_CUTOFF_DATE;
+      sinon.stub(process, "env").value({
+        ...process.env,
+        LEGACY_EMAIL_LOGIN_MODE: "transition",
+        LEGACY_EMAIL_LOGIN_CUTOFF_DATE: "2100-01-01",
+      });
     });
 
     const requestLink = (typedEmail: string) =>

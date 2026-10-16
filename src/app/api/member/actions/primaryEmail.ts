@@ -27,7 +27,10 @@ import {
 } from "@/lib/error";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { getUserInfos } from "@/lib/kysely/queries/users";
+import { checkUserIsExpired } from "@/lib/utils";
 import { EventCode } from "@/models/actionEvent/actionEvent";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
 
 const getContext = async (username: string) => {
@@ -55,15 +58,25 @@ const getContext = async (username: string) => {
   if (!user) {
     throw new NoDataError("Membre introuvable");
   }
-  return { session, isSelf, isAdmin, user };
+  const isExpiredSelf = async () => {
+    if (!isSelf || isAdmin) return false;
+    const infos = await getUserInfos({ username });
+    return !infos || checkUserIsExpired(memberBaseInfoToModel(infos));
+  };
+  return { session, isSelf, isAdmin, user, isExpiredSelf };
 };
 
-// Who may request a new primary email (it only becomes primary after a
-// ProConnect + MFA login on it) :
-// - the member, from a ProConnect + MFA session
-// - the member, from a magic link session opened through a support exception,
-//   when their current address is lost (no other way to log in)
-// - an admin, from a ProConnect + MFA session, for someone else
+const assertNotExpiredSelf = async (
+  context: Awaited<ReturnType<typeof getContext>>,
+) => {
+  if (await context.isExpiredSelf()) {
+    throw new BusinessError(
+      "expiredMember",
+      "Ta mission est terminée, tu ne peux plus modifier ton email principal.",
+    );
+  }
+};
+
 const canRequestChange = async ({
   session,
   isSelf,
@@ -74,6 +87,8 @@ const canRequestChange = async ({
     return isSelf || isAdmin;
   }
   // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+  // magic link only through a support exception, for a member who lost their
+  // current address and has no other way in
   return (
     isSelf &&
     session.user.provider === "email" &&
@@ -81,8 +96,7 @@ const canRequestChange = async ({
   );
 };
 
-// the member's own Dimail addresses on the main domain : attached to them by
-// Dimail, they become primary without a ProConnect verification
+// attached by Dimail, so they become primary without a ProConnect check
 const getDimailAddresses = async (userUuid: string) =>
   (
     await db
@@ -92,7 +106,10 @@ const getDimailAddresses = async (userUuid: string) =>
       .where("email", "ilike", `%@${DIMAIL_MAILBOX_DOMAIN}`)
       .where("email", "not ilike", `%@${LEGACY_EXT_DOMAIN}`)
       .where((eb) =>
-        eb.or([eb("status", "is", null), eb("status", "!=", "disabled")]),
+        eb.or([
+          eb("status", "is", null),
+          eb("status", "not in", ["disabled", "deleted"]),
+        ]),
       )
       .orderBy("email")
       .execute()
@@ -101,6 +118,7 @@ const getDimailAddresses = async (userUuid: string) =>
 async function getPrimaryEmailSettings(username: string) {
   const context = await getContext(username);
   const { user, isSelf, session } = context;
+  const expired = await context.isExpiredSelf();
   const primary = normalizeLoginEmail(user.primary_email);
   const pending =
     user.pending_primary_email &&
@@ -118,8 +136,9 @@ async function getPrimaryEmailSettings(username: string) {
     dimailAddresses: (await getDimailAddresses(user.uuid)).filter(
       (email) => email !== primary,
     ),
-    canChooseDimail: isSelf && isMfaSession(session),
-    canRequest: await canRequestChange(context),
+    expired,
+    canChooseDimail: !expired && isSelf && isMfaSession(session),
+    canRequest: !expired && (await canRequestChange(context)),
   };
 }
 
@@ -127,11 +146,13 @@ async function choosePrimaryEmailFromDimail(
   username: string,
   rawEmail: string,
 ) {
-  const { session, isSelf, user } = await getContext(username);
+  const context = await getContext(username);
+  const { session, isSelf, user } = context;
   if (!isSelf) {
     throw new AuthorizationError();
   }
   assertMfaSession(session, "modifier l'email principal");
+  await assertNotExpiredSelf(context);
   const email = normalizeLoginEmail(rawEmail);
   if (!email || !(await getDimailAddresses(user.uuid)).includes(email)) {
     throw new BusinessError(
@@ -178,6 +199,7 @@ async function requestPrimaryEmailChange(username: string, rawEmail: string) {
       "Reconnecte-toi avec ProConnect pour modifier l'email principal.",
     );
   }
+  await assertNotExpiredSelf(context);
   // a member without a login address yet is not onboarded : a pending
   // address could never be confirmed (the login is refused as MemberNotReady)
   if (!context.user.primary_email) {

@@ -23,6 +23,7 @@ type Settings = {
     requestedBy: string | null;
   } | null;
   dimailAddresses: string[];
+  expired: boolean;
   canChooseDimail: boolean;
   canRequest: boolean;
 };
@@ -117,9 +118,8 @@ export default function BlocConfigurerEmailPrincipal({
         />
       )}
       <p>
-        L'email principal est l'adresse utilisée pour se connecter avec
-        ProConnect et pour les communications beta.gouv.fr. Ce doit être une
-        adresse d'agent public. Actuellement :{" "}
+        Adresse de connexion ProConnect et de communication, obligatoirement
+        d'agent public. Actuellement :{" "}
         <strong>{settings?.primaryEmail || userInfos.primary_email}</strong>.
       </p>
 
@@ -221,7 +221,6 @@ export default function BlocConfigurerEmailPrincipal({
         >
           <Input
             label={isAdmin ? "Adresse à proposer" : "Nouvelle adresse"}
-            hintText="Elle ne devient l'email principal qu'après une connexion ProConnect avec cette adresse."
             nativeInputProps={{
               type: "email",
               required: true,
@@ -242,20 +241,30 @@ export default function BlocConfigurerEmailPrincipal({
         </p>
       )}
 
-      {settings && !settings.canRequest && !isAdmin && !settings.pending && (
-        <>
-          <p>
-            Pour modifier ton email principal, reconnecte-toi avec ProConnect.
-          </p>
-          <Button
-            priority="secondary"
-            nativeButtonProps={{ type: "button" }}
-            onClick={() => reconnectWithProConnect()}
-          >
-            Me reconnecter avec ProConnect
-          </Button>
-        </>
+      {settings?.expired && (
+        <p>
+          Ta mission est terminée, tu ne peux plus modifier ton email principal.
+        </p>
       )}
+
+      {settings &&
+        !settings.expired &&
+        !settings.canRequest &&
+        !isAdmin &&
+        !settings.pending && (
+          <>
+            <p>
+              Pour modifier ton email principal, reconnecte-toi avec ProConnect.
+            </p>
+            <Button
+              priority="secondary"
+              nativeButtonProps={{ type: "button" }}
+              onClick={() => reconnectWithProConnect()}
+            >
+              Me reconnecter avec ProConnect
+            </Button>
+          </>
+        )}
     </Accordion>
   );
 }
