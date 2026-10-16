@@ -125,6 +125,25 @@ describe("dinum_emails manual attachment", () => {
     }
   });
 
+  it("should refuse an address pending as another member's primary email", async () => {
+    asUser(admin);
+    await db
+      .updateTable("users")
+      .set({
+        pending_primary_email: email,
+        pending_primary_email_expires_at: new Date(Date.now() + 3600 * 1000),
+      })
+      .where("uuid", "=", otherUuid)
+      .execute();
+    const res = await actions.safeAttachDinumEmailToMember(
+      member.username,
+      email,
+      { confirmMove: true },
+    );
+    expect(res.success).to.be.false;
+    expect(res.message).to.include("en attente");
+  });
+
   it("should release a locked address back to the sync", async () => {
     asUser(admin);
     await actions.safeAttachDinumEmailToMember(member.username, email, {

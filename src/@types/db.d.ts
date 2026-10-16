@@ -494,6 +494,9 @@ export interface Users {
   link: string | null;
   member_type: string | null;
   osm_city: string | null;
+  pending_primary_email: string | null;
+  pending_primary_email_expires_at: Timestamp | null;
+  pending_primary_email_requested_by: string | null;
   primary_email: string | null;
   primary_email_status: Generated<string | null>;
   primary_email_status_updated_at: Generated<Timestamp | null>;

@@ -83,13 +83,18 @@ async function attachDinumEmailToMember(
       eb.or([
         eb(fn("lower", ["primary_email"]), "=", row.email.toLowerCase()),
         eb(fn("lower", ["secondary_email"]), "=", row.email.toLowerCase()),
+        eb(
+          fn("lower", ["pending_primary_email"]),
+          "=",
+          row.email.toLowerCase(),
+        ).and("pending_primary_email_expires_at", ">", new Date()),
       ]),
     )
     .executeTakeFirst();
   if (emailOwner) {
     throw new BusinessError(
       "dinumEmailUsedByAnotherMember",
-      `Cette adresse est l'email principal ou secondaire de la fiche ${emailOwner.username}. Changez d'abord l'adresse de cette fiche.`,
+      `Cette adresse est l'email principal, secondaire ou en attente de la fiche ${emailOwner.username}. Changez d'abord l'adresse de cette fiche.`,
     );
   }
   const previousOwner =

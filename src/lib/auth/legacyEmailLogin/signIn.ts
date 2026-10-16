@@ -1,3 +1,6 @@
+import { findUsersByLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
+
+import { findUsersBySecondaryEmail } from "./adapter";
 import { canUseLegacyEmailLogin } from "./eligibility";
 import { LEGACY_EMAIL_PROVIDER_ID } from "./provider";
 import { checkRateLimit } from "./rateLimit";
@@ -33,12 +36,29 @@ export const checkLegacyEmailLoginRateLimit = ({
 export const checkLegacyEmailLoginAllowed = async ({
   provider,
   dbUser,
+  requestedEmail,
+  isVerificationRequest,
 }: {
   provider: string | undefined;
   dbUser: { uuid: string; username: string; created_at: Date };
+  requestedEmail?: string | null;
+  isVerificationRequest: boolean;
 }) => {
   if (provider !== LEGACY_EMAIL_PROVIDER_ID) {
     return;
+  }
+  // the shared adapter also resolves pending primary emails, which must log in
+  // through ProConnect only. The token goes to the typed address, so checking
+  // the request is enough.
+  if (isVerificationRequest) {
+    const matches = [
+      ...(await findUsersByLoginEmail(requestedEmail)),
+      ...(await findUsersBySecondaryEmail(requestedEmail)),
+    ];
+    if (!matches.some((user) => user.uuid === dbUser.uuid)) {
+      console.log(`Email login address not usable for ${dbUser.username}`);
+      throw new Error("UnknownMember");
+    }
   }
   if (!(await canUseLegacyEmailLogin(dbUser))) {
     console.log(`Email login not allowed for ${dbUser.username}`);

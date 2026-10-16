@@ -20,6 +20,7 @@ export enum EventCode {
   MEMBER_RESPONDER_DELETED = "MEMBER_RESPONDER_DELETED",
   MEMBER_SECONDARY_EMAIL_UPDATED = "MEMBER_SECONDARY_EMAIL_UPDATED",
   MEMBER_PRIMARY_EMAIL_UPDATED = "MEMBER_PRIMARY_EMAIL_UPDATED",
+  MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED = "MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED",
   MEMBER_WEBMAIL_ACCESS_SENT = "MEMBER_WEBMAIL_ACCESS_SENT",
   MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED = "MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED",
   MEMBER_END_DATE_UPDATED = "MEMBER_END_DATE_UPDATED",
@@ -62,6 +63,8 @@ export const EventCodeToReadable: Record<EventCode, string> = {
   [EventCode.MEMBER_RESPONDER_DELETED]: "Réponse automatique supprimé",
   [EventCode.MEMBER_SECONDARY_EMAIL_UPDATED]: "Email secondaire mis à jour",
   [EventCode.MEMBER_PRIMARY_EMAIL_UPDATED]: "Email primaire mis à jour",
+  [EventCode.MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED]:
+    "Changement d'email primaire demandé",
   [EventCode.MEMBER_WEBMAIL_ACCESS_SENT]: "Lien d'accès au webmail renvoyé",
   [EventCode.MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED]:
     "Rattachement d'une adresse Dimail modifié",
@@ -182,6 +185,13 @@ export const EventMemberPrimaryEmailUpdatedPayload = z.object({
   action_metadata: z.object({
     value: z.string().email(),
     old_value: z.string().email().optional(),
+  }),
+});
+
+export const EventMemberPrimaryEmailChangeRequestedPayload = z.object({
+  action_code: z.literal(EventCode.MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED),
+  action_metadata: z.object({
+    value: z.string().email(),
   }),
 });
 
@@ -404,6 +414,7 @@ export type EventPayloads =
   | z.infer<typeof EventMemberEndDatePayload>
   | z.infer<typeof EventMemberSecondaryEmailUpdatedPayload>
   | z.infer<typeof EventMemberPrimaryEmailUpdatedPayload>
+  | z.infer<typeof EventMemberPrimaryEmailChangeRequestedPayload>
   | z.infer<typeof EventMemberWebmailAccessSentPayload>
   | z.infer<typeof EventMemberDinumEmailAttachmentUpdatedPayload>
   | z.infer<typeof EventMemberRedirectionDeletedPayload>

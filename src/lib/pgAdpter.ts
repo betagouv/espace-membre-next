@@ -8,6 +8,7 @@ import {
 } from "next-auth/adapters";
 
 import { findUsersByLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
+import { findUsersByPendingPrimaryEmail } from "@/lib/auth/pendingPrimaryEmail";
 // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
 import {
   findUsersBySecondaryEmail,
@@ -49,8 +50,12 @@ export default function customPostgresAdapter(): Adapter {
     const getUserByEmail = async (
       email: string,
     ): Promise<AdapterUser | null> => {
-      // legacy-email-login: back to const with src/lib/auth/legacyEmailLogin
       let dbUsers = await findUsersByLoginEmail(email);
+      // a member who never logged in with ProConnect has no accounts row : next-auth
+      // finds them by the address ProConnect returned, which may be pending
+      if (dbUsers.length === 0) {
+        dbUsers = await findUsersByPendingPrimaryEmail(email);
+      }
       // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
       if (dbUsers.length === 0) {
         dbUsers = await findUsersBySecondaryEmail(email);

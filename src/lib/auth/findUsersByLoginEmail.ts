@@ -78,6 +78,12 @@ export const findUsersUsingEmail = async (
       eb.or([
         eb(fn("lower", ["primary_email"]), "=", normalized),
         eb(fn("lower", ["secondary_email"]), "=", normalized),
+        // a pending primary email already logs in with ProConnect
+        eb(fn("lower", ["pending_primary_email"]), "=", normalized).and(
+          "pending_primary_email_expires_at",
+          ">",
+          new Date(),
+        ),
         eb(
           "users.uuid",
           "in",

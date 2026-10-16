@@ -175,6 +175,7 @@ describe("legacyEmailLogin", () => {
       await checkLegacyEmailLoginAllowed({
         provider: "proconnect",
         dbUser: user,
+        isVerificationRequest: false,
       });
     });
 
@@ -182,7 +183,11 @@ describe("legacyEmailLogin", () => {
       setEnv({ LEGACY_EMAIL_LOGIN_MODE: "exceptions" });
       let error: Error | undefined;
       try {
-        await checkLegacyEmailLoginAllowed({ provider: "email", dbUser: user });
+        await checkLegacyEmailLoginAllowed({
+          provider: "email",
+          dbUser: user,
+          isVerificationRequest: false,
+        });
       } catch (e) {
         error = e as Error;
       }

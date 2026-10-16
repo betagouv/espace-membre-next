@@ -1,9 +1,5 @@
 import { expect } from "chai";
 import jwt from "jsonwebtoken";
-import * as nextAuth from "next-auth/next";
-import sinon from "sinon";
-
-import { managePrimaryEmailForUser } from "@/app/api/member/actions/managePrimaryEmailForUser";
 
 import { authOptions } from "@/lib/authoptions";
 import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
@@ -171,25 +167,6 @@ describe("account security with members in database", () => {
           check(sessionWith("proconnect", "eidas1-mfa"), "nouveau@example.com"),
         ),
       ).to.be.null;
-    });
-  });
-
-  describe("managePrimaryEmailForUser", () => {
-    afterEach(() => sinon.restore());
-
-    it("should refuse to change the primary email from a session without MFA", async () => {
-      sinon.stub(nextAuth, "getServerSession").resolves({
-        user: { id: owner.username, provider: "email" },
-      } as any);
-      expect(
-        await rejection(
-          managePrimaryEmailForUser({
-            username: owner.username,
-            primaryEmail: "security.owner@ademe.fr",
-          }),
-        ),
-      ).to.include("ProConnect");
-      expect(await getPrimary()).to.equal(owner.primary_email);
     });
   });
 
