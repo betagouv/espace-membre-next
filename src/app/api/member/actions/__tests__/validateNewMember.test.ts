@@ -6,9 +6,10 @@ import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
 import * as mapperLib from "@/models/mapper";
 import * as canEditMemberLib from "@/lib/canEditMember";
-import * as bossClient from "@/server/queueing/client";
+import * as sendEmailToTeamLib from "@/lib/email/send-email-to-team-when-new-member";
+import * as sendVerificationEmailLib from "@/lib/email/send-verification-email";
 import { validateNewMember } from "../validateNewMember";
-import { EmailStatusCode } from "@/models/member";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import { EventCode } from "@/models/actionEvent";
 import { AuthorizationError, BusinessError } from "@/lib/error";
 
@@ -21,8 +22,11 @@ describe("validateNewMember", () => {
   let memberBaseInfoToModelStub: sinon.SinonStub;
   let canEditMemberStub: sinon.SinonStub;
   let addEventStub: sinon.SinonStub;
-  let getBossClientInstanceStub: sinon.SinonStub;
-  let bossClientSendStub: sinon.SinonStub;
+  let sendEmailToTeamWhenNewMemberStub: sinon.SinonStub;
+  let sendNewMemberVerificationEmailStub: sinon.SinonStub;
+
+  const memberUuid = "11111111-1111-4111-8111-111111111111";
+  const incubatorUuid = "22222222-2222-4222-8222-222222222222";
 
   const mockSession = {
     user: {
@@ -33,7 +37,7 @@ describe("validateNewMember", () => {
   };
 
   const mockUserData = {
-    uuid: "member-uuid",
+    uuid: memberUuid,
     username: "testmember",
     primary_email_status: EmailStatusCode.MEMBER_VALIDATION_WAITING,
   };
@@ -47,7 +51,20 @@ describe("validateNewMember", () => {
     action_code: EventCode.MEMBER_CREATED,
     action_on_username: "testmember",
     action_metadata: {
-      incubator_id: "incubator-1",
+      member: {
+        firstname: "Test",
+        lastname: "Member",
+        email: "test.member@example.com",
+        domaine: Domaine.DEVELOPPEMENT,
+      },
+      missions: [
+        {
+          start: new Date("2026-01-01"),
+          status: "admin",
+          startups: [],
+        },
+      ],
+      incubator_id: incubatorUuid,
     },
   };
 
@@ -71,10 +88,12 @@ describe("validateNewMember", () => {
       .resolves(true);
     addEventStub = sinon.stub(eventsLib, "addEvent").resolves();
 
-    bossClientSendStub = sinon.stub().resolves();
-    getBossClientInstanceStub = sinon
-      .stub(bossClient, "getBossClientInstance")
-      .resolves({ send: bossClientSendStub } as any);
+    sendEmailToTeamWhenNewMemberStub = sinon
+      .stub(sendEmailToTeamLib, "sendEmailToTeamWhenNewMember")
+      .resolves();
+    sendNewMemberVerificationEmailStub = sinon
+      .stub(sendVerificationEmailLib, "sendNewMemberVerificationEmail")
+      .resolves();
 
     // stub db chainable query builder
     dbUpdateTableStub = sinon.stub(kyselyLib.db, "updateTable").returns({
@@ -99,7 +118,7 @@ describe("validateNewMember", () => {
     getServerSessionStub.resolves(null);
 
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
+      await validateNewMember({ memberUuid });
       expect.fail("Should have thrown AuthorizationError");
     } catch (e) {
       expect(e).to.be.instanceof(AuthorizationError);
@@ -110,7 +129,7 @@ describe("validateNewMember", () => {
     getUserBasicInfoStub.resolves(null);
 
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
+      await validateNewMember({ memberUuid });
       expect.fail("Should have thrown BusinessError");
     } catch (e) {
       expect(e).to.be.instanceof(BusinessError);
@@ -122,7 +141,7 @@ describe("validateNewMember", () => {
     getLastEventStub.resolves(null);
 
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
+      await validateNewMember({ memberUuid });
       expect.fail("Should have thrown BusinessError");
     } catch (e) {
       expect(e).to.be.instanceof(BusinessError);
@@ -136,7 +155,7 @@ describe("validateNewMember", () => {
     });
 
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
+      await validateNewMember({ memberUuid });
       expect.fail("Should have thrown BusinessError");
     } catch (e) {
       expect(e).to.be.instanceof(BusinessError);
@@ -148,7 +167,7 @@ describe("validateNewMember", () => {
     canEditMemberStub.resolves(false);
 
     try {
-      await validateNewMember({ memberUuid: "member-uuid" });
+      await validateNewMember({ memberUuid });
       expect.fail("Should have thrown BusinessError");
     } catch (e) {
       expect(e).to.be.instanceof(BusinessError);
@@ -159,7 +178,7 @@ describe("validateNewMember", () => {
   });
 
   it("should successfully validate a new member", async () => {
-    await validateNewMember({ memberUuid: "member-uuid" });
+    await validateNewMember({ memberUuid });
 
     // verify db update was called
     expect(dbUpdateTableStub.calledOnce).to.be.true;
@@ -171,8 +190,12 @@ describe("validateNewMember", () => {
       action_on_username: mockMember.username,
     });
 
-    // verify boss client send was called twice (for both jobs)
-    expect(bossClientSendStub.calledTwice).to.be.true;
+    expect(
+      sendEmailToTeamWhenNewMemberStub.calledOnceWith({ userId: memberUuid }),
+    ).to.be.true;
+    expect(
+      sendNewMemberVerificationEmailStub.calledOnceWith({ userId: memberUuid }),
+    ).to.be.true;
   });
 
   it("should use isAdmin flag when session user is admin", async () => {
@@ -185,7 +208,7 @@ describe("validateNewMember", () => {
     };
     getServerSessionStub.resolves(adminSession as any);
 
-    await validateNewMember({ memberUuid: "member-uuid" });
+    await validateNewMember({ memberUuid });
 
     // canEditMember is called but returns early for admins
     expect(canEditMemberStub.calledOnce).to.be.true;

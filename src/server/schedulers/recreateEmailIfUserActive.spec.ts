@@ -6,6 +6,7 @@ import * as dimailClient from "@/lib/dimail/client";
 import rewire from "rewire";
 import { EmailStatusCode } from "@/models/member";
 import { db } from "@/lib/kysely";
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 // load module via rewire so we can override its internal binding
 const recreateModule = rewire("./recreateEmailIfUserActive");
 const recreateEmailIfUserActive = recreateModule.__get__(
@@ -18,6 +19,8 @@ describe("recreateEmailIfUserActive", () => {
   let patchMailboxStub: sinon.SinonStub;
   let createDimailMailboxForUserStub: sinon.SinonStub;
   let dbUpdateTableStub: sinon.SinonStub;
+  let dbSetStub: sinon.SinonStub;
+  let dbSelectFromStub: sinon.SinonStub;
 
   const fakeUser = {
     uuid: "user-uuid",
@@ -43,14 +46,19 @@ describe("recreateEmailIfUserActive", () => {
       "createDimailMailboxForUser",
       createDimailMailboxForUserStub,
     );
+    dbSetStub = sinon.stub().returnsThis();
     dbUpdateTableStub = sinon.stub(db, "updateTable").returns({
-      set: sinon.stub().returnsThis(),
+      set: dbSetStub,
       where: sinon.stub().returnsThis(),
       execute: sinon.stub().resolves(),
-    });
-
-    //sinon.stub(console, "error");
-    //sinon.stub(console, "log");
+    } as any);
+    dbSelectFromStub = sinon.stub(db, "selectFrom").returns({
+      select: sinon.stub().returnsThis(),
+      where: sinon.stub().returnsThis(),
+      executeTakeFirstOrThrow: sinon
+        .stub()
+        .resolves({ email: "test.mailbox@beta.gouv.fr" }),
+    } as any);
   });
 
   afterEach(() => {
@@ -62,16 +70,21 @@ describe("recreateEmailIfUserActive", () => {
 
     await recreateEmailIfUserActive();
 
-    // expect(patchMailboxStub.calledOnce).to.be.true;
-    // expect(patchMailboxStub.firstCall.args[0]).to.deep.eq({
-    //   data: {
-    //     active: "yes",
-    //   },
-    //   domain_name: "test-opi-email.beta.gouv.fr",
-    //   user_name: "test",
-    // });
+    expect(dbSelectFromStub.calledOnceWith("dinum_emails")).to.be.true;
+    expect(patchMailboxStub.calledOnce).to.be.true;
+    expect(patchMailboxStub.firstCall.args[0]).to.deep.eq({
+      data: {
+        imap_active: "yes",
+      },
+      domain_name: DIMAIL_MAILBOX_DOMAIN,
+      user_name: "test.mailbox",
+    });
     expect(dbUpdateTableStub.calledOnce).to.be.true;
     expect(dbUpdateTableStub.firstCall.args[0]).to.deep.eq("users");
+    expect(dbSetStub.firstCall.args[0]).to.include({
+      primary_email: fakeUser.primary_email,
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+    });
     expect(createDimailMailboxForUserStub.notCalled).to.be.true;
   });
 
@@ -86,12 +99,15 @@ describe("recreateEmailIfUserActive", () => {
       .true;
   });
 
-  it("should do nothing if no primary_email", async () => {
+  it("should create mailbox if no primary_email", async () => {
     (getActiveUsersStub().execute as sinon.SinonStub).resolves([
       { ...fakeUser, primary_email: null },
     ]);
     await recreateEmailIfUserActive();
+    expect(getDimailEmailStub.notCalled).to.be.true;
     expect(patchMailboxStub.notCalled).to.be.true;
-    expect(createDimailMailboxForUserStub.notCalled).to.be.true;
+    expect(dbUpdateTableStub.notCalled).to.be.true;
+    expect(createDimailMailboxForUserStub.calledOnceWith(fakeUser.uuid)).to.be
+      .true;
   });
 });

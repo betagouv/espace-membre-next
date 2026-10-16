@@ -2,6 +2,8 @@ import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
 
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
+
 // Mock dependencies
 const mockGetUserBasicInfo = sinon.stub();
 const mockCreateMailbox = sinon.stub();
@@ -19,9 +21,6 @@ const mockInsertInto = sinon.stub().returns({ values: mockValues });
 
 const userTestUuid = "9f58ae81-3580-4d37-9334-a979dcc2372f";
 
-// Mock constants
-const DIMAIL_MAILBOX_DOMAIN =
-  process.env.DIMAIL_MAILBOX_DOMAIN || "test-opi-email.beta.gouv.fr";
 
 const mockDb = {
   updateTable: mockUpdateTable,
