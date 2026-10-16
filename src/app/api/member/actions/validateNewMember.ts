@@ -10,7 +10,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
 import { SendEmailToTeamWhenNewMemberSchema } from "@/models/jobs/member";
-import { EmailStatusCode } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
@@ -20,11 +20,10 @@ import {
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
 import { canEditMember } from "@/lib/canEditMember";
 import {
-  ONBOARDING_NOT_STARTED_STATUSES,
+  resumeMemberOnboarding,
   startMemberOnboarding,
 } from "@/lib/onboarding/startMemberOnboarding";
 import { checkUserIsExpired } from "@/lib/utils";
-import { memberBaseInfoSchemaType } from "@/models/member";
 
 const MemberCreatedIncubatorSchema = z.object({
   action_metadata: z.object({
@@ -47,9 +46,8 @@ export async function validateNewMember({
     );
   }
 
-  // the incubator chosen at invitation is only stored in the MEMBER_CREATED event.
-  // it is optional : it only adds a way to be authorized (fail-closed).
-  // only parse incubator_id so an old event with outdated missions data still works
+  // incubator chosen at invitation, only in MEMBER_CREATED. Optional (fail-closed),
+  // only incubator_id is parsed to survive old events.
   const eventMemberCreated = MemberCreatedIncubatorSchema.safeParse(
     await getLastEvent(rawData.username, EventCode.MEMBER_CREATED),
   );
@@ -86,20 +84,15 @@ export async function validateNewMember({
     )
     .executeTakeFirst();
   if (!Number(result.numUpdatedRows)) {
-    // already validated. if the onboarding never started (ex: the mailbox job
-    // could not be enqueued), opening the validation link again restarts it.
-    // EMAIL_UNSET is also the status of old fiches without email : only
-    // members with a current mission are concerned.
+    // already validated : opening the validation link again resumes an
+    // onboarding stopped by a failure. EMAIL_UNSET is also the status of old
+    // fiches without email : only members with a current mission are concerned.
     const currentData = await getUserBasicInfo({ uuid: memberUuid });
     if (
       currentData &&
-      ONBOARDING_NOT_STARTED_STATUSES.includes(
-        currentData.primary_email_status as EmailStatusCode,
-      ) &&
-      !currentData.primary_email &&
-      !checkUserIsExpired(currentData as unknown as memberBaseInfoSchemaType)
+      !checkUserIsExpired(currentData as unknown as memberBaseInfoSchemaType) &&
+      (await resumeMemberOnboarding(rawData.uuid))
     ) {
-      await startMemberOnboarding(rawData.uuid);
       return;
     }
     throw new BusinessError(
@@ -114,7 +107,20 @@ export async function validateNewMember({
     action_on_username: rawData.username,
   });
 
-  await startMemberOnboarding(rawData.uuid);
+  try {
+    await startMemberOnboarding(rawData.uuid);
+  } catch (e) {
+    if (e instanceof BusinessError) throw e;
+    console.error(
+      `validateNewMember: onboarding failed for ${rawData.username}`,
+      e,
+    );
+    Sentry.captureException(e);
+    throw new BusinessError(
+      "onboardingNotStarted",
+      `La fiche de ${rawData.username} est validée mais son arrivée n'a pas pu démarrer. Recharge cette page pour relancer.`,
+    );
+  }
 
   // the announcement must never block the onboarding
   try {

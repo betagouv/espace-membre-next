@@ -14,17 +14,19 @@ La phase est choisie par `LEGACY_EMAIL_LOGIN_MODE`, à changer sur Scalingo puis
 
 Variables :
 
-- `LEGACY_EMAIL_LOGIN_MODE` : `transition`, `exceptions` ou `off`. Obligatoire, `off` compris : le serveur refuse de démarrer si la variable est absente ou invalide (`src/instrumentation.ts`). À poser aussi sur les review apps et sur l'app cron, dont le job de rappel fait le même contrôle. Une valeur invalide posée après coup met l'app hors ligne au prochain redémarrage : le contrôle protège les déploiements, pas les changements de variables.
+- `LEGACY_EMAIL_LOGIN_MODE` : `transition`, `exceptions` ou `off`. Obligatoire partout, `off` compris, app cron et review apps comprises : le serveur refuse de démarrer si la variable est absente ou invalide (`src/instrumentation.ts`). Une valeur invalide posée après le déploiement casse l'app au redémarrage.
 - `LEGACY_EMAIL_LOGIN_CUTOFF_DATE` : date ISO. Obligatoire en `transition`. À fixer à la date de mise en prod.
 - `LEGACY_EMAIL_LOGIN_END_DATE` : date ISO de fin de la transition, obligatoire en `transition`. Elle est affichée aux membres et sert au rappel hebdomadaire, qui ne part pas sans elle.
 
 Dès qu'un membre se connecte avec ProConnect + MFA (événement `login.proconnect_mfa`), le lien magique se ferme pour lui.
 
-Le job `job:remind-legacy-email-login` (enchaîné chaque jour à la tâche cron de 8 h UTC de `clean-teams-members`, Scalingo limitant une app à 5 tâches cron ; un membre n'est relancé qu'une fois tous les 6 jours au plus) écrit aux comptes pas encore migrés, uniquement en `transition`. Pour une adresse principale en `@ext.beta.gouv.fr`, que ProConnect refuse, il indique l'alias `@beta.gouv.fr` du membre. Sans alias, le membre est sauté jusqu'à la migration des adresses ext vers `.ext@beta.gouv.fr`.
+Le job `job:remind-legacy-email-login` écrit aux comptes pas encore migrés, uniquement en `transition`. Il est enchaîné chaque jour à la tâche cron de 8 h UTC de `clean-teams-members`, et relance un membre au plus une fois tous les 6 jours. Pour une adresse principale en `@ext.beta.gouv.fr`, que ProConnect refuse, il indique l'alias `@beta.gouv.fr` du membre. Sans alias, le membre est sauté jusqu'à la migration des adresses ext vers `.ext@beta.gouv.fr`.
 
 `npm run report:legacy-email-login` (lecture seule) compte les membres actifs pas encore migrés par catégorie. Avec `--list`, il liste ceux qui sont à risque à la coupure.
 
-Au déploiement de la PR, faire tourner `SESSION_SECRET` : les sessions ouvertes avant, par ProConnect sans MFA ou par email, restent sinon valides 7 jours. Au passage en `off`, les sessions ouvertes par email expirent au plus tard 24 h après la connexion. Pour les couper tout de suite, faire tourner `SESSION_SECRET`.
+Au déploiement, tous les membres sont déconnectés : les sessions ouvertes avant n'ont pas de `loginAt` et sont refusées par next-auth et par le middleware. Aucune rotation de `SESSION_SECRET` n'est nécessaire.
+
+Au passage en `off`, les sessions ouvertes par email expirent au plus tard 24 h après la connexion. Pour les couper tout de suite, faire tourner `SESSION_SECRET`.
 
 ## Données
 

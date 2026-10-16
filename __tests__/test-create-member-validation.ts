@@ -236,7 +236,9 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       username: newUser.username,
       onboarding: true,
     });
-    // try to do the action a second time
+    // try to do the action a second time : the mailbox job is still pending,
+    // pg-boss creates no second job with the same singletonKey
+    bossSendStub.resolves(null);
     try {
       await validateNewMember({ memberUuid: newUser.uuid });
     } catch (error) {
@@ -262,7 +264,10 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       (error as BusinessError).code.should.be.equals("userAlreadyValided");
     }
     // no second onboarding
-    bossSendStub.calledOnce.should.be.true;
+    bossSendStub.calledTwice.should.be.true;
+    bossSendStub.secondCall.args[2].singletonKey.should.equals(
+      bossSendStub.firstCall.args[2].singletonKey,
+    );
     getBossClientInstanceStub.restore();
   });
 });

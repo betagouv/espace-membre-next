@@ -13,6 +13,7 @@ import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { BusinessError } from "@/lib/error";
+import { withRetry } from "@/lib/withRetry";
 
 export async function sendNewMemberValidationEmail(
   data: SendNewMemberValidationEmailSchemaType,
@@ -68,16 +69,22 @@ export async function sendNewMemberValidationEmail(
       ),
     ) as string[];
 
-    await sendEmail({
-      toEmail: memberEmails,
-      type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
-      variables: {
-        startups: userStartups.map((startup) => userStartupToModel(startup)),
-        incubator: incubatorToModel(incubator),
-        userInfos: newMember,
-        validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
-      },
-    });
+    await withRetry(
+      () =>
+        sendEmail({
+          toEmail: memberEmails,
+          type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
+          variables: {
+            startups: userStartups.map((startup) =>
+              userStartupToModel(startup),
+            ),
+            incubator: incubatorToModel(incubator),
+            userInfos: newMember,
+            validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
+          },
+        }),
+      { operationName: "validation email" },
+    );
 
     sentCount++;
     console.log(`Validation email sent for new member ${newMember.fullname}`);
