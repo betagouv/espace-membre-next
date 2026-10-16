@@ -5,13 +5,6 @@ import { EmailStatusCode } from "@/models/member";
 // fiche that is not validated yet, or whose login address is not ready, must
 // not be entered that way.
 //
-// refused :
-//  - MEMBER_VALIDATION_WAITING : the incubator has not validated the fiche
-//  - EMAIL_CREATION_WAITING : the mailbox is being created
-//  - no primary email with EMAIL_UNSET (accepted, onboarding not started), with
-//    the legacy EMAIL_VERIFICATION_WAITING (accepted before the mailbox was
-//    created at validation) or with no status at all
-//
 // every other status logs in, EMAIL_SUSPENDED included (the expired-mission
 // check is done separately) : older statuses still exist on legacy fiches.
 export const isMemberReadyToLogin = ({

@@ -103,8 +103,7 @@ const oAuthErrors = {
     "Ta fiche n'est pas encore validée, ou ton adresse de connexion est en cours de création. Réessaie plus tard ou rapproche-toi de ton incubateur.",
 };
 
-// development only : stands in for ProConnect, which is not reachable from a
-// local setup. The server only accepts it under `next dev` (see fakeProConnect.ts)
+// development only, see fakeProConnect.ts
 const FakeProConnectForm = ({ next }: { next: string | null }) => {
   const [email, setEmail] = React.useState("");
   return (

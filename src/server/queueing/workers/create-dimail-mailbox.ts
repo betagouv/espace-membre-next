@@ -141,7 +141,6 @@ export async function createDimailMailboxForUser(
     });
     mailboxEmail = mailboxInfos.email;
 
-    // MAJ de la table dinum_emails
     // recorded right after the creation, so a retry does not create the mailbox again
     await db
       .insertInto("dinum_emails")
@@ -188,16 +187,8 @@ const getInvitationDelayMs = () => {
   return Number.isFinite(delay) && delay > 0 ? delay : 0;
 };
 
-/*
-
-onboarding d'un nouveau membre : crée la boite puis, seulement une fois la
-boite créée et après un délai de 10s, envoie l'invitation à se connecter via
-ProConnect sur cette nouvelle boite.
-
-idempotent : en cas de retry pg-boss (ex: échec d'envoi de l'invitation),
-la boite n'est pas recréée (sinon 409) et l'invitation n'est envoyée qu'une fois.
-
-*/
+// idempotent en cas de retry pg-boss : la boîte n'est pas recréée (409) et
+// l'invitation part une seule fois.
 export async function onboardNewMemberMailbox(userUuid: string) {
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
@@ -219,7 +210,6 @@ export async function onboardNewMemberMailbox(userUuid: string) {
     });
     mailboxJustCreated = true;
   } else {
-    // user is not onboarding anymore (already verified, suspended...)
     console.log(
       `Skip onboarding of ${dbUser.username}: status is ${dbUser.primary_email_status}`,
     );

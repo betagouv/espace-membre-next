@@ -9,12 +9,8 @@ import {
 
 export const FAKE_PROCONNECT_PROVIDER_ID = "fake-proconnect";
 
-// [IMPORTANT] development only : the ProConnect integration environment is not
-// reachable from a local setup, so `next dev` gets a login that simulates what
-// ProConnect returns (an email, nothing is checked).
-// NODE_ENV is "production" for every built app (production, staging, review
-// apps) : this can only be enabled by `next dev`.
-// set FAKE_PROCONNECT_LOGIN=false to disable it locally.
+// [IMPORTANT] next dev only : NODE_ENV is "production" in every built app.
+// FAKE_PROCONNECT_LOGIN=false disables it locally.
 export const isFakeProConnectEnabled = () =>
   process.env.NODE_ENV === "development" &&
   process.env.FAKE_PROCONNECT_LOGIN !== "false";

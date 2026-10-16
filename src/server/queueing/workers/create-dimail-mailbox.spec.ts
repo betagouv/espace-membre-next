@@ -373,27 +373,6 @@ describe("create-dimail-mail", () => {
     expect(mockUpdateTable.called).to.be.false;
   });
 
-  it("on retry, should not recreate a mailbox already recorded and should send the access link", async () => {
-    mockExistingMailbox.resolves({
-      email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-    });
-
-    const result = await createDimailMailboxForUser(userTestUuid);
-
-    expect(result).to.equal(`john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`);
-    expect(mockCreateMailbox.called).to.be.false;
-    expect(mockCreateMailboxCode.calledOnce).to.be.true;
-    expect(mockSendEmail.calledOnce).to.be.true;
-    expect(mockSendEmail.firstCall.args[0].variables).to.deep.equal({
-      email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-      webmailUrl: "https://messagerie.numerique.gouv.fr/code/test-access-code",
-      resend: false,
-    });
-    expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
-      "EMAIL_ACTIVE",
-    );
-  });
-
   describe("onboardNewMemberMailbox", () => {
     const onboardingUser = {
       uuid: userTestUuid,
@@ -423,17 +402,24 @@ describe("create-dimail-mail", () => {
     });
 
     it("waits before sending the invitation to a mailbox that was just created", async () => {
-      process.env.DIMAIL_INVITATION_DELAY_MS = "60";
+      process.env.DIMAIL_INVITATION_DELAY_MS = "10000";
       mockGetUserBasicInfo.resolves(onboardingUser);
-
-      const start = Date.now();
-      await onboardNewMemberMailbox(userTestUuid);
+      const clock = sinon.useFakeTimers({ toFake: ["setTimeout"] });
+      try {
+        const onboarding = onboardNewMemberMailbox(userTestUuid);
+        await clock.tickAsync(9_999);
+        expect(mockSendInvitation.called).to.be.false;
+        await clock.tickAsync(1);
+        await onboarding;
+      } finally {
+        clock.restore();
+      }
 
       expect(mockSendInvitation.calledOnce).to.be.true;
-      expect(Date.now() - start).to.be.at.least(55);
     });
 
-    it("does not wait when the mailbox was created by a previous attempt", async () => {
+    it("on retry, neither recreates the mailbox nor waits, and sends the invitation once", async () => {
+      mockCreateMailbox.resetHistory();
       process.env.DIMAIL_INVITATION_DELAY_MS = "5000";
       mockGetUserBasicInfo.resolves({
         ...onboardingUser,
@@ -444,6 +430,7 @@ describe("create-dimail-mail", () => {
       const start = Date.now();
       await onboardNewMemberMailbox(userTestUuid);
 
+      expect(mockCreateMailbox.called).to.be.false;
       expect(mockSendInvitation.calledOnce).to.be.true;
       expect(Date.now() - start).to.be.below(1000);
     });
@@ -483,23 +470,15 @@ describe("create-dimail-mail", () => {
 
       expect(mockCreateMailbox.calledOnce).to.be.true;
       expect(mockSendEmail.calledTwice).to.be.true;
+      expect(mockSendEmail.secondCall.args[0].variables).to.deep.equal({
+        email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        webmailUrl:
+          "https://messagerie.numerique.gouv.fr/code/test-access-code",
+        resend: false,
+      });
       expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
         "EMAIL_VERIFICATION_WAITING",
       );
-      expect(mockSendInvitation.calledOnce).to.be.true;
-    });
-
-    it("on retry, does not recreate an existing mailbox and sends the invitation once", async () => {
-      mockCreateMailbox.resetHistory();
-      mockGetUserBasicInfo.resolves({
-        ...onboardingUser,
-        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-        primary_email_status: "EMAIL_VERIFICATION_WAITING",
-      });
-
-      await onboardNewMemberMailbox(userTestUuid);
-
-      expect(mockCreateMailbox.called).to.be.false;
       expect(mockSendInvitation.calledOnce).to.be.true;
     });
 

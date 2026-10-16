@@ -1,6 +1,4 @@
 // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
-// read only : counts the active members not migrated to ProConnect + MFA, by
-// what they need to migrate. --list prints the usernames of the at-risk ones.
 import { reportLegacyEmailLoginPopulation } from "@/lib/auth/legacyEmailLogin/population";
 
 const AT_RISK = ["ext_without_alias", "no_primary_email", "other"];

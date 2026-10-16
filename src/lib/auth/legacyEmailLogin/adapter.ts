@@ -5,7 +5,6 @@ import { db } from "@/lib/kysely";
 
 import { isLegacyEmailLoginEnabled } from "./config";
 
-// taken as is from the former pgAdpter.ts
 const createVerificationToken = async ({
   identifier,
   expires,
@@ -31,7 +30,7 @@ const createVerificationToken = async ({
   return createdToken;
 };
 
-//Return verification token from the database and delete it so it cannot be used again.
+// single use : the token is deleted once read
 const useVerificationToken = async ({
   identifier,
   token,
@@ -52,7 +51,6 @@ const useVerificationToken = async ({
       throw new Error("Error fetching verification token");
     });
 
-  // If a token is found, delete it
   if (rows.length > 0) {
     await db
       .deleteFrom("verification_tokens")
@@ -64,14 +62,12 @@ const useVerificationToken = async ({
         throw new Error("Error deleting verification token");
       });
 
-    // Return the details of the deleted token
     return {
       expires: rows[0].expires,
       identifier: rows[0].identifier,
       token: rows[0].token,
     };
   } else {
-    // Handle the case where no token is found or it's already expired
     throw new Error(`No valid token found: ${token}`);
   }
 };

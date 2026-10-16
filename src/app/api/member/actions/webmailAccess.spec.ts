@@ -40,11 +40,19 @@ describe("resend webmail access", () => {
         id_token: acr ? jwt.sign({ acr }, "test") : undefined,
       },
     } as any);
+  const addMailbox = (email = mailbox, status = "enabled") =>
+    db
+      .insertInto("dinum_emails")
+      .values({ email, type: "mailbox", status, user_id: uuid })
+      .execute();
+  const resend = (expected = member.secondary_email) =>
+    actions.safeResendWebmailAccess(member.username, expected);
 
   beforeEach(async () => {
     sinon.stub(config, "ESPACE_MEMBRE_ADMIN").value([admin]);
     sendWebmailAccessCodeStub.reset();
     sendWebmailAccessCodeStub.resolves();
+    asUser(admin, "eidas1-mfa");
     await createData({ users: [member] });
     uuid = (
       await db
@@ -53,15 +61,6 @@ describe("resend webmail access", () => {
         .where("username", "=", member.username)
         .executeTakeFirstOrThrow()
     ).uuid;
-    await db
-      .insertInto("dinum_emails")
-      .values({
-        email: mailbox,
-        type: "mailbox",
-        status: "enabled",
-        user_id: uuid,
-      })
-      .execute();
   });
 
   afterEach(async () => {
@@ -75,11 +74,8 @@ describe("resend webmail access", () => {
   });
 
   it("should send a new access link to the personal email, traced", async () => {
-    asUser(admin, "eidas1-mfa");
-    const res = await actions.safeResendWebmailAccess(
-      member.username,
-      member.secondary_email,
-    );
+    await addMailbox();
+    const res = await resend();
     expect(res.success, res.message).to.be.true;
     expect(sendWebmailAccessCodeStub.firstCall.args[0]).to.deep.equal({
       mailboxEmail: mailbox,
@@ -97,113 +93,38 @@ describe("resend webmail access", () => {
   });
 
   it("should refuse a non admin and an admin without MFA", async () => {
+    await addMailbox();
     asUser(member.username, "eidas1-mfa");
-    expect(
-      (
-        await actions.safeResendWebmailAccess(
-          member.username,
-          member.secondary_email,
-        )
-      ).success,
-    ).to.be.false;
+    expect((await resend()).success).to.be.false;
     asUser(admin, "eidas1");
-    const res = await actions.safeResendWebmailAccess(
-      member.username,
-      member.secondary_email,
-    );
+    const res = await resend();
     expect(res.success).to.be.false;
     expect(res.message).to.include("ProConnect");
     expect(sendWebmailAccessCodeStub.notCalled).to.be.true;
   });
 
   it("should refuse a member without personal email", async () => {
+    await addMailbox();
     await db
       .updateTable("users")
       .set({ secondary_email: null })
       .where("uuid", "=", uuid)
       .execute();
-    asUser(admin, "eidas1-mfa");
-    const res = await actions.safeResendWebmailAccess(
-      member.username,
-      member.secondary_email,
-    );
+    const res = await resend();
     expect(res.success).to.be.false;
     expect(res.message).to.include("email secondaire");
   });
-});
-
-describe("resend webmail access refusals", () => {
-  const admin = "webmail.admin2";
-  const member = {
-    username: "webmail.other",
-    secondary_email: "webmail.other@example.com",
-    missions: [
-      {
-        start: new Date("2020-01-01"),
-        end: new Date("2099-01-01"),
-        status: "independent",
-        employer: "octo",
-      },
-    ],
-  };
-  const getServerSessionStub = sinon.stub();
-  const sendStub = sinon.stub();
-  const actions = proxyquire("./webmailAccess", {
-    "next-auth/next": { getServerSession: getServerSessionStub },
-    "@/server/queueing/workers/create-dimail-mailbox": {
-      sendWebmailAccessCode: sendStub,
-    },
-  });
-  let uuid: string;
-  const addMailbox = (email: string, status = "enabled") =>
-    db
-      .insertInto("dinum_emails")
-      .values({ email, type: "mailbox", status, user_id: uuid })
-      .execute();
-  const resend = (expected = member.secondary_email) =>
-    actions.safeResendWebmailAccess(member.username, expected);
-
-  beforeEach(async () => {
-    sinon.stub(config, "ESPACE_MEMBRE_ADMIN").value([admin]);
-    sendStub.reset();
-    sendStub.resolves();
-    getServerSessionStub.resolves({
-      user: {
-        id: admin,
-        provider: "proconnect",
-        id_token: jwt.sign({ acr: "eidas1-mfa" }, "test"),
-      },
-    } as any);
-    await createData({ users: [member] });
-    uuid = (
-      await db
-        .selectFrom("users")
-        .select("uuid")
-        .where("username", "=", member.username)
-        .executeTakeFirstOrThrow()
-    ).uuid;
-  });
-
-  afterEach(async () => {
-    sinon.restore();
-    await db.deleteFrom("dinum_emails").where("user_id", "=", uuid).execute();
-    await db
-      .deleteFrom("events")
-      .where("action_on_username", "=", member.username)
-      .execute();
-    await deleteData({ users: [member] });
-  });
 
   it("should refuse when the personal email changed since the admin confirmed it", async () => {
-    await addMailbox("webmail.other@beta.gouv.fr");
+    await addMailbox();
     const res = await resend("ancien@example.com");
     expect(res.success).to.be.false;
     expect(res.message).to.include("a changé");
-    expect(sendStub.notCalled).to.be.true;
+    expect(sendWebmailAccessCodeStub.notCalled).to.be.true;
   });
 
   it("should refuse a disabled mailbox and a namesake's mailbox", async () => {
-    await addMailbox("webmail.other@beta.gouv.fr", "disabled");
+    await addMailbox("webmail.member@beta.gouv.fr", "disabled");
     let res = await resend();
     expect(res.message).to.include("désactivée");
     await db.deleteFrom("dinum_emails").where("user_id", "=", uuid).execute();
@@ -211,11 +132,11 @@ describe("resend webmail access refusals", () => {
     res = await resend();
     expect(res.success).to.be.false;
     expect(res.message).to.include("reliée");
-    expect(sendStub.notCalled).to.be.true;
+    expect(sendWebmailAccessCodeStub.notCalled).to.be.true;
   });
 
   it("should refuse a second link within 5 minutes, and record the destination", async () => {
-    await addMailbox("webmail.other@beta.gouv.fr");
+    await addMailbox();
     expect((await resend()).success).to.be.true;
     const res = await resend();
     expect(res.success).to.be.false;
@@ -232,7 +153,7 @@ describe("resend webmail access refusals", () => {
   });
 
   it("should refuse a member without a current mission", async () => {
-    await addMailbox("webmail.other@beta.gouv.fr");
+    await addMailbox();
     await db
       .updateTable("missions")
       .set({ end: new Date("2021-01-01") })

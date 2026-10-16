@@ -60,9 +60,7 @@ export const findUsersByLoginEmail = async (
     .execute();
 };
 
-// Returns the users already using this email in any field (primary, secondary
-// or dinum_emails). Used to refuse inviting a member with an email that
-// already belongs to someone else.
+// users already using this email in any field (primary, secondary or dinum_emails)
 export const findUsersUsingEmail = async (
   email: string | null | undefined,
   { excludeUserUuid }: { excludeUserUuid?: string } = {},

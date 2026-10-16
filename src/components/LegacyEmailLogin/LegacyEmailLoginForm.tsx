@@ -9,7 +9,6 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { signIn } from "next-auth/react";
 
 // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
-// login form taken from the former LoginPage (before ProConnect only)
 
 const oAuthErrors = {
   UnknownMember:
