@@ -89,11 +89,8 @@ async function getWebmailAccessTarget(username: string) {
   };
 }
 
-// A new member's webmail access code (3 uses) is only sent once, at creation :
-// when it is lost or used up, the support sends a new one to the personal
-// email. It gives access to the mailbox, hence the MFA requirement.
-// expectedSecondaryEmail is the address the admin confirmed : it is checked
-// again here, the member may have changed it since the page was loaded
+// requires MFA : the code gives access to the mailbox. expectedSecondaryEmail
+// is checked again, it may have changed since the admin loaded the page.
 async function resendWebmailAccess(
   username: string,
   expectedSecondaryEmail: string,

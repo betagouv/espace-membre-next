@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
 
 // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
-// magic link tests taken from the former login.spec.ts
 
 test.skip(
   process.env.LEGACY_EMAIL_LOGIN_MODE !== "transition",

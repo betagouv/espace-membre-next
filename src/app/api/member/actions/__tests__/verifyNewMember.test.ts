@@ -159,7 +159,12 @@ describe("verifyNewMember", () => {
   });
 
   it("should only save the profile and activate the account", async () => {
-    await verifyNewMember(baseMemberData);
+    const result = await verifyNewMember(baseMemberData);
+
+    expect(result).to.deep.equal({
+      success: true,
+      message: "L'utilisateur a bien été vérifié",
+    });
 
     expect(updateMemberStub.calledOnce).to.be.true;
     const [, uuid, extraParams, createdBy] = updateMemberStub.firstCall.args;
@@ -173,14 +178,5 @@ describe("verifyNewMember", () => {
     expect(extraParams).to.not.have.property("secondary_email");
     // no mailbox creation from here
     expect(getBossClientInstanceStub.called).to.be.false;
-  });
-
-  it("should return success message", async () => {
-    const result = await verifyNewMember(baseMemberData);
-
-    expect(result).to.deep.equal({
-      success: true,
-      message: "L'utilisateur a bien été vérifié",
-    });
   });
 });

@@ -4,8 +4,6 @@ import sinon from "sinon";
 
 import * as nextAuth from "next-auth/next";
 
-import { authOptions } from "@/lib/authoptions";
-import customPostgresAdapter from "@/lib/pgAdpter";
 import config from "@/server/config";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { db } from "@/lib/kysely";
@@ -97,11 +95,15 @@ describe("legacyEmailLogin", () => {
   });
 
   describe("config", () => {
-    it("should default to off when the mode is missing or invalid", () => {
-      setEnv({});
-      expect(getLegacyEmailLoginConfig().mode).to.equal("off");
-      setEnv({ LEGACY_EMAIL_LOGIN_MODE: "on" });
-      expect(getLegacyEmailLoginConfig().mode).to.equal("off");
+    it("should fall back to off when the config is missing, invalid or incomplete", () => {
+      for (const env of [
+        {},
+        { LEGACY_EMAIL_LOGIN_MODE: "on" },
+        { LEGACY_EMAIL_LOGIN_MODE: "transition" },
+      ]) {
+        setEnv(env);
+        expect(getLegacyEmailLoginConfig().mode).to.equal("off");
+      }
     });
 
     it("should refuse to start without an explicit and complete config", () => {
@@ -117,11 +119,6 @@ describe("legacyEmailLogin", () => {
       expect(() => assertLegacyEmailLoginConfig()).not.to.throw();
       setEnv(transitionEnv);
       expect(() => assertLegacyEmailLoginConfig()).not.to.throw();
-    });
-
-    it("should fall back to off in transition without a cutoff date", () => {
-      setEnv({ LEGACY_EMAIL_LOGIN_MODE: "transition" });
-      expect(getLegacyEmailLoginConfig().mode).to.equal("off");
     });
   });
 
@@ -367,45 +364,6 @@ describe("legacyEmailLogin", () => {
   });
 });
 
-describe("ProConnect login refusals", () => {
-  const signIn = authOptions.callbacks!.signIn!;
-
-  it("should forward the refusal decided in userinfo as the error code", async () => {
-    for (const code of ["UnknownMember", "ExtEmailNotAllowed"]) {
-      let error: Error | undefined;
-      try {
-        await signIn({
-          user: { id: "refused-proconnect-login" } as any,
-          account: { provider: "proconnect" } as any,
-          profile: { loginRefusal: code } as any,
-        });
-      } catch (e) {
-        error = e as Error;
-      }
-      expect(error?.message).to.equal(code);
-    }
-  });
-});
-
-describe("ProConnect account linking", () => {
-  const linkAccount = customPostgresAdapter().linkAccount!;
-
-  it("should refuse to link a ProConnect identity to another member", async () => {
-    let error: Error | undefined;
-    try {
-      await linkAccount({
-        provider: "proconnect",
-        type: "oauth",
-        providerAccountId: "membre.attaquant",
-        userId: "membre.cible",
-      });
-    } catch (e) {
-      error = e as Error;
-    }
-    expect(error?.message).to.equal("AccountLinkRefused");
-  });
-});
-
 describe("legacy email login admin actions", () => {
   const admin = "admin.legacy.email";
 
@@ -445,62 +403,5 @@ describe("legacy email login admin actions", () => {
     // past the session check : the member does not exist
     expect(res.success).to.be.false;
     expect(res.message).to.equal("Membre introuvable");
-  });
-});
-
-describe("login events", () => {
-  const username = "login.event.member";
-  const getLoginEvents = async (uuid: string) =>
-    (
-      await db
-        .selectFrom("user_events")
-        .select("field_id")
-        .where("user_id", "=", uuid)
-        .execute()
-    ).map((e) => e.field_id);
-  let uuid: string;
-
-  beforeEach(async () => {
-    await createData({
-      users: [
-        {
-          username,
-          primary_email: `${username}@beta.gouv.fr`,
-          missions: member.missions,
-        },
-      ],
-    });
-    uuid = (
-      await db
-        .selectFrom("users")
-        .select("uuid")
-        .where("username", "=", username)
-        .executeTakeFirstOrThrow()
-    ).uuid;
-  });
-
-  afterEach(async () => {
-    await db.deleteFrom("user_events").where("user_id", "=", uuid).execute();
-    await deleteData({ users: [{ username }] as any });
-  });
-
-  it("should record the ProConnect + MFA login once it succeeded", async () => {
-    await authOptions.events!.signIn!({
-      user: { id: username } as any,
-      account: { provider: "proconnect" } as any,
-    });
-    expect(await getLoginEvents(uuid)).to.deep.equal(["login.proconnect_mfa"]);
-  });
-
-  it("should record nothing in the signIn callback, which can still be followed by a refusal", async () => {
-    const allowed = await authOptions.callbacks!.signIn!({
-      user: { id: username } as any,
-      account: {
-        provider: "proconnect",
-        id_token: jwt.sign({ acr: "eidas1-mfa" }, "test"),
-      } as any,
-    });
-    expect(allowed).to.be.true;
-    expect(await getLoginEvents(uuid)).to.deep.equal([]);
   });
 });

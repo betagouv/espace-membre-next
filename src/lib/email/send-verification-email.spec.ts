@@ -2,6 +2,8 @@ import { expect } from "chai";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
+import { withRetry } from "@/lib/withRetry";
+
 const mockGetUserBasicInfo = sinon.stub();
 const mockSendEmail = sinon.stub();
 const mockAddEvent = sinon.stub();
@@ -13,6 +15,10 @@ const { sendNewMemberVerificationEmail } = proxyquire(
     "@/server/config/email.config": { sendEmail: mockSendEmail },
     "@/lib/events": { addEvent: mockAddEvent },
     "@/lib/url": { getBaseUrl: () => "https://espace-membre.test" },
+    "@/lib/withRetry": {
+      withRetry: (operation, options) =>
+        withRetry(operation, { ...options, baseDelayMs: 0 }),
+    },
   },
 );
 
@@ -89,5 +95,24 @@ describe("sendNewMemberVerificationEmail", () => {
       expect(e.message).to.include("primary email");
     }
     expect(mockSendEmail.called).to.be.false;
+  });
+
+  it("retries the sending and records the invitation once", async () => {
+    const consoleErrorStub = sinon.stub(console, "error");
+    mockGetUserBasicInfo.resolves({
+      username: "ada.lovelace",
+      fullname: "Ada Lovelace",
+      primary_email: "ada@interieur.gouv.fr",
+    });
+    mockSendEmail.onFirstCall().rejects(new Error("brevo 503"));
+
+    try {
+      await sendNewMemberVerificationEmail({ userId: USER_UUID });
+    } finally {
+      consoleErrorStub.restore();
+    }
+
+    expect(mockSendEmail.calledTwice).to.be.true;
+    expect(mockAddEvent.calledOnce).to.be.true;
   });
 });

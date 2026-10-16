@@ -11,12 +11,8 @@ L'espace membre de l’incubateur
   - accès aux outils (sentry, matomo)
 - exploration de la communauté
 - afficher les formations et évènements
-- connexion uniquement via ProConnect, avec l'adresse principale du membre
-  (boîte `@beta.gouv.fr` ou adresse du service public). L'email personnel
-  (`secondary_email`) ne permet pas de se connecter. La double authentification
-  est exigée (claim `acr` essentiel, niveaux `eidas0-mfa`, `eidas1-mfa`,
-  `eidas2`, `eidas3`, vérifié dans l'`id_token` au retour). Aide : page
-  publique `/support`
+- connexion via ProConnect avec double authentification, aide sur `/support`.
+  Personas, parcours et règles de l'email principal : [connexion.md](connexion.md)
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 
@@ -74,16 +70,9 @@ npm run dev-import-from-www # Ajoute les données du site beta.gouv.fr (utilisat
 L'application est disponible sur http://localhost:8100. Les emails envoyés par
 l'application sont visibles sur le maildev http://localhost:1080.
 
-En développement (`next dev`), l'environnement d'intégration ProConnect n'est
-pas utilisable : la page `/login` propose une **connexion ProConnect simulée**.
-On y saisit l'adresse principale d'un membre présent en base (pas son email
-personnel) et on est connecté sans mot de passe, avec les mêmes règles que la
-vraie connexion (un seul membre correspondant, mission en cours, fiche validée
-et adresse de connexion prête). Ce mode
-n'existe que quand `NODE_ENV=development` : il est absent de toute application
-buildée (production, staging, review apps). `FAKE_PROCONNECT_LOGIN=false` le
-désactive en local, par exemple pour tester le vrai ProConnect avec les
-variables `PRO_CONNECT_*`.
+En développement (`next dev` uniquement), la page `/login` propose une
+**connexion ProConnect simulée** : saisir l'adresse principale d'un membre en
+base. `FAKE_PROCONNECT_LOGIN=false` la désactive.
 
 ### Lancer les tests
 
@@ -118,14 +107,8 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 | `0 * * * *`        | `npm run job:recreate-email-if-user-active` | Recrée/réactive l'email des comptes actifs repassés en `EMAIL_SUSPENDED` |
 
 Un seul job reste géré par [pg-boss](https://github.com/timgit/pg-boss), déclenché
-à la demande (et non planifié) : `create-dimail-mailbox`, qui crée une boite mail
-Dimail pour un utilisateur. Il est déclenché à l'arrivée d'un membre (validation
-de la fiche, ou création par une personne autorisée) avec `onboarding: true` :
-une fois la boite créée, et après 10 secondes d'attente (le temps que la boite
-accepte le courrier, réglable via `DIMAIL_INVITATION_DELAY_MS`), il envoie sur
-cette boite l'invitation à se connecter via ProConnect.
-En cas de relance (retry), la boite n'est pas recréée et l'invitation n'est
-envoyée qu'une fois.
+à la demande : `create-dimail-mailbox`, qui crée une boite mail Dimail (cf
+[Arrivée](#arrivée-onboarding)).
 
 Les autres tâches de maintenance (relances avant/après mission, retrait des comptes GitHub/Matomo/Sentry...) sont gérées par des workflows n8n.
 
@@ -147,7 +130,7 @@ flowchart TD
 
     subgraph creation["1 - Création de la fiche (membre connecté)"]
         A["Formulaire de création :<br/>identité, mission(s), email personnel"] --> B{"Email valide ?"}
-        B -- "@beta.gouv.fr, email d'admin<br/>ou email déjà utilisé" --> KO["Refusé"]:::ko
+        B -- "@beta.gouv.fr, @ext.beta.gouv.fr,<br/>email d'admin ou email déjà utilisé" --> KO["Refusé"]:::ko
         B -- oui --> C["createMember :<br/>création user + missions<br/>événement MEMBER_CREATED"]
         C --> D{"Créateur admin ou membre<br/>de l'équipe de l'incubateur ?"}
     end
@@ -190,40 +173,13 @@ flowchart TD
 Les nœuds arrondis sont les valeurs de `primary_email_status`, les
 parallélogrammes les emails envoyés.
 
-1. Une fiche membre est créée par un membre de la communauté, avec une
-   première mission et l'email personnel du nouveau membre (une adresse
-   `@beta.gouv.fr` ou un email déjà utilisé sont refusés).
-2. L'incubateur valide la fiche (statut `MEMBER_VALIDATION_WAITING`). Cette
-   étape est sautée si la personne qui crée la fiche est admin ou membre de
-   l'équipe de l'incubateur.
-3. La fiche acceptée passe en `EMAIL_UNSET` (pas encore d'adresse de
-   connexion) et l'arrivée démarre (`startMemberOnboarding`). Dans tous les cas (fiche
-   validée par l'incubateur ou validée d'office à la création), un email
-   annonce ensuite l'arrivée aux membres actifs des produits du nouveau
-   membre ; un échec de cette annonce ne bloque pas l'arrivée. Si l'arrivée n'a
-   pas pu démarrer (ex : file de jobs indisponible), rouvrir
-   `/community/<username>/validate` la relance.
-   - email personnel : une adresse `@beta.gouv.fr` est créée
-     via Dimail (statut `EMAIL_CREATION_WAITING`). Le nom est
-     `prenom.nom` pour les agents publics (`legal_status`, ou à défaut statut
-     `admin` de la dernière mission), `prenom.nom.ext` sinon. Les
-     attributaires (domaine « Attributaire » ou type de membre
-     « attributaire ») ont toujours une adresse en `.ext`. Un lien
-     d'accès temporaire au webmail (code d'invitation Dimail, sans mot de
-     passe) est envoyé sur l'email personnel ;
-   - email du service public : cet email devient l'adresse principale, pas de
-     nouvelle boite.
-
-   Seul l'email compte : les attributaires suivent le même parcours que les
-   autres membres externes (boîte `@beta.gouv.fr` si leur email n'est pas celui
-   d'un service public).
-4. Une fois l'adresse principale prête (statut `EMAIL_VERIFICATION_WAITING`), une
-   invitation à se connecter **via ProConnect** est envoyée **sur cette adresse
-   principale** (sans lien de connexion) : le membre la trouve en ouvrant sa
-   nouvelle boîte pour la première fois. L'email personnel ne reçoit que le
-   lien d'accès à la boîte.
-5. Le membre se connecte avec ProConnect, puis vérifie/complète ses informations
-   (page `/verify`, statut `EMAIL_ACTIVE`).
+- Nom de la boîte créée : `prenom.nom` pour les agents publics
+  (`legal_status`, ou à défaut statut `admin` de la dernière mission),
+  `prenom.nom.ext` sinon. Les attributaires (domaine « Attributaire » ou type
+  de membre « attributaire ») ont toujours une adresse en `.ext`.
+- L'invitation ProConnect et l'email de validation sont réessayés 5 fois. Si
+  l'arrivée reste bloquée (job non créé ou en échec, invitation jamais
+  partie), rouvrir `/community/<username>/validate` la relance.
 
 ### Départ (offboarding)
 

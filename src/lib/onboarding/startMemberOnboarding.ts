@@ -2,39 +2,17 @@
 // action. Callers (createMember, validateNewMember) check authorizations first.
 
 import { findUsersUsingEmail } from "@/lib/auth/findUsersByLoginEmail";
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
+import { getLastEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { BusinessError } from "@/lib/error";
 import { isPublicServiceEmail } from "@/lib/utils";
+import { EventCode } from "@/models/actionEvent";
 import { EmailStatusCode } from "@/models/member";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
-
-/*
-
-démarre l'arrivée d'un membre accepté (validé par l'incubateur ou créé par
-une personne autorisée), en statut EMAIL_UNSET sans email primaire :
-
- - email perso : passe en EMAIL_CREATION_WAITING et crée une boite
-   @beta.gouv.fr via le worker create-dimail-mailbox, qui passera en
-   EMAIL_VERIFICATION_WAITING et enverra l'invitation ProConnect sur la nouvelle
-   boite une fois celle-ci créée
- - email service public : cet email devient aussi l'email primaire, le statut
-   passe en EMAIL_VERIFICATION_WAITING et l'invitation ProConnect y est envoyée
-   tout de suite
-
-seul l'email compte : le domaine du membre (attributaire compris) ne change rien.
-
-EMAIL_VERIFICATION_WAITING signifie donc toujours : adresse de connexion prête,
-invitation envoyée, en attente de la connexion du membre.
-
-idempotent : ne fait rien si l'arrivée a déjà été démarrée.
-
-si le job de création de boite ne peut pas être mis en file, le statut est
-remis à EMAIL_UNSET : l'arrivée peut alors être relancée (cf validateNewMember).
-
-*/
 
 // statuses of an accepted member whose onboarding has not started, always
 // combined with "no primary email". EMAIL_VERIFICATION_WAITING is the legacy
@@ -44,6 +22,22 @@ export const ONBOARDING_NOT_STARTED_STATUSES = [
   EmailStatusCode.EMAIL_VERIFICATION_WAITING,
 ];
 
+async function enqueueOnboardingMailboxJob(userUuid: string, username: string) {
+  const bossClient = await getBossClientInstance();
+  return bossClient.send(
+    createDimailMailboxTopic,
+    { userUuid, username, onboarding: true },
+    {
+      retryLimit: 5,
+      retryBackoff: true,
+      // no new job while one with this key is waiting or running
+      singletonKey: `onboarding-mailbox-${userUuid}`,
+    },
+  );
+}
+
+// idempotent. When the mailbox job cannot be enqueued, the status goes back to
+// EMAIL_UNSET so the onboarding can be resumed (validateNewMember).
 export async function startMemberOnboarding(userUuid: string) {
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
@@ -71,18 +65,9 @@ export async function startMemberOnboarding(userUuid: string) {
     }
     // the ProConnect invitation is sent by the worker, once the mailbox exists
     try {
-      const bossClient = await getBossClientInstance();
-      const jobId = await bossClient.send(
-        createDimailMailboxTopic,
-        {
-          userUuid,
-          username: dbUser.username,
-          onboarding: true,
-        },
-        {
-          retryLimit: 5,
-          retryBackoff: true,
-        },
+      const jobId = await enqueueOnboardingMailboxJob(
+        userUuid,
+        dbUser.username,
       );
       if (!jobId) {
         throw new Error(
@@ -139,4 +124,44 @@ export async function startMemberOnboarding(userUuid: string) {
     return;
   }
   await sendNewMemberVerificationEmail({ userId: userUuid });
+}
+
+// resumes an onboarding stopped by a failure (job not enqueued, mailbox job
+// failed for good, invitation not sent). Returns false when there is nothing
+// to resume, a mailbox job still pending included. The mailbox job is
+// idempotent, so enqueuing it again is safe.
+export async function resumeMemberOnboarding(
+  userUuid: string,
+): Promise<boolean> {
+  const dbUser = await getUserBasicInfo({ uuid: userUuid });
+  if (!dbUser) {
+    return false;
+  }
+  const status = dbUser.primary_email_status as EmailStatusCode;
+  if (!dbUser.primary_email) {
+    if (ONBOARDING_NOT_STARTED_STATUSES.includes(status)) {
+      await startMemberOnboarding(userUuid);
+      return true;
+    }
+    if (status === EmailStatusCode.EMAIL_CREATION_WAITING) {
+      return !!(await enqueueOnboardingMailboxJob(userUuid, dbUser.username));
+    }
+    return false;
+  }
+  if (status !== EmailStatusCode.EMAIL_VERIFICATION_WAITING) {
+    return false;
+  }
+  const invitationEvent = await getLastEvent(
+    dbUser.username,
+    EventCode.EMAIL_VERIFICATION_WAITING_SENT,
+  );
+  if (invitationEvent) {
+    return false;
+  }
+  if (dbUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`)) {
+    // the worker waits for the new mailbox to accept emails before inviting
+    return !!(await enqueueOnboardingMailboxJob(userUuid, dbUser.username));
+  }
+  await sendNewMemberVerificationEmail({ userId: userUuid });
+  return true;
 }

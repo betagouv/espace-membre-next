@@ -1,97 +1,139 @@
 import { expect } from "chai";
+import proxyquire from "proxyquire";
 import sinon from "sinon";
-import * as kyselyQueriesUsers from "@/lib/kysely/queries/users";
-import * as kyselyQueriesDimail from "@/lib/kysely/queries/dimail";
-import * as dimailClient from "@/lib/dimail/client";
-import rewire from "rewire";
-import { EmailStatusCode } from "@/models/member";
+
 import { db } from "@/lib/kysely";
-// load module via rewire so we can override its internal binding
-const recreateModule = rewire("./recreateEmailIfUserActive");
-const recreateEmailIfUserActive = recreateModule.__get__(
-  "recreateEmailIfUserActive",
-);
+import { Domaine, EmailStatusCode } from "@/models/member";
+import { createData, deleteData } from "__tests__/utils/fakeData";
 
 describe("recreateEmailIfUserActive", () => {
-  let getActiveUsersStub: sinon.SinonStub;
-  let getDimailEmailStub: sinon.SinonStub;
-  let patchMailboxStub: sinon.SinonStub;
-  let createDimailMailboxForUserStub: sinon.SinonStub;
-  let dbUpdateTableStub: sinon.SinonStub;
-
-  const fakeUser = {
-    uuid: "user-uuid",
-    username: "testuser",
-    primary_email: "test@beta.gouv.fr",
-    secondary_email: "test2@beta.gouv.fr",
-    primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+  const member = {
+    username: "recreate.member",
+    primary_email: "recreate.member@beta.gouv.fr",
+    secondary_email: "recreate.member@example.com",
+    domaine: Domaine.DEVELOPPEMENT,
+    missions: [
+      {
+        start: new Date("2020-01-01"),
+        end: new Date("2099-01-01"),
+        status: "independent",
+        employer: "octo",
+      },
+    ],
   };
+  let uuid: string;
+  let patchMailboxStub: sinon.SinonStub;
+  let createMailboxStub: sinon.SinonStub;
+  let recreateEmailIfUserActive: () => Promise<void>;
 
-  beforeEach(() => {
-    getActiveUsersStub = sinon
-      .stub(kyselyQueriesUsers, "getActiveUsers")
-      .returns({
-        where: sinon.stub().returnsThis(),
-        execute: sinon.stub().resolves([fakeUser]),
-      } as any);
+  const setPrimary = (primary_email: string) =>
+    db
+      .updateTable("users")
+      .set({
+        primary_email,
+        primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+      })
+      .where("uuid", "=", uuid)
+      .execute();
+  const addRow = (row: {
+    email: string;
+    type: string;
+    status?: string;
+    destination?: string;
+  }) =>
+    db
+      .insertInto("dinum_emails")
+      .values({ status: "disabled", ...row, user_id: uuid })
+      .execute();
+  const getStatus = async () =>
+    (
+      await db
+        .selectFrom("users")
+        .select("primary_email_status")
+        .where("uuid", "=", uuid)
+        .executeTakeFirstOrThrow()
+    ).primary_email_status;
 
-    getDimailEmailStub = sinon.stub(kyselyQueriesDimail, "getDimailEmail");
-    patchMailboxStub = sinon.stub(dimailClient, "patchMailbox").resolves();
-    // create a stub and inject it into the module under test
-    createDimailMailboxForUserStub = sinon.stub().resolves();
-    recreateModule.__set__(
-      "createDimailMailboxForUser",
-      createDimailMailboxForUserStub,
-    );
-    dbUpdateTableStub = sinon.stub(db, "updateTable").returns({
-      set: sinon.stub().returnsThis(),
-      where: sinon.stub().returnsThis(),
-      execute: sinon.stub().resolves(),
-    });
-
-    //sinon.stub(console, "error");
-    //sinon.stub(console, "log");
+  beforeEach(async () => {
+    patchMailboxStub = sinon.stub().resolves({ success: true });
+    createMailboxStub = sinon.stub().resolves();
+    recreateEmailIfUserActive = proxyquire("./recreateEmailIfUserActive", {
+      "@/lib/dimail/client": { patchMailbox: patchMailboxStub },
+      "../queueing/workers/create-dimail-mailbox": {
+        createDimailMailboxForUser: createMailboxStub,
+      },
+    }).recreateEmailIfUserActive;
+    await createData({ users: [member] });
+    uuid = (
+      await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", member.username)
+        .executeTakeFirstOrThrow()
+    ).uuid;
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     sinon.restore();
+    await db.deleteFrom("dinum_emails").where("user_id", "=", uuid).execute();
+    await deleteData({ users: [member] });
   });
 
-  it("should patch mailbox and update user if email exists in dinum_emails", async () => {
-    getDimailEmailStub.resolves(true);
-
+  it("should reactivate the mailbox an alias primary email points to, on its own domain", async () => {
+    await setPrimary("recreate.member@beta.gouv.fr");
+    await addRow({
+      email: "recreate.member@beta.gouv.fr",
+      type: "alias",
+      status: "enabled",
+      destination: "recreate.member@ext.beta.gouv.fr",
+    });
+    await addRow({
+      email: "recreate.member@ext.beta.gouv.fr",
+      type: "mailbox",
+    });
     await recreateEmailIfUserActive();
-
-    // expect(patchMailboxStub.calledOnce).to.be.true;
-    // expect(patchMailboxStub.firstCall.args[0]).to.deep.eq({
-    //   data: {
-    //     active: "yes",
-    //   },
-    //   domain_name: "test-opi-email.beta.gouv.fr",
-    //   user_name: "test",
-    // });
-    expect(dbUpdateTableStub.calledOnce).to.be.true;
-    expect(dbUpdateTableStub.firstCall.args[0]).to.deep.eq("users");
-    expect(createDimailMailboxForUserStub.notCalled).to.be.true;
+    expect(patchMailboxStub.calledOnce).to.be.true;
+    expect(patchMailboxStub.firstCall.args[0]).to.deep.equal({
+      domain_name: "ext.beta.gouv.fr",
+      user_name: "recreate.member",
+      data: { imap_active: "yes" },
+    });
+    expect(createMailboxStub.notCalled).to.be.true;
+    expect(await getStatus()).to.equal(EmailStatusCode.EMAIL_ACTIVE);
   });
 
-  it("should create mailbox if email does not exist in dinum_emails", async () => {
-    getDimailEmailStub.resolves(false);
-
+  it("should ignore rows removed from Dimail, and create a mailbox when none is left", async () => {
+    await setPrimary("recreate.member@beta.gouv.fr");
+    await addRow({
+      email: "recreate.member@beta.gouv.fr",
+      type: "mailbox",
+      status: "deleted",
+    });
     await recreateEmailIfUserActive();
-
     expect(patchMailboxStub.notCalled).to.be.true;
-    expect(dbUpdateTableStub.notCalled).to.be.true;
-    expect(createDimailMailboxForUserStub.calledOnceWith(fakeUser.uuid)).to.be
-      .true;
+    expect(createMailboxStub.calledWith(uuid)).to.be.true;
   });
 
-  it("should do nothing if no primary_email", async () => {
-    (getActiveUsersStub().execute as sinon.SinonStub).resolves([
-      { ...fakeUser, primary_email: null },
-    ]);
+  it("should reactivate a mailbox on the current domain first when the primary email is elsewhere, without creating one", async () => {
+    await setPrimary("recreate.member@ademe.gouv.fr");
+    await addRow({
+      email: "recreate.member.ext@ext.beta.gouv.fr",
+      type: "mailbox",
+    });
+    await addRow({ email: "recreate.member@beta.gouv.fr", type: "mailbox" });
     await recreateEmailIfUserActive();
-    expect(patchMailboxStub.notCalled).to.be.true;
-    expect(createDimailMailboxForUserStub.notCalled).to.be.true;
+    expect(patchMailboxStub.firstCall.args[0]).to.include({
+      domain_name: "beta.gouv.fr",
+      user_name: "recreate.member",
+    });
+    expect(createMailboxStub.notCalled).to.be.true;
+  });
+
+  it("should leave the member suspended when Dimail refuses the reactivation", async () => {
+    patchMailboxStub.resolves({ success: false });
+    await setPrimary("recreate.member@beta.gouv.fr");
+    await addRow({ email: "recreate.member@beta.gouv.fr", type: "mailbox" });
+    await recreateEmailIfUserActive();
+    expect(await getStatus()).to.equal(EmailStatusCode.EMAIL_SUSPENDED);
   });
 });

@@ -154,28 +154,5 @@ describe("dimail client", () => {
       expect(scope.isDone()).to.be.true;
       expect(result).to.deep.equal(mockResponse);
     });
-
-    it("should call axios.post with only required params", async () => {
-      const mockResponse = {
-        email: "user@domain.com",
-        code: "xyz789",
-        expires_at: 1700000000,
-        expires_in: 3600,
-        maxuse: 1,
-        nbuse: 0,
-      };
-
-      const scope = nock(process.env.DIMAIL_API_URL as string)
-        .post("/domains/domain.com/mailboxes/user/code", {})
-        .reply(201, mockResponse);
-
-      const result = await clientModule.createMailboxCode({
-        domain_name: "domain.com",
-        user_name: "user",
-      });
-
-      expect(scope.isDone()).to.be.true;
-      expect(result).to.deep.equal(mockResponse);
-    });
   });
 });

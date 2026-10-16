@@ -3,14 +3,17 @@ import sinon from "sinon";
 
 import * as findUsersLib from "@/lib/auth/findUsersByLoginEmail";
 import * as verificationEmailLib from "@/lib/email/send-verification-email";
+import * as eventsLib from "@/lib/events";
 import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
 import * as utilsLib from "@/lib/utils";
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { BusinessError } from "@/lib/error";
 import {
-  ONBOARDING_NOT_STARTED_STATUSES,
+  resumeMemberOnboarding,
   startMemberOnboarding,
 } from "@/lib/onboarding/startMemberOnboarding";
+import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import * as bossClient from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
@@ -23,6 +26,7 @@ describe("startMemberOnboarding", () => {
   let findUsersUsingEmailStub: sinon.SinonStub;
   let sendVerificationEmailStub: sinon.SinonStub;
   let bossSendStub: sinon.SinonStub;
+  let getLastEventStub: sinon.SinonStub;
   let updateSetStub: sinon.SinonStub;
   let updateWhereStub: sinon.SinonStub;
   let updateExecuteStub: sinon.SinonStub;
@@ -50,6 +54,7 @@ describe("startMemberOnboarding", () => {
     sendVerificationEmailStub = sinon
       .stub(verificationEmailLib, "sendNewMemberVerificationEmail")
       .resolves();
+    getLastEventStub = sinon.stub(eventsLib, "getLastEvent").resolves(null);
     bossSendStub = sinon.stub().resolves("job-id");
     sinon
       .stub(bossClient, "getBossClientInstance")
@@ -83,71 +88,50 @@ describe("startMemberOnboarding", () => {
       username: "ada.lovelace",
       onboarding: true,
     });
+    expect(bossSendStub.firstCall.args[2].singletonKey).to.equal(
+      `onboarding-mailbox-${USER_UUID}`,
+    );
     // the ProConnect invitation is sent by the worker once the mailbox exists
     expect(sendVerificationEmailStub.called).to.be.false;
   });
 
-  it("personal email: puts the status back when the mailbox job cannot be enqueued", async () => {
-    bossSendStub.rejects(new Error("pg-boss down"));
+  for (const [trigger, setup] of [
+    [
+      "cannot be enqueued",
+      () => bossSendStub.rejects(new Error("pg-boss down")),
+    ],
+    ["is not created by pg-boss", () => bossSendStub.resolves(null)],
+  ] as const) {
+    it(`personal email: puts the status back when the mailbox job ${trigger}`, async () => {
+      setup();
 
-    try {
-      await startMemberOnboarding(USER_UUID);
-      expect.fail("Should have thrown");
-    } catch (e: any) {
-      expect(e.message).to.equal("pg-boss down");
-    }
+      try {
+        await startMemberOnboarding(USER_UUID);
+        expect.fail("Should have thrown");
+      } catch (e: any) {
+        expect(e.message).to.match(/pg-boss down|mailbox job not created/);
+      }
 
-    expect(updateSetStub.calledTwice).to.be.true;
-    expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
-      EmailStatusCode.EMAIL_UNSET,
-    );
-    // only undoes its own transition
-    expect(
-      updateWhereStub.calledWith(
-        "primary_email_status",
-        "=",
-        EmailStatusCode.EMAIL_CREATION_WAITING,
-      ),
-    ).to.be.true;
-    expect(sendVerificationEmailStub.called).to.be.false;
-  });
+      expect(updateSetStub.calledTwice).to.be.true;
+      expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
+        EmailStatusCode.EMAIL_UNSET,
+      );
+      // only undoes its own transition
+      expect(
+        updateWhereStub.calledWith(
+          "primary_email_status",
+          "=",
+          EmailStatusCode.EMAIL_CREATION_WAITING,
+        ),
+      ).to.be.true;
+      expect(sendVerificationEmailStub.called).to.be.false;
+    });
+  }
 
-  it("personal email: puts the status back when pg-boss creates no job", async () => {
-    bossSendStub.resolves(null);
-
-    try {
-      await startMemberOnboarding(USER_UUID);
-      expect.fail("Should have thrown");
-    } catch (e: any) {
-      expect(e.message).to.contain("mailbox job not created");
-    }
-
-    expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
-      EmailStatusCode.EMAIL_UNSET,
-    );
-  });
-
-  it("only transitions an accepted member without primary email", async () => {
-    await startMemberOnboarding(USER_UUID);
-    expect(
-      updateWhereStub.calledWith(
-        "primary_email_status",
-        "in",
-        ONBOARDING_NOT_STARTED_STATUSES,
-      ),
-    ).to.be.true;
-    expect(updateWhereStub.calledWith("primary_email", "is", null)).to.be.true;
-  });
-
-  it("starts from EMAIL_UNSET, and from the legacy EMAIL_VERIFICATION_WAITING without primary email", () => {
-    expect(ONBOARDING_NOT_STARTED_STATUSES).to.have.members([
-      EmailStatusCode.EMAIL_UNSET,
-      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-    ]);
-  });
-
-  it("is a no-op when the onboarding already started", async () => {
+  it("is a no-op when the onboarding already started, whatever the email", async () => {
     updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
+    await startMemberOnboarding(USER_UUID);
+    isPublicServiceEmailStub.resolves(true);
     await startMemberOnboarding(USER_UUID);
     expect(bossSendStub.called).to.be.false;
     expect(sendVerificationEmailStub.called).to.be.false;
@@ -176,7 +160,7 @@ describe("startMemberOnboarding", () => {
     expect(sendVerificationEmailStub.calledAfter(updateExecuteStub)).to.be.true;
   });
 
-  it("attributaire with a personal email: gets a mailbox like any other external member", async () => {
+  it("attributaire: only the email decides, like any other member", async () => {
     getUserBasicInfoStub.resolves({
       ...baseUser,
       domaine: Domaine.ATTRIBUTAIRE,
@@ -187,25 +171,19 @@ describe("startMemberOnboarding", () => {
     expect(updateSetStub.firstCall.args[0].primary_email_status).to.equal(
       EmailStatusCode.EMAIL_CREATION_WAITING,
     );
-    expect(updateSetStub.firstCall.args[0].primary_email).to.be.undefined;
-    expect(bossSendStub.calledOnce).to.be.true;
-    expect(sendVerificationEmailStub.called).to.be.false;
-  });
 
-  it("attributaire with a public service email: that email becomes the primary email", async () => {
     isPublicServiceEmailStub.resolves(true);
     getUserBasicInfoStub.resolves({
       ...baseUser,
       domaine: Domaine.ATTRIBUTAIRE,
       secondary_email: "ada@interieur.gouv.fr",
     } as any);
-
     await startMemberOnboarding(USER_UUID);
 
-    expect(updateSetStub.firstCall.args[0].primary_email).to.equal(
+    expect(updateSetStub.secondCall.args[0].primary_email).to.equal(
       "ada@interieur.gouv.fr",
     );
-    expect(bossSendStub.called).to.be.false;
+    expect(bossSendStub.calledOnce).to.be.true;
     expect(sendVerificationEmailStub.calledOnce).to.be.true;
   });
 
@@ -227,10 +205,95 @@ describe("startMemberOnboarding", () => {
     expect(sendVerificationEmailStub.called).to.be.false;
   });
 
-  it("does nothing more for a public service member already onboarded", async () => {
-    isPublicServiceEmailStub.resolves(true);
-    updateExecuteStub.resolves({ numUpdatedRows: BigInt(0) });
-    await startMemberOnboarding(USER_UUID);
-    expect(sendVerificationEmailStub.called).to.be.false;
+  describe("resumeMemberOnboarding", () => {
+    const resumeWith = (user: Record<string, unknown>) => {
+      getUserBasicInfoStub.resolves({ ...baseUser, ...user } as any);
+      return resumeMemberOnboarding(USER_UUID);
+    };
+
+    it("starts an onboarding that never started, legacy status included", async () => {
+      expect(await resumeWith({})).to.be.true;
+      expect(
+        await resumeWith({
+          primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+        }),
+      ).to.be.true;
+      expect(updateSetStub.callCount).to.equal(2);
+      expect(bossSendStub.calledTwice).to.be.true;
+    });
+
+    it("enqueues the mailbox job again for a member stuck in EMAIL_CREATION_WAITING", async () => {
+      const resumed = await resumeWith({
+        primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
+      });
+
+      expect(resumed).to.be.true;
+      expect(updateSetStub.called).to.be.false;
+      expect(bossSendStub.calledOnce).to.be.true;
+      expect(bossSendStub.firstCall.args[1].onboarding).to.be.true;
+      expect(bossSendStub.firstCall.args[2].singletonKey).to.equal(
+        `onboarding-mailbox-${USER_UUID}`,
+      );
+    });
+
+    it("does nothing while the mailbox job is still pending", async () => {
+      bossSendStub.resolves(null);
+
+      const resumed = await resumeWith({
+        primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
+      });
+
+      expect(resumed).to.be.false;
+    });
+
+    it("sends the invitation that never left to a public service email", async () => {
+      const resumed = await resumeWith({
+        primary_email: "ada@interieur.gouv.fr",
+        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      });
+
+      expect(resumed).to.be.true;
+      expect(
+        getLastEventStub.calledWith(
+          "ada.lovelace",
+          EventCode.EMAIL_VERIFICATION_WAITING_SENT,
+        ),
+      ).to.be.true;
+      expect(sendVerificationEmailStub.calledOnceWith({ userId: USER_UUID })).to
+        .be.true;
+      expect(bossSendStub.called).to.be.false;
+    });
+
+    it("lets the mailbox job send the invitation that never left to a new mailbox", async () => {
+      const resumed = await resumeWith({
+        primary_email: `ada.lovelace.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      });
+
+      expect(resumed).to.be.true;
+      expect(bossSendStub.calledOnce).to.be.true;
+      expect(sendVerificationEmailStub.called).to.be.false;
+    });
+
+    it("does nothing once the invitation is sent or the member is active", async () => {
+      getLastEventStub.resolves({
+        action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
+      });
+      expect(
+        await resumeWith({
+          primary_email: "ada@interieur.gouv.fr",
+          primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+        }),
+      ).to.be.false;
+      expect(
+        await resumeWith({
+          primary_email: "ada@interieur.gouv.fr",
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        }),
+      ).to.be.false;
+      expect(bossSendStub.called).to.be.false;
+      expect(sendVerificationEmailStub.called).to.be.false;
+      expect(updateSetStub.called).to.be.false;
+    });
   });
 });

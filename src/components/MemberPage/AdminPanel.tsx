@@ -1,6 +1,7 @@
 import BlocConfigurerEmailPrincipal from "./Email/BlocConfigurerEmailPrincipal";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
 import { ResendWebmailAccess } from "./Email/ResendWebmailAccess";
+import { DinumEmailsAdmin } from "./Email/DinumEmailsAdmin";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
@@ -25,6 +26,7 @@ export const AdminPanel = ({
       <ResendWebmailAccess username={userInfos.username} />
       {/* legacy-email-login: remove with src/lib/auth/legacyEmailLogin */}
       <LegacyEmailLoginException username={userInfos.username} />
+      <DinumEmailsAdmin username={userInfos.username} />
       <br />
       <h3>Évènements</h3>
       <MemberEventList userId={userInfos.username} />

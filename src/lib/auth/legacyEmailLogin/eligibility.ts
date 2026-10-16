@@ -29,11 +29,8 @@ export const getLegacyEmailLoginException = async (userUuid: string) => {
   return exceptionUntil && exceptionUntil > new Date() ? exceptionUntil : null;
 };
 
-// - transition : members created before the cutoff date who never logged in
-//   with ProConnect + MFA. Once migrated, the magic link closes for them,
-//   otherwise it would remain a way around the MFA.
-// - exceptions : only members with an unexpired support exception
-// - off : nobody
+// once migrated to ProConnect + MFA, the magic link closes, otherwise it would
+// bypass the MFA
 export const canUseLegacyEmailLogin = async (user: {
   uuid: string;
   created_at: Date;

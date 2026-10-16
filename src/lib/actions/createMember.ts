@@ -31,7 +31,11 @@ import {
   MemberUniqueConstraintViolationError,
   withErrorHandling,
 } from "@/lib/error";
-import { findUsersUsingEmail } from "@/lib/auth/findUsersByLoginEmail";
+import {
+  LEGACY_EXT_DOMAIN,
+  findUsersUsingEmail,
+  isLegacyExtEmail,
+} from "@/lib/auth/findUsersByLoginEmail";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { startMemberOnboarding } from "@/lib/onboarding/startMemberOnboarding";
 
@@ -80,11 +84,15 @@ async function createMemberAction(input: createMemberSchemaType) {
   if (hasPublicServiceEmail && isAdminEmail(member.email)) {
     throw new AdminEmailNotAllowedError();
   }
-  // beta.gouv.fr mailboxes are only created by the platform
-  if (member.email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`)) {
+  // beta.gouv.fr mailboxes are only created by the platform, and ProConnect
+  // refuses the legacy ext.beta.gouv.fr ones
+  if (
+    member.email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`) ||
+    isLegacyExtEmail(member.email)
+  ) {
     throw new BusinessError(
       "betaEmailNotAllowed",
-      `Les adresses @${DIMAIL_MAILBOX_DOMAIN} sont créées par l'espace-membre : indique l'email personnel ou professionnel du nouveau membre.`,
+      `Les adresses @${DIMAIL_MAILBOX_DOMAIN} et @${LEGACY_EXT_DOMAIN} sont créées par l'espace-membre : indique l'email personnel ou professionnel du nouveau membre.`,
     );
   }
   if ((await findUsersUsingEmail(member.email)).length) {
@@ -170,12 +178,25 @@ async function createMemberAction(input: createMemberSchemaType) {
         Sentry.captureException(e);
       }
     } else {
-      await sendNewMemberValidationEmail(
-        SendNewMemberValidationEmailSchema.parse({
-          userId: dbUser.uuid,
-          incubator_id,
-        }),
-      );
+      try {
+        await sendNewMemberValidationEmail(
+          SendNewMemberValidationEmailSchema.parse({
+            userId: dbUser.uuid,
+            incubator_id,
+          }),
+        );
+      } catch (e) {
+        if (e instanceof BusinessError) throw e;
+        console.error(
+          `createMember: validation email failed for ${username}`,
+          e,
+        );
+        Sentry.captureException(e);
+        throw new BusinessError(
+          "validationEmailNotSent",
+          `La fiche de ${username} a été créée mais l'équipe d'animation n'a pas pu être prévenue. Ne recrée pas la fiche : demande à l'équipe d'animation de l'incubateur de la valider sur /community/${username}/validate.`,
+        );
+      }
     }
     revalidatePath("/community", "layout");
     const response: createMemberResponseSchemaType = {

@@ -8,6 +8,7 @@ import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { db } from "@/lib/kysely";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import { getBaseUrl } from "@/lib/url";
 import { isPublicServiceEmail } from "@/lib/utils";
@@ -42,6 +43,7 @@ const getProConnectLoginEmail = async (user: {
     .where("user_id", "=", user.uuid)
     .where("email", "ilike", `%@${DIMAIL_MAILBOX_DOMAIN}`)
     .where("email", "not ilike", `%@${LEGACY_EXT_DOMAIN}`)
+    .where(isLive)
     .orderBy("email")
     .executeTakeFirst();
   return alias?.email ?? null;

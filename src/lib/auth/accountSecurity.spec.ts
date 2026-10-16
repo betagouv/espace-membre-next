@@ -1,10 +1,12 @@
 import { expect } from "chai";
 import jwt from "jsonwebtoken";
 
+import { authOptions } from "@/lib/authoptions";
 import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
 import { isMfaSession } from "@/lib/auth/sessionMfa";
 import { switchLegacyExtPrimaryEmail } from "@/lib/auth/switchLegacyExtPrimaryEmail";
 import { db } from "@/lib/kysely";
+import customPostgresAdapter from "@/lib/pgAdpter";
 import {
   getJwtTokenForUser,
   isSessionLoginExpired,
@@ -226,5 +228,108 @@ describe("account security with members in database", () => {
       ).to.be.false;
       expect(await getPrimary()).to.equal("security.owner@ademe.fr");
     });
+  });
+});
+
+describe("ProConnect login refusals", () => {
+  const signIn = authOptions.callbacks!.signIn!;
+
+  it("should forward the refusal decided in userinfo as the error code", async () => {
+    for (const code of ["UnknownMember", "ExtEmailNotAllowed"]) {
+      let error: Error | undefined;
+      try {
+        await signIn({
+          user: { id: "refused-proconnect-login" } as any,
+          account: { provider: "proconnect" } as any,
+          profile: { loginRefusal: code } as any,
+        });
+      } catch (e) {
+        error = e as Error;
+      }
+      expect(error?.message).to.equal(code);
+    }
+  });
+});
+
+describe("ProConnect account linking", () => {
+  const linkAccount = customPostgresAdapter().linkAccount!;
+
+  it("should refuse to link a ProConnect identity to another member", async () => {
+    let error: Error | undefined;
+    try {
+      await linkAccount({
+        provider: "proconnect",
+        type: "oauth",
+        providerAccountId: "membre.attaquant",
+        userId: "membre.cible",
+      });
+    } catch (e) {
+      error = e as Error;
+    }
+    expect(error?.message).to.equal("AccountLinkRefused");
+  });
+});
+
+describe("login events", () => {
+  const username = "login.event.member";
+  const getLoginEvents = async (uuid: string) =>
+    (
+      await db
+        .selectFrom("user_events")
+        .select("field_id")
+        .where("user_id", "=", uuid)
+        .execute()
+    ).map((e) => e.field_id);
+  let uuid: string;
+
+  beforeEach(async () => {
+    await createData({
+      users: [
+        {
+          username,
+          primary_email: `${username}@beta.gouv.fr`,
+          missions: [
+            {
+              start: new Date("2020-01-01"),
+              end: new Date("2099-01-01"),
+              status: "independent",
+              employer: "octo",
+            },
+          ],
+        },
+      ],
+    });
+    uuid = (
+      await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", username)
+        .executeTakeFirstOrThrow()
+    ).uuid;
+  });
+
+  afterEach(async () => {
+    await db.deleteFrom("user_events").where("user_id", "=", uuid).execute();
+    await deleteData({ users: [{ username }] as any });
+  });
+
+  it("should record the ProConnect + MFA login once it succeeded", async () => {
+    await authOptions.events!.signIn!({
+      user: { id: username } as any,
+      account: { provider: "proconnect" } as any,
+    });
+    expect(await getLoginEvents(uuid)).to.deep.equal(["login.proconnect_mfa"]);
+  });
+
+  it("should record nothing in the signIn callback, which can still be followed by a refusal", async () => {
+    const allowed = await authOptions.callbacks!.signIn!({
+      user: { id: username } as any,
+      account: {
+        provider: "proconnect",
+        id_token: jwt.sign({ acr: "eidas1-mfa" }, "test"),
+      } as any,
+    });
+    expect(allowed).to.be.true;
+    expect(await getLoginEvents(uuid)).to.deep.equal([]);
   });
 });

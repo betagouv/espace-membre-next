@@ -40,16 +40,12 @@ describe("fake ProConnect login (development only)", () => {
       expect(isFakeProConnectEnabled()).to.be.false;
     });
 
-    it("is never enabled in production, even with the flag set", () => {
-      env.NODE_ENV = "production";
+    it("is never enabled outside development, even with the flag set", () => {
       env.FAKE_PROCONNECT_LOGIN = "true";
-      expect(isFakeProConnectEnabled()).to.be.false;
-    });
-
-    it("is not enabled in test", () => {
-      env.NODE_ENV = "test";
-      env.FAKE_PROCONNECT_LOGIN = "true";
-      expect(isFakeProConnectEnabled()).to.be.false;
+      for (const nodeEnv of ["production", "test"]) {
+        env.NODE_ENV = nodeEnv;
+        expect(isFakeProConnectEnabled(), nodeEnv).to.be.false;
+      }
     });
   });
 
@@ -98,25 +94,16 @@ describe("fake ProConnect login (development only)", () => {
       expect(findUsersStub.called).to.be.false;
     });
 
-    it("refuses an email matching no member", async () => {
+    it("refuses an email matching no member or several members", async () => {
       env.NODE_ENV = "development";
-      findUsersStub.resolves([]);
-      try {
-        await authorizeFakeProConnect({ email: "nobody@beta.gouv.fr" });
-        expect.fail("Should have thrown");
-      } catch (e: any) {
-        expect(e.message).to.equal("UnknownMember");
-      }
-    });
-
-    it("refuses an email matching several members", async () => {
-      env.NODE_ENV = "development";
-      findUsersStub.resolves([{ username: "a" }, { username: "b" }] as any);
-      try {
-        await authorizeFakeProConnect({ email: "shared@beta.gouv.fr" });
-        expect.fail("Should have thrown");
-      } catch (e: any) {
-        expect(e.message).to.equal("UnknownMember");
+      for (const users of [[], [{ username: "a" }, { username: "b" }]]) {
+        findUsersStub.resolves(users as any);
+        try {
+          await authorizeFakeProConnect({ email: "shared@beta.gouv.fr" });
+          expect.fail("Should have thrown");
+        } catch (e: any) {
+          expect(e.message).to.equal("UnknownMember");
+        }
       }
     });
   });

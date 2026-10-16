@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   title: `${routeTitles.support()} / Espace Membre`,
 };
 
-// public page : no session required, no form (nothing is submitted)
 export default async function Page() {
   const supportEmail = config.SUPPORT_EMAIL;
   return (
