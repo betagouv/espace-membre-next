@@ -87,6 +87,20 @@ describe("findUsersByLoginEmail", () => {
     expect(users.map((u) => u.username)).to.deep.equal([userA.username]);
   });
 
+  it("should not find a user through a dinum_emails row removed from Dimail", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: "prenom.nom@dinum.gouv.fr",
+        user_id: uuidA,
+        status: "deleted",
+      })
+      .execute();
+    expect(
+      await findUsersByLoginEmail("prenom.nom@dinum.gouv.fr"),
+    ).to.deep.equal([]);
+  });
+
   it("should not match any user when the email is empty, even if some rows store ''", async () => {
     await db
       .updateTable("users")
@@ -102,8 +116,9 @@ describe("findUsersByLoginEmail", () => {
     expect(
       await findUsersByLoginEmail("membre_login_a@beta.gouv.fr"),
     ).to.deep.equal([]);
-    expect(await findUsersByLoginEmail("membre.login.%@beta.gouv.fr")).to.deep
-      .equal([]);
+    expect(
+      await findUsersByLoginEmail("membre.login.%@beta.gouv.fr"),
+    ).to.deep.equal([]);
   });
 
   it("should return several users when the email is ambiguous", async () => {
