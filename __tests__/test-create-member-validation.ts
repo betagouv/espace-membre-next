@@ -38,6 +38,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       .insertInto("incubators")
       .values({
         title: "un autre incubator",
+        ghid: `un-autre-incubator-validation-${Math.random().toString(36).slice(2, 8)}`,
       })
       .returningAll()
       .executeTakeFirstOrThrow();

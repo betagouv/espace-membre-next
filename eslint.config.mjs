@@ -27,6 +27,18 @@ export default [
   prettierRecommended,
   {
     rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "axios",
+              importNames: ["HttpStatusCode"],
+              message: "Utiliser StatusCodes de http-status-codes.",
+            },
+          ],
+        },
+      ],
       "react/no-unescaped-entities": "off",
       "react/no-children-prop": "warn",
       "import/no-named-as-default": "warn",

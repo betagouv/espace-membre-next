@@ -5,7 +5,7 @@ import * as eventsLib from "@/lib/events";
 import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
 import * as mapperLib from "@/models/mapper";
-import * as canEditMemberLib from "@/lib/canEditMember";
+import * as canEditMemberLib from "@/lib/authorization/member";
 import * as bossClient from "@/server/queueing/client";
 import { validateNewMember } from "../validateNewMember";
 import { EmailStatusCode } from "@/models/member";
