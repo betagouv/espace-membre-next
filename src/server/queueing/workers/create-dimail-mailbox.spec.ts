@@ -176,6 +176,7 @@ describe("create-dimail-mail", () => {
           email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
           webmailUrl:
             "https://messagerie.numerique.gouv.fr/code/test-access-code",
+          resend: false,
         },
       }),
       `mockSendEmail should be called with correct parameters. instead got ${JSON.stringify(mockSendEmail.firstCall && mockSendEmail.firstCall.args)}`,
