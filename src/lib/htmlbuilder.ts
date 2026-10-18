@@ -12,14 +12,19 @@ import {
   SubjectFunction,
 } from "@/lib/email/email";
 import { ApiKeyReminderEmailTitle } from "@/server/views/templates/emails/ApiKeyReminderEmail/ApiKeyReminderEmail";
-import { EmailCreatedDimailTitle } from "@/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail";
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
 import { LoginEmailTitle } from "@/server/views/templates/emails/LoginEmail/LoginEmail";
+import { LegacyEmailLoginReminderTitle } from "@/server/views/templates/emails/LegacyEmailLoginReminder/LegacyEmailLoginReminder";
+import { EmailCreatedDimailTitle } from "@/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail";
 import { MemberValidationEmailTitle } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
 import { StartupNewMemberArrivalEmailTitle } from "@/server/views/templates/emails/StartupNewMemberArrivalEmail/StartupNewMemberArrivalEmail";
 import { VerificationWaitingEmailTitle } from "@/server/views/templates/emails/VerificationWaitingEmail/VerificationWaitingEmail";
 import { BusinessError } from "@/lib/error";
 
-const EMAILS_DIR = path.join(process.cwd(), "src/server/views/templates/emails");
+const EMAILS_DIR = path.join(
+  process.cwd(),
+  "src/server/views/templates/emails",
+);
 const MJML_LAYOUT_PATH = path.join(EMAILS_DIR, "_layout.mjml.ejs");
 
 // Templates are plain MJML markup rendered through EJS rather than JSX/mjml-react.
@@ -29,7 +34,12 @@ const MJML_LAYOUT_PATH = path.join(EMAILS_DIR, "_layout.mjml.ejs");
 // so email bodies are authored as .mjml.ejs files wrapped in a shared layout
 // instead of React components.
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   EMAIL_LOGIN: path.join(EMAILS_DIR, "LoginEmail/LoginEmail.mjml.ejs"),
+  EMAIL_LEGACY_LOGIN_REMINDER: path.join(
+    EMAILS_DIR,
+    "LegacyEmailLoginReminder/LegacyEmailLoginReminder.mjml.ejs",
+  ),
   EMAIL_CREATED_DIMAIL: path.join(
     EMAILS_DIR,
     "EmailCreatedDimail/EmailCreatedDimail.mjml.ejs",
@@ -54,8 +64,10 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   EMAIL_LOGIN: LoginEmailTitle(),
-  EMAIL_CREATED_DIMAIL: EmailCreatedDimailTitle(),
+  EMAIL_LEGACY_LOGIN_REMINDER: LegacyEmailLoginReminderTitle(),
+  EMAIL_CREATED_DIMAIL: EmailCreatedDimailTitle as SubjectFunction,
   EMAIL_STARTUP_ASK_PHASE: "",
   EMAIL_VERIFICATION_WAITING: VerificationWaitingEmailTitle(),
   EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
@@ -69,7 +81,9 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
 // still in this directory) go through renderFile as-is instead of the MJML
 // layout wrap; none of the currently wired-up types use this path.
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   EMAIL_LOGIN: false,
+  EMAIL_LEGACY_LOGIN_REMINDER: false,
   EMAIL_CREATED_DIMAIL: false,
   EMAIL_STARTUP_ASK_PHASE: false,
   EMAIL_VERIFICATION_WAITING: false,

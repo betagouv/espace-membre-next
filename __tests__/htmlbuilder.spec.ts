@@ -7,6 +7,7 @@ import { userStartupSchemaType } from "@/models/startup";
 import { EMAIL_TYPES } from "@/lib/email/email";
 chai.should();
 
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
 describe(`Test EMAIL_LOGIN`, () => {
   it(`email EMAIL_LOGIN renders the magic link and fullname`, async () => {
     const loginUrlWithToken: string = "http://localhost:8100/signin?token=abc";
@@ -23,21 +24,75 @@ describe(`Test EMAIL_LOGIN`, () => {
   });
 });
 
+describe(`Test EMAIL_LEGACY_LOGIN_REMINDER`, () => {
+  const variables = {
+    fullname: "Jean Paul",
+    endDate: "1 décembre 2026",
+    loginUrl: "http://espace-membre/login",
+    supportUrl: "http://espace-membre/support",
+  };
+
+  it(`invites to log in with ProConnect with the primary email`, async () => {
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER,
+      variables: { ...variables, loginEmail: "jean.paul@beta.gouv.fr" },
+    });
+    emailBody.should.include("1 décembre 2026");
+    emailBody.should.include("jean.paul@beta.gouv.fr");
+    emailBody.should.include(variables.loginUrl);
+  });
+
+  it(`points to the support page without a primary email`, async () => {
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER,
+      variables: { ...variables, loginEmail: null },
+    });
+    emailBody.should.include(variables.supportUrl);
+    emailBody.should.not.include(variables.loginUrl);
+  });
+});
+
 describe(`Test EMAIL_CREATED_DIMAIL`, () => {
-  it(`email EMAIL_CREATED_DIMAIL renders the webmail credentials`, async () => {
-    const webmailUrl: string = "http://webmail-url";
+  it(`email EMAIL_CREATED_DIMAIL renders the webmail access link, without password`, async () => {
+    const webmailUrl: string = "http://webmail-url/code/access-code";
 
     const emailBody: string = await htmlBuilder.renderContentForType({
       type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
       variables: {
         email: "jean.paul@betagouv.ovh",
-        password: "tempPassword123",
         webmailUrl,
       },
     });
     emailBody.should.include(webmailUrl);
     emailBody.should.include("jean.paul@betagouv.ovh");
-    emailBody.should.include("tempPassword123");
+    emailBody.should.not.include("mot de passe");
+  });
+});
+
+describe(`Test EMAIL_CREATED_DIMAIL resend`, () => {
+  it(`renders a new access link from the support, without the arrival text`, async () => {
+    const webmailUrl = "http://webmail-url/code/new-code";
+    const emailBody: string = await htmlBuilder.renderContentForType({
+      type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+      variables: {
+        email: "jean.paul@beta.gouv.fr",
+        webmailUrl,
+        resend: true,
+      },
+    });
+    emailBody.should.include(webmailUrl);
+    emailBody.should.include("Nouveau lien d");
+    emailBody.should.not.include("Et maintenant");
+    htmlBuilder
+      .renderSubjectForType({
+        type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+        variables: {
+          email: "jean.paul@beta.gouv.fr",
+          webmailUrl,
+          resend: true,
+        },
+      })
+      .should.include("Nouveau lien");
   });
 });
 
@@ -61,18 +116,21 @@ describe(`Test EMAIL_STARTUP_NEW_MEMBER_ARRIVAL`, () => {
 });
 
 describe(`Test EMAIL_VERIFICATION_WAITING`, () => {
-  it(`email EMAIL_VERIFICATION_WAITING`, async () => {
-    const secretariatUrl: string = "http://secretariat-url";
+  it(`email EMAIL_VERIFICATION_WAITING invites to log in with ProConnect`, async () => {
+    const loginUrl: string = "http://espace-membre/login";
 
     const emailBody: string = await htmlBuilder.renderContentForType({
       type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
       variables: {
-        secretariatUrl,
-        secondaryEmail: "toto@gmail.com",
+        loginUrl,
+        loginEmail: "lucas.thenet.ext@beta.gouv.fr",
         fullname: "Lucas Thenet",
       },
     });
-    emailBody.should.include(secretariatUrl);
+    emailBody.should.include(loginUrl);
+    emailBody.should.include("lucas.thenet.ext@beta.gouv.fr");
+    emailBody.should.include("ProConnect");
+    emailBody.should.not.include("token");
   });
 });
 

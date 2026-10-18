@@ -20,6 +20,9 @@ export enum EventCode {
   MEMBER_RESPONDER_DELETED = "MEMBER_RESPONDER_DELETED",
   MEMBER_SECONDARY_EMAIL_UPDATED = "MEMBER_SECONDARY_EMAIL_UPDATED",
   MEMBER_PRIMARY_EMAIL_UPDATED = "MEMBER_PRIMARY_EMAIL_UPDATED",
+  MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED = "MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED",
+  MEMBER_WEBMAIL_ACCESS_SENT = "MEMBER_WEBMAIL_ACCESS_SENT",
+  MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED = "MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED",
   MEMBER_END_DATE_UPDATED = "MEMBER_END_DATE_UPDATED",
   MEMBER_COMMUNICATION_EMAIL_UPDATE = "MEMBER_COMMUNICATION_EMAIL_UPDATE",
   MEMBER_EMAIL_RECREATED = "MEMBER_EMAIL_RECREATED",
@@ -69,6 +72,11 @@ export const EventCodeToReadable: Record<EventCode, string> = {
   [EventCode.MEMBER_RESPONDER_DELETED]: "Réponse automatique supprimé",
   [EventCode.MEMBER_SECONDARY_EMAIL_UPDATED]: "Email secondaire mis à jour",
   [EventCode.MEMBER_PRIMARY_EMAIL_UPDATED]: "Email primaire mis à jour",
+  [EventCode.MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED]:
+    "Changement d'email primaire demandé",
+  [EventCode.MEMBER_WEBMAIL_ACCESS_SENT]: "Lien d'accès au webmail renvoyé",
+  [EventCode.MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED]:
+    "Rattachement d'une adresse Dimail modifié",
   [EventCode.MEMBER_END_DATE_UPDATED]: "Date de fin mis à jour",
   [EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE]:
     "Email de communication mis à jour",
@@ -196,6 +204,29 @@ export const EventMemberPrimaryEmailUpdatedPayload = z.object({
   action_metadata: z.object({
     value: z.string().email(),
     old_value: z.string().email().optional(),
+  }),
+});
+
+export const EventMemberPrimaryEmailChangeRequestedPayload = z.object({
+  action_code: z.literal(EventCode.MEMBER_PRIMARY_EMAIL_CHANGE_REQUESTED),
+  action_metadata: z.object({
+    value: z.string().email(),
+  }),
+});
+
+export const EventMemberWebmailAccessSentPayload = z.object({
+  action_code: z.literal(EventCode.MEMBER_WEBMAIL_ACCESS_SENT),
+  action_metadata: z.object({
+    value: z.string().email(),
+    sentTo: z.string().email(),
+  }),
+});
+
+export const EventMemberDinumEmailAttachmentUpdatedPayload = z.object({
+  action_code: z.literal(EventCode.MEMBER_DINUM_EMAIL_ATTACHMENT_UPDATED),
+  action_metadata: z.object({
+    value: z.string().email(),
+    attached: z.boolean(),
   }),
 });
 
@@ -498,6 +529,9 @@ export type EventPayloads =
   | z.infer<typeof EventMemberEndDatePayload>
   | z.infer<typeof EventMemberSecondaryEmailUpdatedPayload>
   | z.infer<typeof EventMemberPrimaryEmailUpdatedPayload>
+  | z.infer<typeof EventMemberPrimaryEmailChangeRequestedPayload>
+  | z.infer<typeof EventMemberWebmailAccessSentPayload>
+  | z.infer<typeof EventMemberDinumEmailAttachmentUpdatedPayload>
   | z.infer<typeof EventMemberRedirectionDeletedPayload>
   | z.infer<typeof EventTeamCreatedPayload>
   | z.infer<typeof EventTeamUpdatedPayload>

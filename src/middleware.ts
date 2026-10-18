@@ -10,6 +10,7 @@ interface UserJwtPayload {
   jti: string;
   iat: number;
   exp: number;
+  loginAt?: number;
 }
 
 export async function verifyAuth(req: NextRequest) {
@@ -30,7 +31,12 @@ export async function verifyAuth(req: NextRequest) {
         algorithms: ["HS512"], // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
       },
     );
-    return verified.payload as UserJwtPayload;
+    const payload = verified.payload as UserJwtPayload;
+    // tokens signed before the expiry was anchored to the login time
+    if (typeof payload.loginAt !== "number") {
+      throw new Error("Missing login time");
+    }
+    return payload;
   } catch (err) {
     throw new Error("Your token has expired.");
   }
@@ -170,6 +176,6 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      */
     // "/dashboard",
-    "/((?!accessibilite|keskispasse|components|login|signin|api/docs|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!accessibilite|components|login|signin|support|api/docs|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

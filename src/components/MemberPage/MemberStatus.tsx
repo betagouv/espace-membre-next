@@ -41,6 +41,7 @@ const emailStatusRow = (
         P.union(
           EmailStatusCode.EMAIL_VERIFICATION_WAITING,
           EmailStatusCode.MEMBER_VALIDATION_WAITING,
+          EmailStatusCode.EMAIL_UNSET,
         ),
         () => (
           <Badge severity="warning" as="span">
@@ -90,6 +91,12 @@ const emailStatusRow = (
                 EmailStatusCode.EMAIL_VERIFICATION_WAITING
               ]
             }
+          </>
+        ))
+        .with(EmailStatusCode.EMAIL_UNSET, () => (
+          <>
+            <br />
+            {EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_UNSET]}
           </>
         ))
         .otherwise(() => (

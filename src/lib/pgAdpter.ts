@@ -5,36 +5,16 @@ import {
   AdapterAccount,
   AdapterSession,
   AdapterUser,
-  VerificationToken,
 } from "next-auth/adapters";
 
 import { findUsersByLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
+import { findUsersByPendingPrimaryEmail } from "@/lib/auth/pendingPrimaryEmail";
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+import {
+  findUsersBySecondaryEmail,
+  legacyEmailLoginAdapterMethods,
+} from "@/lib/auth/legacyEmailLogin";
 import { db } from "@/lib/kysely";
-
-export const createVerificationToken = async ({
-  identifier,
-  expires,
-  token,
-}: VerificationToken): Promise<VerificationToken | null | undefined> => {
-  const insertedRow = await db
-    .insertInto("verification_tokens")
-    .values({
-      identifier: identifier,
-      token: token,
-      expires: expires,
-    })
-    .returningAll()
-    .executeTakeFirst(); // This will return all columns of the inserted row
-  if (!insertedRow) {
-    throw new Error("Row not created");
-  }
-  const createdToken: VerificationToken = {
-    identifier: insertedRow.identifier,
-    token: insertedRow.token,
-    expires: insertedRow.expires,
-  };
-  return createdToken;
-};
 
 export default function customPostgresAdapter(): Adapter {
   try {
@@ -70,7 +50,16 @@ export default function customPostgresAdapter(): Adapter {
     const getUserByEmail = async (
       email: string,
     ): Promise<AdapterUser | null> => {
-      const dbUsers = await findUsersByLoginEmail(email);
+      let dbUsers = await findUsersByLoginEmail(email);
+      // a member who never logged in with ProConnect has no accounts row : next-auth
+      // finds them by the address ProConnect returned, which may be pending
+      if (dbUsers.length === 0) {
+        dbUsers = await findUsersByPendingPrimaryEmail(email);
+      }
+      // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+      if (dbUsers.length === 0) {
+        dbUsers = await findUsersBySecondaryEmail(email);
+      }
       if (dbUsers.length > 1) {
         console.log(`several db users match this email`);
         return null;
@@ -101,6 +90,10 @@ export default function customPostgresAdapter(): Adapter {
         .selectAll()
         .where("a.provider", "=", provider)
         .where("a.providerAccountId", "=", providerAccountId)
+        // the account id is the username resolved from the login address : a
+        // row pointing to another member (linked from someone else's session)
+        // must never open that member's account
+        .whereRef("a.userId", "=", "a.providerAccountId")
         .executeTakeFirst();
       if (!dbUser) {
         return null;
@@ -237,6 +230,19 @@ export default function customPostgresAdapter(): Adapter {
     const linkAccount = async (
       account: AdapterAccount,
     ): Promise<AdapterAccount | null | undefined> => {
+      // next-auth links the account to the member of the current session, if
+      // any. The ProConnect account id is the username resolved from the
+      // ProConnect email (see authoptions.ts) : a member signed in as someone
+      // else must not attach their own ProConnect identity to that account.
+      if (
+        account.provider === "proconnect" &&
+        account.providerAccountId !== account.userId
+      ) {
+        console.log(
+          `ProConnect: refused to link ${account.providerAccountId} to ${account.userId}`,
+        );
+        throw new Error("AccountLinkRefused");
+      }
       await db
         .insertInto("accounts")
         .values({
@@ -271,51 +277,6 @@ export default function customPostgresAdapter(): Adapter {
       return;
     };
 
-    //Return verification token from the database and delete it so it cannot be used again.
-    const useVerificationToken = async ({
-      identifier,
-      token,
-    }: {
-      identifier: string;
-      token: string;
-    }) => {
-      const rows = await db
-        .selectFrom("verification_tokens")
-        .selectAll()
-        .where("identifier", "=", identifier)
-        .where("token", "=", token)
-        .where("expires", ">", new Date())
-        .execute()
-        .then((rows) => rows)
-        .catch((err) => {
-          console.error(err);
-          throw new Error("Error fetching verification token");
-        });
-
-      // If a token is found, delete it
-      if (rows.length > 0) {
-        await db
-          .deleteFrom("verification_tokens")
-          .where("identifier", "=", identifier)
-          .where("token", "=", token)
-          .execute()
-          .catch((err) => {
-            console.error(err);
-            throw new Error("Error deleting verification token");
-          });
-
-        // Return the details of the deleted token
-        return {
-          expires: rows[0].expires,
-          identifier: rows[0].identifier,
-          token: rows[0].token,
-        };
-      } else {
-        // Handle the case where no token is found or it's already expired
-        throw new Error(`No valid token found: ${token}`);
-      }
-    };
-
     return {
       createUser,
       getUser,
@@ -327,10 +288,10 @@ export default function customPostgresAdapter(): Adapter {
       createSession,
       updateSession,
       deleteSession,
-      createVerificationToken,
-      useVerificationToken,
       linkAccount,
       unlinkAccount,
+      // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+      ...legacyEmailLoginAdapterMethods,
     };
   } catch (error) {
     throw error;

@@ -39,6 +39,10 @@ jobs:
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
+                  # legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+                  LEGACY_EMAIL_LOGIN_MODE: transition
+                  LEGACY_EMAIL_LOGIN_CUTOFF_DATE: "2100-01-01"
+                  LEGACY_EMAIL_LOGIN_END_DATE: "2100-02-01"
             - name: Wait
               uses: cygnetdigital/wait_for_response@v2.0.0
               with:
@@ -60,6 +64,10 @@ jobs:
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
+                  # legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+                  LEGACY_EMAIL_LOGIN_MODE: transition
+                  LEGACY_EMAIL_LOGIN_CUTOFF_DATE: "2100-01-01"
+                  LEGACY_EMAIL_LOGIN_END_DATE: "2100-02-01"
             - uses: actions/upload-artifact@v7
               if: always()
               with:
