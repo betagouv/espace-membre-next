@@ -221,7 +221,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                 >
                   <Input
                     label="Email (obligatoire)"
-                    hintText="Saisissez l'adresse email de la personne à inviter (celle de son administration si elle en a une ; son email personnel sinon)."
+                    hintText="Saisissez l'adresse email de la personne à inviter (celle de son administration si elle en a une ; son email personnel sinon). Une adresse d'administration devient son identifiant de connexion : elle doit permettre de se connecter avec ProConnect. Sinon, un alias @beta.gouv.fr (sans boîte mail) peut lui être créé sur demande au support."
                     nativeInputProps={{
                       placeholder: "ex: grace.hopper@gmail.com",
                       ...register("member.email"),

@@ -1,25 +1,69 @@
 import * as Sentry from "@sentry/node";
 
 import { db } from "@/lib/kysely";
-import { Domaine, EmailStatusCode } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import { patchMailbox } from "@/lib/dimail/client";
-import { getDimailEmail } from "@/lib/kysely/queries/dimail";
-import * as createDimailMailboxWorker from "../queueing/workers/create-dimail-mailbox";
-// allow tests (rewire) to override this function by exposing a mutable binding
-let createDimailMailboxForUser =
-  createDimailMailboxWorker.createDimailMailboxForUser;
+import { createDimailMailboxForUser } from "../queueing/workers/create-dimail-mailbox";
+import { isLive } from "@/lib/kysely/queries/dimail";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 
-const getUserMailBox = async (uuid) =>
-  (
-    await db
+// a @beta.gouv.fr primary email can be an alias to a @ext.beta.gouv.fr mailbox
+const liveMailboxes = (uuid: string) =>
+  db
+    .selectFrom("dinum_emails")
+    .select("email")
+    .where("user_id", "=", uuid)
+    .where("type", "=", "mailbox")
+    .where(isLive);
+
+const getMailboxToReactivate = async (
+  uuid: string,
+  primaryEmail: string | null,
+) => {
+  if (primaryEmail) {
+    const primaryRow = await db
       .selectFrom("dinum_emails")
-      .select("email")
+      .select(["email", "type", "destination"])
       .where("user_id", "=", uuid)
-      .where("type", "=", "mailbox")
-      .executeTakeFirstOrThrow()
-  ).email;
+      .where(({ eb, fn }) =>
+        eb(fn("lower", ["email"]), "=", primaryEmail.toLowerCase()),
+      )
+      .where(isLive)
+      .executeTakeFirst();
+    const target =
+      primaryRow?.type === "mailbox"
+        ? primaryRow.email
+        : primaryRow?.type === "alias"
+          ? primaryRow.destination
+          : null;
+    if (target) {
+      const mailbox = await liveMailboxes(uuid)
+        .where(({ eb, fn }) =>
+          eb(fn("lower", ["email"]), "=", target.toLowerCase()),
+        )
+        .executeTakeFirst();
+      if (mailbox) {
+        return mailbox.email;
+      }
+    }
+  }
+  const mailbox = await liveMailboxes(uuid)
+    .orderBy((eb) =>
+      eb
+        .case()
+        .when("email", "ilike", `%@${DIMAIL_MAILBOX_DOMAIN}`)
+        .then(0)
+        .else(1)
+        .end(),
+    )
+    .orderBy((eb) =>
+      eb.case().when("status", "=", "disabled").then(0).else(1).end(),
+    )
+    .orderBy("email")
+    .executeTakeFirst();
+  return mailbox?.email ?? null;
+};
 
 // pour les comptes actifs en EMAIL_SUSPENDED/EMAIL_DELETED avec un secondary_email
 // reactive ou recréé l'email et le passe en ACTIVE
@@ -31,53 +75,42 @@ export async function recreateEmailIfUserActive() {
       EmailStatusCode.EMAIL_SUSPENDED,
     ])
     .where("users.secondary_email", "is not", null)
-    .where("users.domaine", "!=", Domaine.ATTRIBUTAIRE)
-    .execute();
+    .execute()
+    // one row per open mission
+    .then((rows) => [...new Map(rows.map((row) => [row.uuid, row])).values()]);
   console.log(`recreateEmailIfUserActive: ${dbUsers.length} accounts`);
   for (const dbUser of dbUsers) {
     try {
-      console.log(
-        `recreate email for ${dbUser.username} (${dbUser.primary_email})`,
+      console.log(`recreate email for ${dbUser.username}`);
+      const mailbox = await getMailboxToReactivate(
+        dbUser.uuid,
+        dbUser.primary_email,
       );
-      if (dbUser.primary_email) {
-        // if in dinum_emails
-        const isDimailEmail = await getDimailEmail(dbUser.primary_email);
-        if (isDimailEmail) {
-          console.log(
-            `set DIMAIL email imap_active for ${dbUser.username} (${dbUser.primary_email})`,
-          );
-          const mailbox = await getUserMailBox(dbUser.uuid);
-          console.log(
-            `set DIMAIL email imap_active for ${dbUser.username} (${mailbox})`,
-          );
-          await patchMailbox({
-            domain_name: DIMAIL_MAILBOX_DOMAIN,
-            user_name: mailbox.split("@")[0],
-            data: {
-              imap_active: "yes",
-            },
-          });
-          await db
-            .updateTable("users")
-            .set({
-              primary_email: dbUser.primary_email,
-              primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-              primary_email_status_updated_at: new Date(),
-            })
-            .where("uuid", "=", dbUser.uuid)
-            .execute();
-        } else {
-          console.log(
-            `create DIMAIL email for ${dbUser.username} (${dbUser.primary_email})`,
-          );
-          // create new DIMAIL email account
-          await createDimailMailboxForUser(dbUser.uuid);
-        }
-      } else {
+      if (mailbox) {
         console.log(
-          `create DIMAIL email for ${dbUser.username} (${dbUser.secondary_email})`,
+          `set DIMAIL email imap_active for ${dbUser.username} (${mailbox})`,
         );
-        // create new DIMAIL email account
+        const [userName, domainName] = mailbox.split("@");
+        const { success } = await patchMailbox({
+          domain_name: domainName,
+          user_name: userName,
+          data: {
+            imap_active: "yes",
+          },
+        });
+        if (!success) {
+          throw new Error(`could not reactivate ${mailbox}`);
+        }
+        await db
+          .updateTable("users")
+          .set({
+            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+            primary_email_status_updated_at: new Date(),
+          })
+          .where("uuid", "=", dbUser.uuid)
+          .execute();
+      } else {
+        console.log(`create DIMAIL email for ${dbUser.username}`);
         await createDimailMailboxForUser(dbUser.uuid);
       }
     } catch (e) {

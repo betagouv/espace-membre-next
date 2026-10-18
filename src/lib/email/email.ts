@@ -3,7 +3,9 @@ import { memberPublicInfoSchemaType } from "@/models/member";
 import { userStartupSchemaType } from "@/models/startup";
 
 export enum EMAIL_TYPES {
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   EMAIL_LOGIN = "EMAIL_LOGIN",
+  EMAIL_LEGACY_LOGIN_REMINDER = "EMAIL_LEGACY_LOGIN_REMINDER",
   EMAIL_CREATED_DIMAIL = "EMAIL_CREATED_DIMAIL",
   EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
   EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
@@ -34,6 +36,7 @@ type BaseEmail = {
   attachments?: any[];
 };
 
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
 export type EmailLogin = {
   type: EMAIL_TYPES.EMAIL_LOGIN;
   variables: {
@@ -42,12 +45,24 @@ export type EmailLogin = {
   };
 };
 
+export type EmailLegacyLoginReminder = {
+  type: EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER;
+  variables: {
+    fullname: string;
+    endDate: string;
+    loginEmail: string | null;
+    loginUrl: string;
+    supportUrl: string;
+  };
+};
+
 export type EmailCreatedDimail = {
   type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL;
   variables: {
-    password: string;
     email: string;
     webmailUrl: string;
+    // a new access link sent by the support, not the arrival email
+    resend?: boolean;
   };
 };
 
@@ -64,8 +79,8 @@ export type EmailStartupAskPhase = {
 export type EmailVerificationWaiting = {
   type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING;
   variables: {
-    secondaryEmail: string;
-    secretariatUrl: string;
+    loginEmail: string;
+    loginUrl: string;
     fullname: string;
   };
 };
@@ -89,7 +104,9 @@ export type EmailStartupNewMemberArrival = {
 };
 
 export type EmailVariants =
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   | EmailLogin
+  | EmailLegacyLoginReminder
   | EmailCreatedDimail
   | EmailStartupNewMemberArrival
   | EmailStartupAskPhase
@@ -217,9 +234,13 @@ export const EmailDocumentation: Record<
     description: string;
   }
 > = {
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   [EMAIL_TYPES.EMAIL_LOGIN]: {
+    description: "Lien de connexion à l'espace membre (connexion par email).",
+  },
+  [EMAIL_TYPES.EMAIL_LEGACY_LOGIN_REMINDER]: {
     description:
-      "Email de login envoyé à la personne qui essaye de se connecter",
+      "Rappel hebdomadaire de la fin de la connexion par email, pour les membres pas encore passés à ProConnect.",
   },
   [EMAIL_TYPES.EMAIL_CREATED_DIMAIL]: {
     description: "Email envoyé lors de la création d’une boite mail Dimail.",

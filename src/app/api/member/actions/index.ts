@@ -35,6 +35,7 @@ import {
   BusinessError,
 } from "@/lib/error";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
 
 async function changeSecondaryEmailForUser(
   secondary_email: string,
@@ -52,12 +53,18 @@ async function changeSecondaryEmailForUser(
   }
   const user = await db
     .selectFrom("users")
-    .select("secondary_email")
+    .select(["uuid", "secondary_email"])
     .where("username", "=", username)
     .executeTakeFirst();
   if (!user) {
     throw new NoDataError("Users not found");
   }
+  await assertSecondaryEmailChangeAllowed({
+    session,
+    userUuid: user.uuid,
+    currentEmail: user.secondary_email,
+    newEmail: secondary_email,
+  });
   await db
     .updateTable("users")
     .set({
@@ -258,13 +265,20 @@ export async function manageSecondaryEmailForUser({
   ) {
     const user = await db
       .selectFrom("users")
-      .select("secondary_email")
+      .select(["uuid", "secondary_email"])
       .where("username", "=", username)
       .executeTakeFirst();
 
     if (!user) {
       throw new BusinessError("Users not found");
     }
+
+    await assertSecondaryEmailChangeAllowed({
+      session,
+      userUuid: user.uuid,
+      currentEmail: user.secondary_email,
+      newEmail: secondaryEmail,
+    });
 
     await db
       .updateTable("users")
