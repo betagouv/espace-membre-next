@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth/next";
 
 import { normalizeLoginEmail } from "@/lib/auth/findUsersByLoginEmail";
 import { authOptions } from "@/lib/authoptions";
+import { assertMfaSession } from "@/lib/auth/sessionMfa";
 import {
   AuthorizationError,
   BusinessError,
@@ -25,6 +26,8 @@ const getAdminContext = async (username: string) => {
   ) {
     throw new AuthorizationError();
   }
+  // an attached address logs into the account
+  assertMfaSession(session, "rattacher une adresse Dimail");
   const user = await db
     .selectFrom("users")
     .select("uuid")
@@ -64,6 +67,13 @@ async function attachDinumEmailToMember(
       .where(({ eb, fn }) =>
         eb(fn("lower", ["dinum_emails.email"]), "=", email),
       )
+      // a lock on a row removed from Dimail would survive its re-creation
+      .where((eb) =>
+        eb.or([
+          eb("dinum_emails.status", "is", null),
+          eb("dinum_emails.status", "!=", "deleted"),
+        ]),
+      )
       .executeTakeFirst());
   if (!row) {
     throw new BusinessError(
@@ -80,13 +90,18 @@ async function attachDinumEmailToMember(
       eb.or([
         eb(fn("lower", ["primary_email"]), "=", row.email.toLowerCase()),
         eb(fn("lower", ["secondary_email"]), "=", row.email.toLowerCase()),
+        eb(
+          fn("lower", ["pending_primary_email"]),
+          "=",
+          row.email.toLowerCase(),
+        ).and("pending_primary_email_expires_at", ">", new Date()),
       ]),
     )
     .executeTakeFirst();
   if (emailOwner) {
     throw new BusinessError(
       "dinumEmailUsedByAnotherMember",
-      `Cette adresse est l'email principal ou secondaire de la fiche ${emailOwner.username}. Changez d'abord l'adresse de cette fiche.`,
+      `Cette adresse est l'email principal, secondaire ou en attente de la fiche ${emailOwner.username}. Changez d'abord l'adresse de cette fiche.`,
     );
   }
   const previousOwner =

@@ -34,6 +34,10 @@ export async function updateMember(
         secondary_email: string;
         primary_email_status: EmailStatusCode;
       }
+    | {
+        primary_email_status: EmailStatusCode;
+        primary_email_status_updated_at: Date;
+      }
     | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
   created_by_username: string,
 ) {

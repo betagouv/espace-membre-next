@@ -49,6 +49,12 @@ const nextConfig = {
         destination: "/login",
         permanent: true,
       },
+      // former help page, replaced by /support
+      {
+        source: "/keskispasse",
+        destination: "/support",
+        permanent: true,
+      },
     ];
   },
   serverExternalPackages: ["knex", "pg", "pg-native", "sib-api-v3-sdk", "mjml"],

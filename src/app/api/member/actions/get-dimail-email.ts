@@ -7,6 +7,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import {
   getDimailUsernameForUser,
+  isAttributaire,
   DIMAIL_MAILBOX_DOMAIN,
 } from "@/lib/dimail/utils";
 
@@ -21,6 +22,11 @@ export const getDimailEmail = withErrorHandling(async () => {
     throw new Error(`User ${session.user.uuid} not found`);
   }
   const user = memberBaseInfoToModel(dbUser);
-  const username = getDimailUsernameForUser(user.username, user.legal_status);
+  const username = getDimailUsernameForUser(
+    user.username,
+    user.legal_status,
+    undefined,
+    isAttributaire(dbUser),
+  );
   return `${username}@${DIMAIL_MAILBOX_DOMAIN}`;
 });

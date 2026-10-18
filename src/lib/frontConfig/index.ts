@@ -52,8 +52,6 @@ export default {
   matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
   FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET:
     process.env.NEXT_PUBLIC_FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET,
-  FEATURE_SHOW_PROCONNECT_LOGIN:
-    process.env.NEXT_PUBLIC_FEATURE_SHOW_PROCONNECT_LOGIN,
   newsletterContentUrl:
     process.env.NEWSLETTER_CONTENT_URL ||
     "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374",

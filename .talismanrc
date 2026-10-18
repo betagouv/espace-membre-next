@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: baab9bc320877785c6ccf878f72a9b9257becfb719d4bcbcca1a2ba2bca49870
+  checksum: 8c5abacb4d10f1674a882841bb7937eba4a14fdf4535251c2adb439644fe12ee
 - filename: .env.test
   checksum: ac4a41141b6012a11636e64642152bbc339bf10380b564d35fe33870531d732a
 - filename: .github/workflows/nodejs.yml
@@ -8,13 +8,17 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: 2bf3b8babdc7578c6e99e67c1cf8022a26fb4ac9bd6d411019e064f68f766a00
 - filename: README.md
-  checksum: 9f3ceb61b1e3140608bc4c88b210ba9e94f3d277b055c2b3ad71f75961942a5c
+  checksum: 554368306b26bb92ec5176538398adf7aab1d84b741666bc6dafb45f66d9a989
 - filename: __tests__/htmlbuilder.spec.ts
-  checksum: 3204d46ffc02fc0eef7abed2ad9c2d9f342d49a03c69f0066907443d48d84980
+  checksum: b7e67d2a05570add2fee22a95e3faa3b5af001cffbeefd71725064e82636e889
 - filename: __tests__/test-email.ts
   checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
+- filename: e2e/auth.valid.member.setup.ts
+  checksum: 7a239296ed02a1826845830e31700a724aec621fccf6a078a3cdff565b578e17
+- filename: e2e/legacy-email-login.spec.ts
+  checksum: 2f389a5151bd6f122fe87a095c39e02918794a60e100e17d780f0478d7584431
 - filename: migrations/20260618000001_add_startups_incubators_table.ts
   checksum: bede298828d3b776caa717960fd6afb95f5f344a158246e265309e14d6dfa5ab
 - filename: package-lock.json
@@ -27,6 +31,12 @@ fileignoreconfig:
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/app/(public)/login/page.tsx
   checksum: 20924a45d0763b0ac98b53f4f2953fbfbd54e636b4accf8d05c84c35a9b3c5ab
+- filename: src/app/(public)/signin/SiginClientPage.tsx
+  checksum: d212a7c30ff0eacc1cdddbedf34c5cc115ef21bef8bd9cbc4f1b319025ede3a4
+- filename: src/app/(public)/support/page.tsx
+  checksum: a2f36bfa4def238ff23bcadac869c4c3779259ebc795ae30fd92379ae76680a8
+- filename: src/app/api/member/actions/__tests__/validateNewMember.test.ts
+  checksum: 5bb531c43b9326865e4d7d9ac268d384e99f219adb64100a336122bda65592a7
 - filename: src/app/api/member/route.ts
   checksum: 70c62cc99b6a82c2b8ef217dd083531e311a863bb637921a4c15628aed1ac119
 - filename: src/components/Checklist.tsx
@@ -51,6 +61,14 @@ fileignoreconfig:
   checksum: 3482e0b52c661f24a115fad091f54289876651d8250a2e3fb8d691726221e7b4
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
+- filename: src/lib/auth/legacyEmailLogin/README.md
+  checksum: dab6c026efab00477b6e7e49ef354e76dbc699e434c4db9c11fbfec1bb1b9d3b
+- filename: src/lib/auth/legacyEmailLogin/legacyEmailLogin.spec.ts
+  checksum: cf1cdbd865f0f70f29cdccf3dc342808ba29763ccfa164a9c1afec7290dd824c
+- filename: src/lib/auth/legacyEmailLogin/rateLimit.spec.ts
+  checksum: 16b4ca44ac4c4d1bace11f35869652b2bd40d22c15c68005e641edc344a3e44c
+- filename: src/lib/auth/legacyEmailLogin/rateLimit.ts
+  checksum: 41f42d4254634f2533eb387646180343cd1a9ba6d90296dbf66503fc76d8ca91
 - filename: src/lib/checklists/offboarding.yml
   checksum: 384a97d6f52970048feb3e4f140a4c9993a190c15acb431cb3035001f3f3f755
 - filename: src/lib/checklists/onboarding.yml
@@ -86,13 +104,13 @@ fileignoreconfig:
 - filename: src/proxy.ts
   checksum: f1487d61722d98af1ebf111e8db40eeb4f682763b933572866121b291c689235
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
-  checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
+  checksum: 8e9e0d0cb8a16090379496eebf03ef83486145231425f9b364affe153a52ead1
 - filename: src/server/queueing/workers/send-verification-email.ts
   checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: 9984a43d1096596c3e87f3333e733f6ade807f2017132469f9acc8cec9a0f344
 - filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.mjml.ejs
-  checksum: b609d42897009197b4e2c28f5e3de1505ca483377b308d4541904bbf00970c05
+  checksum: 45fcad68f655124550d0870606b10fb310e3f79ac459563e8703ce51bd4f0fb7
 - filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.tsx
   checksum: 92e8908b1d03cb63c51d8a56aa909ebaeab6f0ca3078ae044110019a0f9f2a16
 - filename: src/server/views/templates/emails/VerificationWaitingEmail/VerificationWaitingEmail.mjml.ejs

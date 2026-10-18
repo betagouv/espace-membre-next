@@ -1,4 +1,3 @@
-import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 
 import { getMemberIfValidOrThrowError } from "@/lib/member";
@@ -10,7 +9,6 @@ import {
 import { userStartupToModel } from "@/models/mapper";
 import { missionSchemaType } from "@/models/mission";
 import { startupSchemaType } from "@/models/startup";
-import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { withRetry } from "@/lib/withRetry";
@@ -64,16 +62,19 @@ export async function sendEmailToTeamWhenNewMember(
       ),
     );
 
-    await withRetry(async () => {
-      await sendEmail({
-        toEmail: memberEmails,
-        type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL,
-        variables: {
-          startup: userStartupToModel(startup),
-          userInfos: newMember,
-        },
-      });
-    }, undefined, "team notification email");
+    await withRetry(
+      () =>
+        sendEmail({
+          toEmail: memberEmails,
+          type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL,
+          variables: {
+            startup: userStartupToModel(startup),
+            userInfos: newMember,
+          },
+        }),
+      { operationName: "new member announcement email" },
+    );
+
     console.log(
       `Email send to startup member to inform them about ${newMember.fullname} arrival`,
     );
