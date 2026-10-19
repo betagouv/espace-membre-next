@@ -19,6 +19,8 @@ fileignoreconfig:
   checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
+- filename: connexion.md
+  checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
 - filename: e2e/auth.valid.member.setup.ts
   checksum: 55197d4fc1d2b140e6b691846b79372dafdd1bcf82db0c9d32f5a4c494a34047
 - filename: e2e/legacy-email-login.spec.ts
@@ -66,7 +68,7 @@ fileignoreconfig:
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
 - filename: src/lib/auth/legacyEmailLogin/README.md
-  checksum: 43f8bd5840311f55ce269a1d794f8921ed51950f8164c22eff65624f484d1407
+  checksum: 59f6db0dbbbe543c1efe09e8e0c1f4ca908f094e9ee109829932f64dc18371f3
 - filename: src/lib/auth/legacyEmailLogin/legacyEmailLogin.spec.ts
   checksum: f3144b48b45e6b77a43cf57182d3023d5e58985cd19aba422c8bbbbdc145e0aa
 - filename: src/lib/auth/legacyEmailLogin/rateLimit.spec.ts
@@ -89,6 +91,8 @@ fileignoreconfig:
   checksum: 4875c83d95ffdac95c1b9847f3d27d2ffdf0b1cbbc0a6c83ccb6ae9abf25a81d
 - filename: src/lib/ical.spec.ts
   checksum: fba460db18a31e2d6383d485a112eacaf45d51c20260f5fac92ead3c66f8cc59
+- filename: src/lib/onboarding/startMemberOnboarding.ts
+  checksum: af588f46520f619aaa25ed580acfa76be3fc62be1192e887120131ce40c38603
 - filename: src/lib/rateLimit.spec.ts
   checksum: b5be0a794c32b06c418507136408f0e8c78e388979a59f83bd1000dcef8958ae
 - filename: src/lib/rateLimit.ts
