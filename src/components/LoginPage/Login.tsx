@@ -86,6 +86,15 @@ const ConnectBlock = ({ children }) => {
   );
 };
 
+// refused by us after the ProConnect login : its session is still open and,
+// without prompt=login, would answer again with the same address
+const PROCONNECT_REFUSALS = [
+  "UnknownMember",
+  "SecondaryEmailNotAllowed",
+  "ExtEmailNotAllowed",
+  "MfaRequired",
+];
+
 const oAuthErrors = {
   OAuthCallback: "Impossible de se connecter via ProConnect",
   OAuthSignin: "Impossible de se connecter via ProConnect",
@@ -161,15 +170,12 @@ export const LoginPage = function ({
   const errorMessage =
     (error && oAuthErrors[decodeURIComponent(error)]) ||
     "Impossible de se connecter";
+  const isProConnectRefusal = !!error && PROCONNECT_REFUSALS.includes(error);
   // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   // members who used ProConnect with their personal email, or without MFA,
   // before it became mandatory
   const legacyEmailLoginHint =
-    legacyEmailLogin?.mode === "transition" &&
-    (error === "UnknownMember" ||
-      error === "SecondaryEmailNotAllowed" ||
-      error === "MfaRequired" ||
-      error === "ExtEmailNotAllowed")
+    legacyEmailLogin?.mode === "transition" && isProConnectRefusal
       ? " Pendant la transition, tu peux encore te connecter par email avec le formulaire ci-dessous."
       : "";
 
@@ -188,9 +194,18 @@ export const LoginPage = function ({
       <div className={fr.cx("fr-mb-3w")}>
         <ProConnectButton
           onClick={() =>
-            signIn("proconnect", next ? { callbackUrl: next } : undefined)
+            signIn(
+              "proconnect",
+              next ? { callbackUrl: next } : undefined,
+              isProConnectRefusal ? { prompt: "login" } : undefined,
+            )
           }
         />
+        {isProConnectRefusal && (
+          <p className="fr-text--sm fr-mt-1w">
+            ProConnect te redemandera ton adresse : tu peux en saisir une autre.
+          </p>
+        )}
       </div>
       {fakeProConnect && <FakeProConnectForm next={next} />}
       {/* legacy-email-login: remove with src/lib/auth/legacyEmailLogin */}
