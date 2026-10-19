@@ -4,6 +4,7 @@ import {
   findUsersByLoginEmail,
   findUsersUsingEmail,
   isLegacyExtEmail,
+  isSecondaryEmailOfMember,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
 import customPostgresAdapter from "@/lib/pgAdpter";
@@ -88,6 +89,9 @@ describe("findUsersByLoginEmail", () => {
     expect(await findUsersByLoginEmail("Perso.A@example.com")).to.deep.equal(
       [],
     );
+    // only to tell the member why the login is refused
+    expect(await isSecondaryEmailOfMember("Perso.A@example.com")).to.be.true;
+    expect(await isSecondaryEmailOfMember("perso.z@example.com")).to.be.false;
   });
 
   it("should not find a user without primary_email (onboarding)", async () => {

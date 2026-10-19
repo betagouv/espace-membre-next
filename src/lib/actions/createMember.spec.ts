@@ -3,6 +3,7 @@ import { expect } from "chai";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { db } from "@/lib/kysely";
 import { Domaine, EmailStatusCode } from "@/models/member";
 
@@ -64,7 +65,7 @@ describe("createMember", () => {
 
   it("refuses the platform mailboxes, legacy ext.beta.gouv.fr included", async () => {
     for (const email of [
-      "Ada.Lovelace@Beta.Gouv.fr",
+      `Ada.Lovelace@${DIMAIL_MAILBOX_DOMAIN.toUpperCase()}`,
       "ada.lovelace@ext.beta.gouv.fr",
     ]) {
       const result = await invite(email);

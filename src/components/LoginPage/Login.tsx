@@ -91,6 +91,8 @@ const oAuthErrors = {
   OAuthSignin: "Impossible de se connecter via ProConnect",
   UnknownMember:
     "Aucun membre ne correspond à ce compte. Connecte-toi avec ton adresse @beta.gouv.fr ou ton adresse du service public (pas ton email personnel).",
+  SecondaryEmailNotAllowed:
+    "Cette adresse est ton email perso sur ta fiche, elle ne sert pas à te connecter. Connecte-toi avec ton email principal, puis passe cette adresse en principal depuis ta fiche, ou demande-le au support.",
   ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
   MfaRequired:
     "Vous ne pouvez pas accéder au service sans avoir une double authentification installée. Veuillez installer une application d'authentification et vous connecter à nouveau.",
@@ -165,6 +167,7 @@ export const LoginPage = function ({
   const legacyEmailLoginHint =
     legacyEmailLogin?.mode === "transition" &&
     (error === "UnknownMember" ||
+      error === "SecondaryEmailNotAllowed" ||
       error === "MfaRequired" ||
       error === "ExtEmailNotAllowed")
       ? " Pendant la transition, tu peux encore te connecter par email avec le formulaire ci-dessous."

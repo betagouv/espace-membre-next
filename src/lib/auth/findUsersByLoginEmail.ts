@@ -21,6 +21,23 @@ export const LEGACY_EXT_DOMAIN = "ext.beta.gouv.fr";
 export const isLegacyExtEmail = (email: string | null | undefined) =>
   !!normalizeLoginEmail(email)?.endsWith(`@${LEGACY_EXT_DOMAIN}`);
 
+// never a login identifier : only tells a refused member why
+export const isSecondaryEmailOfMember = async (
+  email: string | null | undefined,
+) => {
+  const normalized = normalizeLoginEmail(email);
+  if (!normalized) {
+    return false;
+  }
+  return !!(await db
+    .selectFrom("users")
+    .select("uuid")
+    .where(({ eb, fn }) =>
+      eb(fn("lower", ["secondary_email"]), "=", normalized),
+    )
+    .executeTakeFirst());
+};
+
 // Returns at most 2 users matching the email on primary_email or a linked
 // dinum_emails row (mailbox or alias). secondary_email (personal email) is
 // deliberately NOT a login identifier : members log in with ProConnect using

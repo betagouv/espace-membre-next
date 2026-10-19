@@ -119,6 +119,14 @@ async function resendWebmailAccess(
     );
   }
   if (
+    user.secondary_email.trim().toLowerCase() === mailbox.email.toLowerCase()
+  ) {
+    throw new BusinessError(
+      "secondaryEmailIsMailbox",
+      "L'email secondaire de ce membre est cette boîte : le lien y serait inaccessible. Il faut d'abord lui renseigner un autre email secondaire.",
+    );
+  }
+  if (
     user.secondary_email.trim().toLowerCase() !==
     expectedSecondaryEmail.trim().toLowerCase()
   ) {
