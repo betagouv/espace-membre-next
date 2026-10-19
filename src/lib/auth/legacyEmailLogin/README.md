@@ -20,7 +20,7 @@ Variables :
 
 Dès qu'un membre se connecte avec ProConnect + MFA (événement `login.proconnect_mfa`), le lien magique se ferme pour lui.
 
-Le job `job:remind-legacy-email-login` écrit aux comptes pas encore migrés, uniquement en `transition`. Il est enchaîné chaque jour à la tâche cron de 8 h UTC de `clean-teams-members`, et relance un membre au plus une fois tous les 6 jours. Pour une adresse principale en `@ext.beta.gouv.fr`, que ProConnect refuse, il indique l'alias `@beta.gouv.fr` du membre. Sans alias, le membre est sauté jusqu'à la migration des adresses ext vers `.ext@beta.gouv.fr`.
+Le job cron `remind-legacy-email-login` écrit aux comptes pas encore migrés, uniquement en `transition`. Il tourne chaque jour dans le créneau `morning` (8 h UTC), après `clean-teams-members`, et relance un membre au plus une fois tous les 6 jours. Pour une adresse principale en `@ext.beta.gouv.fr`, que ProConnect refuse, il indique l'alias `@beta.gouv.fr` du membre. Sans alias, le membre est sauté jusqu'à la migration des adresses ext vers `.ext@beta.gouv.fr`.
 
 `npm run report:legacy-email-login` (lecture seule) compte les membres actifs pas encore migrés par catégorie. Avec `--list`, il liste ceux qui sont à risque à la coupure.
 
@@ -38,8 +38,8 @@ Tout passe par `user_events`, sans colonne dédiée :
 
 ## Supprimer la feature
 
-1. Supprimer ce dossier, `src/components/LegacyEmailLogin/`, `src/app/(public)/signin/`, `src/scripts/remind-legacy-email-login.ts`, `src/scripts/legacy-email-login-report.ts`, `e2e/legacy-email-login.spec.ts` et les templates `LoginEmail/` et `LegacyEmailLoginReminder/`.
+1. Supprimer ce dossier, `src/components/LegacyEmailLogin/`, `src/app/(public)/signin/`, `src/scripts/legacy-email-login-report.ts`, `e2e/legacy-email-login.spec.ts` et les templates `LoginEmail/` et `LegacyEmailLoginReminder/`.
 2. Retirer chaque bloc marqué `legacy-email-login` : `git grep -n "legacy-email-login"`.
 3. Retirer `signin` du matcher de `src/middleware.ts` (pas de marqueur possible dans la regex).
-4. Retirer `npm run job:remind-legacy-email-login` de la tâche de 8 h de `cron.json`, les scripts de `package.json`, les variables de `.github/workflows/playwright.yml`, et les variables `LEGACY_EMAIL_LOGIN_*` de `.env.development` et de Scalingo.
+4. Retirer le job `remind-legacy-email-login` de `CRON_SLOTS.morning` (`src/scripts/cron/jobs.ts`), le script `report:legacy-email-login` de `package.json`, les variables de `.github/workflows/playwright.yml`, et les variables `LEGACY_EMAIL_LOGIN_*` de `.env.development` et de Scalingo.
 5. Migration : supprimer la table `verification_tokens` et les lignes `user_events` dont `field_id` commence par `legacy_email_login.`.

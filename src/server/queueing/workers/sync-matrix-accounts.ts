@@ -41,7 +41,7 @@ function firstMatch(
   return emails.map((e) => emailToMatrixId.get(e)).find(Boolean);
 }
 
-export async function syncMatrixAccounts(job: PgBoss.Job<void>) {
+export async function syncMatrixAccounts(job?: PgBoss.Job<void>) {
   // select all active users emails
   const users = await db
     .selectFrom("users")

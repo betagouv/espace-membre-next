@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #set +x # debug
-set -e  # stop on errors
+set -eo pipefail  # stop on errors, including inside pipes
 
 BRANCH="auto/changes-`date '+%Y%m%d_%H%M%S'`"
 COMMIT="chore: db changes `date '+%Y%m%d_%H%M%S'`"
@@ -28,7 +28,7 @@ if [[ `git status --porcelain content` ]]; then
 
     # make PR from fork
     FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY" )";
-    curl -s --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
+    curl -sS --fail-with-body --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
         --data-raw "{
