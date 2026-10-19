@@ -12,6 +12,7 @@ import {
   safeChoosePrimaryEmailFromDimail,
   safeGetPrimaryEmailSettings,
   safeRequestPrimaryEmailChange,
+  safeRequestPrimaryEmailSwap,
 } from "@/app/api/member/actions/primaryEmail";
 import { memberBaseInfoSchemaType } from "@/models/member";
 
@@ -23,9 +24,11 @@ type Settings = {
     requestedBy: string | null;
   } | null;
   dimailAddresses: string[];
+  secondaryEmail: string | null;
   expired: boolean;
   canChooseDimail: boolean;
   canRequest: boolean;
+  canSwap: boolean;
 };
 
 const formatDate = (date: Date) =>
@@ -205,6 +208,29 @@ export default function BlocConfigurerEmailPrincipal({
             Utiliser cette adresse
           </Button>
         </form>
+      )}
+
+      {settings?.canSwap && !settings.pending && (
+        <div className="fr-mb-4w">
+          <p>
+            Email perso : <strong>{settings.secondaryEmail}</strong>. L'inverser
+            le met en attente comme email principal. À la connexion ProConnect
+            de la personne avec cette adresse, il devient son email principal et
+            l'email principal actuel devient son email perso.
+          </p>
+          <Button
+            priority="secondary"
+            nativeButtonProps={{ type: "button", disabled: isSaving }}
+            onClick={() =>
+              run(
+                () => safeRequestPrimaryEmailSwap(userInfos.username),
+                "Inversion proposée : la personne doit se reconnecter avec ProConnect avec son email perso",
+              )
+            }
+          >
+            Inverser email principal et email perso
+          </Button>
+        </div>
       )}
 
       {settings?.canRequest && (

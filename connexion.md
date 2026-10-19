@@ -8,7 +8,7 @@ Un membre est retrouvé par l'adresse que renvoie ProConnect, comparée à :
 - une boîte ou un alias Dimail rattaché à sa fiche (hors adresse supprimée de Dimail) ;
 - son adresse principale en attente, le temps de la confirmer.
 
-L'email perso (`secondary_email`) n'est jamais un identifiant ProConnect. Les adresses `@ext.beta.gouv.fr` sont refusées : il faut passer par l'alias `@beta.gouv.fr`.
+L'email perso (`secondary_email`) n'est jamais un identifiant ProConnect, et un membre qui s'en sert voit un message qui le lui dit. Les adresses `@ext.beta.gouv.fr` sont refusées : il faut passer par l'alias `@beta.gouv.fr`.
 
 Le lien magique par email reste ouvert pendant la transition, pour les comptes existants pas encore passés à ProConnect. Il est isolé dans `src/lib/auth/legacyEmailLogin/`, dont le README décrit les phases et la suppression.
 
@@ -88,6 +88,7 @@ L'email principal est l'identifiant ProConnect : il ne s'écrit jamais directeme
 
 - **Une adresse Dimail du membre** (boîte ou alias `@beta.gouv.fr`, active) devient principale directement, depuis sa fiche.
 - **Toute autre adresse** est posée en attente pour 7 jours. Elle devient principale quand le membre se connecte avec elle sur ProConnect, ce qui prouve qu'elle lui appartient.
+- **L'email perso** suit le même chemin. À la confirmation, les deux adresses s'inversent : l'ancien principal devient l'email perso. Un admin peut proposer cette inversion depuis la fiche.
 
 Peuvent poser une adresse en attente :
 

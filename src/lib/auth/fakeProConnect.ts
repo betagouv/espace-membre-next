@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import {
   findUsersByLoginEmail,
   isLegacyExtEmail,
+  isSecondaryEmailOfMember,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
 import { findUsersByPendingPrimaryEmail } from "@/lib/auth/pendingPrimaryEmail";
@@ -37,7 +38,11 @@ export const authorizeFakeProConnect = async (
     console.log(
       `Fake ProConnect: ${dbUsers.length} member(s) found for ${credentials?.email}`,
     );
-    throw new Error("UnknownMember");
+    throw new Error(
+      dbUsers.length === 0 && (await isSecondaryEmailOfMember(email))
+        ? "SecondaryEmailNotAllowed"
+        : "UnknownMember",
+    );
   }
   return {
     id: dbUsers[0].username,
