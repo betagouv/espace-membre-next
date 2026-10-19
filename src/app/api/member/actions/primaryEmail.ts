@@ -49,6 +49,7 @@ const getContext = async (username: string) => {
       "uuid",
       "username",
       "primary_email",
+      "secondary_email",
       "pending_primary_email",
       "pending_primary_email_expires_at",
       "pending_primary_email_requested_by",
@@ -119,7 +120,9 @@ async function getPrimaryEmailSettings(username: string) {
   const context = await getContext(username);
   const { user, isSelf, session } = context;
   const expired = await context.isExpiredSelf();
+  const canRequest = !expired && (await canRequestChange(context));
   const primary = normalizeLoginEmail(user.primary_email);
+  const secondary = normalizeLoginEmail(user.secondary_email);
   const pending =
     user.pending_primary_email &&
     user.pending_primary_email_expires_at &&
@@ -136,9 +139,16 @@ async function getPrimaryEmailSettings(username: string) {
     dimailAddresses: (await getDimailAddresses(user.uuid)).filter(
       (email) => email !== primary,
     ),
+    secondaryEmail: user.secondary_email,
     expired,
     canChooseDimail: !expired && isSelf && isMfaSession(session),
-    canRequest: !expired && (await canRequestChange(context)),
+    canRequest,
+    canSwap:
+      canRequest &&
+      context.isAdmin &&
+      !!primary &&
+      !!secondary &&
+      secondary !== primary,
   };
 }
 
@@ -191,8 +201,11 @@ async function choosePrimaryEmailFromDimail(
   revalidatePath("/community/[id]", "layout");
 }
 
-async function requestPrimaryEmailChange(username: string, rawEmail: string) {
-  const context = await getContext(username);
+const requestChange = async (
+  context: Awaited<ReturnType<typeof getContext>>,
+  rawEmail: string,
+) => {
+  const { username } = context.user;
   if (!(await canRequestChange(context))) {
     throw new BusinessError(
       "proConnectRequired",
@@ -220,6 +233,26 @@ async function requestPrimaryEmailChange(username: string, rawEmail: string) {
   });
   revalidatePath("/community/[id]", "layout");
   return { email, expiresAt };
+};
+
+async function requestPrimaryEmailChange(username: string, rawEmail: string) {
+  return requestChange(await getContext(username), rawEmail);
+}
+
+// confirmed like any pending address, by a ProConnect login with it : the
+// swap itself happens then (promotePendingPrimaryEmail)
+async function requestPrimaryEmailSwap(username: string) {
+  const context = await getContext(username);
+  if (!context.isAdmin) {
+    throw new AuthorizationError();
+  }
+  if (!context.user.secondary_email) {
+    throw new BusinessError(
+      "noSecondaryEmail",
+      "Cette personne n'a pas d'email perso à passer en principal.",
+    );
+  }
+  return requestChange(context, context.user.secondary_email);
 }
 
 async function cancelPendingPrimaryEmail(username: string) {
@@ -248,6 +281,11 @@ export const safeRequestPrimaryEmailChange = withErrorHandling<
   UnwrapPromise<ReturnType<typeof requestPrimaryEmailChange>>,
   Parameters<typeof requestPrimaryEmailChange>
 >(requestPrimaryEmailChange);
+
+export const safeRequestPrimaryEmailSwap = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof requestPrimaryEmailSwap>>,
+  Parameters<typeof requestPrimaryEmailSwap>
+>(requestPrimaryEmailSwap);
 
 export const safeCancelPendingPrimaryEmail = withErrorHandling<
   UnwrapPromise<ReturnType<typeof cancelPendingPrimaryEmail>>,

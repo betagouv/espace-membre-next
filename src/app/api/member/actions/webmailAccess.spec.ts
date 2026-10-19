@@ -115,6 +115,19 @@ describe("resend webmail access", () => {
     expect(res.message).to.include("email secondaire");
   });
 
+  it("should refuse a personal email that is the mailbox itself", async () => {
+    await addMailbox();
+    await db
+      .updateTable("users")
+      .set({ secondary_email: mailbox })
+      .where("uuid", "=", uuid)
+      .execute();
+    const res = await resend(mailbox);
+    expect(res.success).to.be.false;
+    expect(res.message).to.include("inaccessible");
+    expect(sendWebmailAccessCodeStub.notCalled).to.be.true;
+  });
+
   it("should refuse when the personal email changed since the admin confirmed it", async () => {
     await addMailbox();
     const res = await resend("ancien@example.com");

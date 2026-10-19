@@ -17,6 +17,7 @@ import {
 import {
   findUsersByLoginEmail,
   isLegacyExtEmail,
+  isSecondaryEmailOfMember,
   normalizeLoginEmail,
 } from "@/lib/auth/findUsersByLoginEmail";
 import {
@@ -128,7 +129,12 @@ export const authOptions: NextAuthOptions = {
             console.log(
               `ProConnect: ${dbUsers.length} member(s) found for ${userinfo?.email}`,
             );
-            return refuse("UnknownMember");
+            return refuse(
+              dbUsers.length === 0 &&
+                (await isSecondaryEmailOfMember(userinfo?.email))
+                ? "SecondaryEmailNotAllowed"
+                : "UnknownMember",
+            );
           }
           return {
             ...userinfo,

@@ -47,6 +47,7 @@ const {
   safeChoosePrimaryEmailFromDimail,
   safeGetPrimaryEmailSettings,
   safeRequestPrimaryEmailChange,
+  safeRequestPrimaryEmailSwap,
 } = proxyquire("@/app/api/member/actions/primaryEmail", {
   "next-auth/next": { getServerSession: getServerSessionStub },
   "next/cache": { revalidatePath: () => {} },
@@ -184,6 +185,47 @@ describe("primary email verified by ProConnect", () => {
       );
       expect(res.success).to.be.false;
       expect(res.message).to.include("arrivée");
+    });
+  });
+
+  describe("requestPrimaryEmailSwap", () => {
+    beforeEach(() =>
+      db
+        .updateTable("users")
+        .set({ secondary_email: newEmail })
+        .where("uuid", "=", memberUuid)
+        .execute(),
+    );
+
+    it("should let only an admin with MFA put the personal email in pending", async () => {
+      asSession(member.username, "proconnect", "eidas1-mfa");
+      let settings = await safeGetPrimaryEmailSettings(member.username);
+      expect(settings.data.canSwap).to.be.false;
+      expect((await safeRequestPrimaryEmailSwap(member.username)).success).to.be
+        .false;
+
+      asSession(admin, "proconnect", "eidas1-mfa");
+      settings = await safeGetPrimaryEmailSettings(member.username);
+      expect(settings.data.canSwap).to.be.true;
+      const res = await safeRequestPrimaryEmailSwap(member.username);
+      expect(res.success, res.message).to.be.true;
+      const user = await getUser(member.username);
+      expect(user.primary_email).to.equal(member.primary_email);
+      expect(user.pending_primary_email).to.equal(newEmail);
+      expect(user.pending_primary_email_requested_by).to.equal(admin);
+    });
+
+    it("should swap both addresses at the ProConnect + MFA login with the personal email", async () => {
+      await setPending(member.username, newEmail, 3600 * 1000);
+      await authOptions.events!.signIn!({
+        user: { id: member.username } as any,
+        account: { provider: "proconnect" } as any,
+        profile: { email: newEmail } as any,
+      });
+      const user = await getUser(member.username);
+      expect(user.primary_email).to.equal(newEmail);
+      expect(user.secondary_email).to.equal(member.primary_email);
+      expect(user.pending_primary_email).to.be.null;
     });
   });
 

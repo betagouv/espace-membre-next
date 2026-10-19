@@ -135,6 +135,7 @@ export const promotePendingPrimaryEmail = async ({
     .select([
       "uuid",
       "primary_email",
+      "secondary_email",
       "pending_primary_email",
       "pending_primary_email_expires_at",
     ])
@@ -158,12 +159,16 @@ export const promotePendingPrimaryEmail = async ({
     );
     return false;
   }
+  // the personal email confirmed as primary : the two are swapped, so that the
+  // same address is never kept twice
+  const swapWithSecondary = normalizeLoginEmail(user.secondary_email) === email;
   // conditional on the request still standing : it may have been cancelled or
   // replaced while this login was going on
   const updated = await db
     .updateTable("users")
     .set({
       primary_email: email,
+      ...(swapWithSecondary ? { secondary_email: user.primary_email } : {}),
       pending_primary_email: null,
       pending_primary_email_expires_at: null,
       pending_primary_email_requested_by: null,
@@ -184,6 +189,17 @@ export const promotePendingPrimaryEmail = async ({
       old_value: user.primary_email || undefined,
     },
   });
+  if (swapWithSecondary && user.primary_email) {
+    await addEvent({
+      action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
+      created_by_username: username,
+      action_on_username: username,
+      action_metadata: {
+        value: user.primary_email,
+        old_value: email,
+      },
+    });
+  }
   console.log(`ProConnect: pending primary email of ${username} confirmed`);
   return true;
 };
