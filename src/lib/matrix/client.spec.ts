@@ -36,7 +36,7 @@ describe("lookupMatrixIdsByEmails", () => {
       matrix_user_id: undefined,
     };
     const mod = proxyquire("./client", {
-      "@/server/config": {
+      "@/lib/config": {
         default: mockConfig,
         __esModule: true,
         "@noCallThru": true,
@@ -112,7 +112,7 @@ describe("lookupMatrixIdsByEmails", () => {
     mockConfig.matrix_token = HOME_TOKEN;
     mockConfig.matrix_user_id = MATRIX_USER;
     const mod = proxyquire("./client", {
-      "@/server/config": {
+      "@/lib/config": {
         default: mockConfig,
         __esModule: true,
         "@noCallThru": true,

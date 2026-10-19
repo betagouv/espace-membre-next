@@ -104,13 +104,13 @@ describe("dimail client", () => {
   describe("patchMailbox", () => {
     it("should call axios.patch and return success", async () => {
       const scope = nock(process.env.DIMAIL_API_URL as string)
-        .patch("/domains/domain.com/mailboxes/user")
+        .patch("/v2/domains/domain.com/mailboxes/user", { imap_active: "yes" })
         .reply(200, {});
 
       const result = await clientModule.patchMailbox({
         domain_name: "domain.com",
         user_name: "user",
-        data: { active: "yes" },
+        data: { imap_active: "yes" },
       });
       expect(scope.isDone()).to.be.true;
       expect(result).to.deep.equal({ success: true });

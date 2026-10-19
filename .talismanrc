@@ -1,4 +1,8 @@
 fileignoreconfig:
+- filename: connexion.md
+  checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
+- filename: src/lib/onboarding/startMemberOnboarding.ts
+  checksum: af588f46520f619aaa25ed580acfa76be3fc62be1192e887120131ce40c38603
 - filename: .env.development
   checksum: 8c5abacb4d10f1674a882841bb7937eba4a14fdf4535251c2adb439644fe12ee
 - filename: .env.test
@@ -108,7 +112,7 @@ fileignoreconfig:
 - filename: src/proxy.ts
   checksum: f1487d61722d98af1ebf111e8db40eeb4f682763b933572866121b291c689235
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
-  checksum: 50dd441acf7d9577a8406c44a829891399454975971de6286ea36797776c99ca
+  checksum: 4c61d0ec6187fd8d2a0e75c7ac56b6e0788a6ffa53ac8ea36e111f2056591a65
 - filename: src/server/queueing/workers/send-verification-email.ts
   checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
 - filename: src/server/schedulers/emailScheduler.ts
