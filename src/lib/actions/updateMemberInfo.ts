@@ -3,6 +3,7 @@
 import { getServerSession } from "next-auth";
 
 import { updateMember } from "@/app/api/member/updateMember";
+import { canEditMemberFullInfo } from "@/lib/canEditMember";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberInfoUpdateSchema } from "@/models/actions/member";
 import { authOptions } from "@/lib/authoptions";
@@ -20,15 +21,28 @@ async function updateMemberInfoAction({
   memberData: unknown;
 }) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.id !== username && !session.user.isAdmin)) {
+  if (!session || !session.user.id) {
     throw new AuthorizationError();
   }
 
-  const data = memberInfoUpdateSchema.shape.member.parse(memberData);
   const previousInfo = await getUserInfos({ username });
   if (!previousInfo) {
     throw new NoDataError("Utilisateur introuvable.");
   }
+
+  // a member can edit itself, admins and incubator team members can edit others
+  const isCurrentUser = session.user.id === username;
+  if (
+    !isCurrentUser &&
+    !(await canEditMemberFullInfo({
+      memberUuid: previousInfo.uuid,
+      sessionUser: session.user,
+    }))
+  ) {
+    throw new AuthorizationError();
+  }
+
+  const data = memberInfoUpdateSchema.shape.member.parse(memberData);
 
   await updateMember(data, previousInfo.uuid, undefined, session.user.id);
 

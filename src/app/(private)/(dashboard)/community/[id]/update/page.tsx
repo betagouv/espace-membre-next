@@ -10,7 +10,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
 
-import { canEditMember } from "@/lib/canEditMember";
+import { canEditMember, canEditMemberFullInfo } from "@/lib/canEditMember";
 
 export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -30,6 +30,19 @@ export default async function Page(segmentData: {
   if (!dbData) {
     redirect("/community");
   }
+  const isCurrentUser = session.user.id === dbData.username;
+
+  // admins and incubator team members can edit the whole member data
+  if (
+    !isCurrentUser &&
+    (await canEditMemberFullInfo({
+      memberUuid: dbData.uuid,
+      sessionUser: session.user,
+    }))
+  ) {
+    redirect(`/community/${id}/admin-update`);
+  }
+
   const userInfos = memberBaseInfoToModel(dbData);
 
   const startups = await getAllStartups();
@@ -43,8 +56,6 @@ export default async function Page(segmentData: {
   const hasActiveMission = !!userInfos.missions.find((m) =>
     m.end ? new Date(m.end) >= new Date() : !m.end,
   );
-  const isCurrentUser = session.user.id === dbData.uuid;
-
   const canEdit =
     isCurrentUser ||
     (await canEditMember({
