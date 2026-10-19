@@ -1,4 +1,3 @@
-import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 
 import { getMemberIfValidOrThrowError } from "@/lib/member";
@@ -70,18 +69,23 @@ export async function sendNewMemberValidationEmail(
       ),
     ) as string[];
 
-    await withRetry(async () => {
-      await sendEmail({
-        toEmail: memberEmails,
-        type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
-        variables: {
-          startups: userStartups.map((startup) => userStartupToModel(startup)),
-          incubator: incubatorToModel(incubator),
-          userInfos: newMember,
-          validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
-        },
-      });
-    }, undefined, "validation email");
+    await withRetry(
+      () =>
+        sendEmail({
+          toEmail: memberEmails,
+          type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
+          variables: {
+            startups: userStartups.map((startup) =>
+              userStartupToModel(startup),
+            ),
+            incubator: incubatorToModel(incubator),
+            userInfos: newMember,
+            validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
+          },
+        }),
+      { operationName: "validation email" },
+    );
+
     sentCount++;
     console.log(`Validation email sent for new member ${newMember.fullname}`);
   }

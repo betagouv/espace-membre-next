@@ -4,7 +4,7 @@ import sinon from "sinon";
 import {
   checkRateLimit,
   __resetRateLimitForTests,
-} from "@/lib/rateLimit";
+} from "@/lib/auth/legacyEmailLogin/rateLimit";
 
 describe("rateLimit", () => {
   let clock: sinon.SinonFakeTimers;

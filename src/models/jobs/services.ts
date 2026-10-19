@@ -7,6 +7,8 @@ export const CreateDimailMailboxDataSchema =
     userUuid: z.string().uuid(),
     username: z.string(),
     requestId: z.string().uuid(),
+    // new member onboarding : send the ProConnect invitation once the mailbox is created
+    onboarding: z.boolean().optional(),
   }).strict();
 export type CreateDimailAdressDataSchemaType = z.infer<
   typeof CreateDimailMailboxDataSchema

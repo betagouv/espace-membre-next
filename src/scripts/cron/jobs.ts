@@ -1,5 +1,10 @@
 import { spawn } from "node:child_process";
 
+// legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+import {
+  assertLegacyEmailLoginConfig,
+  sendLegacyEmailLoginReminders,
+} from "@/lib/auth/legacyEmailLogin";
 import type { CronJob } from "@/scripts/runJobs";
 import { cleanTeamsMembers } from "@/server/queueing/workers/clean-teams-members";
 import { startSync } from "@/server/queueing/workers/sync-dinum-emails";
@@ -29,7 +34,18 @@ export const CRON_SLOTS = {
   ],
   "business-hours": [{ name: "sync-dinum-emails", run: startSync }],
   nightly: [{ name: "sync-matrix-accounts", run: () => syncMatrixAccounts() }],
-  morning: [{ name: "clean-teams-members", run: () => cleanTeamsMembers() }],
+  morning: [
+    { name: "clean-teams-members", run: () => cleanTeamsMembers() },
+    // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
+    {
+      name: "remind-legacy-email-login",
+      run: async () => {
+        // the cron app does not go through instrumentation.ts
+        assertLegacyEmailLoginConfig();
+        await sendLegacyEmailLoginReminders();
+      },
+    },
+  ],
   "weekday-evening": [
     {
       name: "export-to-www",

@@ -1,18 +1,16 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { getServerSession } from "next-auth/next";
+import { z } from "zod";
 
 import { addEvent, getLastEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
-import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
-import {
-  SendEmailToTeamWhenNewMemberSchema,
-  SendNewMemberVerificationEmailSchema,
-} from "@/models/jobs/member";
-import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
+import { SendEmailToTeamWhenNewMemberSchema } from "@/models/jobs/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
@@ -20,8 +18,18 @@ import {
   withErrorHandling,
 } from "@/lib/error";
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
-import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 import { canEditMember } from "@/lib/canEditMember";
+import {
+  resumeMemberOnboarding,
+  startMemberOnboarding,
+} from "@/lib/onboarding/startMemberOnboarding";
+import { checkUserIsExpired } from "@/lib/utils";
+
+const MemberCreatedIncubatorSchema = z.object({
+  action_metadata: z.object({
+    incubator_id: z.string().nullish(),
+  }),
+});
 
 export async function validateNewMember({
   memberUuid,
@@ -38,51 +46,18 @@ export async function validateNewMember({
     );
   }
 
-  const eventMemberCreated = await getLastEvent(
-    rawData.username,
-    EventCode.MEMBER_CREATED,
+  // incubator chosen at invitation, only in MEMBER_CREATED. Optional (fail-closed),
+  // only incubator_id is parsed to survive old events.
+  const eventMemberCreated = MemberCreatedIncubatorSchema.safeParse(
+    await getLastEvent(rawData.username, EventCode.MEMBER_CREATED),
   );
-  if (!eventMemberCreated) {
-    throw new BusinessError(
-      "userMemberCreatedEventNotFound",
-      `L'événement de création du membre n'as pas été trouvé pour ${memberUuid}.`,
-    );
-  }
-  const eventMemberCreatedData =
-    EventMemberCreatedPayload.safeParse(eventMemberCreated);
-  if (!eventMemberCreatedData.success) {
-    console.log(eventMemberCreatedData.error);
-    throw new BusinessError(
-      "eventMemberCreatedEventDoesNotHaveTheExpectedFormat",
-      `L'événement de création du membre ${memberUuid} n'as pas le format attendu.`,
-    );
-  }
-  const incubator_id = eventMemberCreatedData.data.action_metadata.incubator_id;
-  const event = await db
-    .selectFrom("events")
-    .selectAll()
-    .where("action_on_username", "=", rawData.username)
-    .where("action_code", "=", EventCode.MEMBER_VALIDATED)
-    .orderBy("created_at desc")
-    .executeTakeFirst();
+  const incubator_id = eventMemberCreated.success
+    ? eventMemberCreated.data.action_metadata.incubator_id
+    : undefined;
 
-  if (event) {
-    throw new BusinessError(
-      "userAlreadyValided",
-      `Le nouveau membre a déjà été validé par ${event.created_by_username}`,
-    );
-  }
-  if (
-    rawData.primary_email_status !== EmailStatusCode.MEMBER_VALIDATION_WAITING
-  ) {
-    throw new BusinessError(
-      "userAlreadyValided",
-      `Ce membre a déjà été validé`,
-    );
-  }
-  const newMember = memberBaseInfoToModel(rawData);
+  // check rights before revealing anything about the member status
   const canEdit = await canEditMember({
-    memberUuid: newMember.uuid,
+    memberUuid: rawData.uuid,
     sessionUser: session.user,
     incubator_id: incubator_id || undefined,
   });
@@ -93,30 +68,74 @@ export async function validateNewMember({
     );
   }
 
-  await db
+  // atomic transition : a second (concurrent) validation updates nothing.
+  // EMAIL_UNSET : accepted, no login email yet (startMemberOnboarding takes over)
+  const result = await db
     .updateTable("users")
-    .where("uuid", "=", memberUuid)
     .set({
-      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
+      primary_email_status_updated_at: new Date(),
     })
-    .execute();
+    .where("uuid", "=", memberUuid)
+    .where(
+      "primary_email_status",
+      "=",
+      EmailStatusCode.MEMBER_VALIDATION_WAITING,
+    )
+    .executeTakeFirst();
+  if (!Number(result.numUpdatedRows)) {
+    // already validated : opening the validation link again resumes an
+    // onboarding stopped by a failure. EMAIL_UNSET is also the status of old
+    // fiches without email : only members with a current mission are concerned.
+    const currentData = await getUserBasicInfo({ uuid: memberUuid });
+    if (
+      currentData &&
+      !checkUserIsExpired(currentData as unknown as memberBaseInfoSchemaType) &&
+      (await resumeMemberOnboarding(rawData.uuid))
+    ) {
+      return;
+    }
+    throw new BusinessError(
+      "userAlreadyValided",
+      `Ce membre a déjà été validé`,
+    );
+  }
 
-    await addEvent({
-      created_by_username: session.user.id,
-      action_code: EventCode.MEMBER_VALIDATED,
-      action_on_username: newMember.username,
-    });
+  await addEvent({
+    created_by_username: session.user.id,
+    action_code: EventCode.MEMBER_VALIDATED,
+    action_on_username: rawData.username,
+  });
 
+  try {
+    await startMemberOnboarding(rawData.uuid);
+  } catch (e) {
+    if (e instanceof BusinessError) throw e;
+    console.error(
+      `validateNewMember: onboarding failed for ${rawData.username}`,
+      e,
+    );
+    Sentry.captureException(e);
+    throw new BusinessError(
+      "onboardingNotStarted",
+      `La fiche de ${rawData.username} est validée mais son arrivée n'a pas pu démarrer. Recharge cette page pour relancer.`,
+    );
+  }
+
+  // the announcement must never block the onboarding
+  try {
     await sendEmailToTeamWhenNewMember(
       SendEmailToTeamWhenNewMemberSchema.parse({
-        userId: newMember.uuid,
+        userId: rawData.uuid,
       }),
     );
-    await sendNewMemberVerificationEmail(
-      SendNewMemberVerificationEmailSchema.parse({
-        userId: newMember.uuid,
-      }),
+  } catch (e) {
+    console.error(
+      `validateNewMember: team announcement failed for ${rawData.username}`,
+      e,
     );
+    Sentry.captureException(e);
+  }
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);

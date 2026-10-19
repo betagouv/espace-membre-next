@@ -1,0 +1,21 @@
+<mj-text>Hello <%= fullname %> ! 👋</mj-text>
+<mj-text>
+  À partir du <b><%= endDate %></b>, la connexion à l'espace membre par lien
+  envoyé par email ne sera plus possible. Seule la connexion avec
+  <b>ProConnect</b>, avec double authentification, restera disponible.
+</mj-text>
+<% if (loginEmail) { %>
+<mj-text>
+  Pour ne pas perdre l'accès, connecte-toi dès maintenant avec ProConnect en
+  utilisant ton adresse <b><%= loginEmail %></b>. Ce rappel s'arrêtera dès ta
+  première connexion ProConnect.
+</mj-text>
+<mj-button href="<%= loginUrl %>">Me connecter avec ProConnect</mj-button>
+<% } else { %>
+<mj-text>
+  Ton compte n'a pas encore d'adresse utilisable avec ProConnect. Consulte
+  <a href="<%= supportUrl %>">la page d'aide</a> pour en obtenir une avant
+  cette date.
+</mj-text>
+<% } %>
+<mj-text>Bonne journée</mj-text>
