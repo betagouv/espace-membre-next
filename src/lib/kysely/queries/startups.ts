@@ -1,9 +1,12 @@
-import { ExpressionBuilder } from "kysely";
+import { ExpressionBuilder, sql, SqlBool } from "kysely";
 
 import { DB } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
+import { applyStartupPerimeter } from "@/lib/api/perimeter";
+import { ApiPerimeter } from "@/models/api/perimeter";
 import { getAllIncubators, getAllStartupsIncubators } from "./incubators";
 import { withMemberMissions } from "./users";
+import { ResourceRef } from "@/lib/api/identifier";
 
 export const getLatests = () =>
   db
@@ -35,9 +38,36 @@ export const getLatests = () =>
 
 // Membres d'une startup pour l'API protegee : toute personne ayant une mission
 // sur cette startup. Missions exposees avec les startups en GHID.
-export function getStartupMembers(startupUuid: string) {
-  return db
-    .selectFrom("users")
+function startupMembersBase(startupUuid: string) {
+  return db.selectFrom("users").where((eb) =>
+    eb.exists(
+      eb
+        .selectFrom("missions")
+        .innerJoin(
+          "missions_startups",
+          "missions_startups.mission_id",
+          "missions.uuid",
+        )
+        .select("missions.uuid")
+        .whereRef("missions.user_id", "=", "users.uuid")
+        .where("missions_startups.startup_id", "=", startupUuid),
+    ),
+  );
+}
+
+export async function countStartupMembers(startupUuid: string) {
+  // pg rend le bigint de countAll en chaine.
+  const { count } = await startupMembersBase(startupUuid)
+    .select((eb) => eb.fn.countAll<string>().as("count"))
+    .executeTakeFirstOrThrow();
+  return Number(count);
+}
+
+export function getStartupMembers(
+  startupUuid: string,
+  window?: { limit: number; offset: number },
+) {
+  return startupMembersBase(startupUuid)
     .select([
       "users.uuid",
       "users.username",
@@ -49,21 +79,11 @@ export function getStartupMembers(startupUuid: string) {
       "users.primary_email_status",
     ])
     .select((eb) => [withMemberMissions(eb, { startupId: startupUuid })])
-    .where((eb) =>
-      eb.exists(
-        eb
-          .selectFrom("missions")
-          .innerJoin(
-            "missions_startups",
-            "missions_startups.mission_id",
-            "missions.uuid",
-          )
-          .select("missions.uuid")
-          .whereRef("missions.user_id", "=", "users.uuid")
-          .where("missions_startups.startup_id", "=", startupUuid),
-      ),
-    )
+    // Tri stable : sans le second critere, deux homonymes peuvent s'echanger
+    // entre deux pages et un enregistrement disparaitre.
     .orderBy("users.fullname", "asc")
+    .orderBy("users.uuid", "asc")
+    .$if(!!window, (qb) => qb.limit(window!.limit).offset(window!.offset))
     .execute();
 }
 
@@ -79,6 +99,88 @@ function withStartupPhases(eb: ExpressionBuilder<DB, "startups">) {
   )
     .$notNull()
     .as("phases");
+}
+
+// Reproduit exactement currentPhaseName, qui prend le DERNIER element de phases
+// ordonne par (start asc, end asc) : c'est le premier element de l'ordre
+// inverse. En Postgres, ASC place les NULL en dernier et DESC en premier, donc
+// une phase sans date de fin reste la phase courante dans les deux
+// formulations.
+export const currentPhaseIn = (names: string[]) => sql<SqlBool>`(
+  select p.name
+  from phases p
+  where p.startup_id = startups.uuid
+  order by p.start desc, p.end desc
+  limit 1
+) = any(${sql.val(names)}::text[])`;
+
+// Incubateurs lies, en { uuid, ghid, title } : toute reponse porte uuid ET ghid.
+export const withStartupIncubators = (eb: ExpressionBuilder<DB, "startups">) =>
+  jsonArrayFrom(
+    eb
+      .selectFrom("startups_incubators")
+      .innerJoin(
+        "incubators",
+        "incubators.uuid",
+        "startups_incubators.incubator_id",
+      )
+      .select(["incubators.uuid", "incubators.ghid", "incubators.title"])
+      .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+      .orderBy("incubators.title"),
+  )
+    .$notNull()
+    .as("incubators");
+
+/**
+ * Base immuable d'une collection de produits : perimetre et filtres, sans
+ * colonnes, sans tri, sans fenetre. countApiStartups et listApiStartups la
+ * consomment, ce qui garantit que total et page portent sur le meme ensemble.
+ */
+export function apiStartupsBase(
+  perimeter: ApiPerimeter,
+  filters: { phases?: string[]; incubatorUuid?: string } = {},
+) {
+  let query = applyStartupPerimeter(db.selectFrom("startups"), perimeter);
+  if (filters.incubatorUuid) {
+    query = query.where((eb) =>
+      eb.exists(
+        eb
+          .selectFrom("startups_incubators")
+          .select("startups_incubators.startup_id")
+          .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+          .where("startups_incubators.incubator_id", "=", filters.incubatorUuid!),
+      ),
+    );
+  }
+  if (filters.phases?.length) {
+    query = query.where(currentPhaseIn(filters.phases));
+  }
+  return query;
+}
+
+export async function countApiStartups(
+  perimeter: ApiPerimeter,
+  filters: { phases?: string[]; incubatorUuid?: string } = {},
+) {
+  const { count } = await apiStartupsBase(perimeter, filters)
+    .select((eb) => eb.fn.countAll<string>().as("count"))
+    .executeTakeFirstOrThrow();
+  return Number(count);
+}
+
+export function listApiStartups(
+  perimeter: ApiPerimeter,
+  filters: { phases?: string[]; incubatorUuid?: string },
+  window: { limit: number; offset: number },
+) {
+  return apiStartupsBase(perimeter, filters)
+    .selectAll("startups")
+    .select((eb) => [withStartupPhases(eb), withStartupIncubators(eb)])
+    .orderBy("startups.name", "asc")
+    .orderBy("startups.uuid", "asc")
+    .limit(window.limit)
+    .offset(window.offset)
+    .execute();
 }
 
 // Startups enrichies de leurs phases, pour l'API protegee. Filtrable par
@@ -108,14 +210,83 @@ export function getStartupsWithPhases(incubatorUuid?: string) {
   );
 }
 
-// Une startup et ses phases, resolue par ghid. Undefined si inconnue.
-export async function getStartupWithPhases(ghid: string) {
+// Une startup et ses phases, resolue par ghid OU par uuid. Undefined si
+// inconnue.
+export async function getStartupWithPhases(ref: ResourceRef) {
   return db
     .selectFrom("startups")
     .selectAll("startups")
-    .select((eb) => [withStartupPhases(eb)])
-    .where("startups.ghid", "=", ghid)
+    .select((eb) => [withStartupPhases(eb), withStartupIncubators(eb)])
+    .$if("uuid" in ref, (qb) =>
+      qb.where("startups.uuid", "=", (ref as { uuid: string }).uuid),
+    )
+    .$if("ghid" in ref, (qb) =>
+      qb.where("startups.ghid", "=", (ref as { ghid: string }).ghid),
+    )
     .executeTakeFirst();
+}
+
+/** Les dix colonnes de standards, plus uuid et ghid en lecture seule. */
+export function updateStartupStandards(
+  startupUuid: string,
+  values: Partial<{
+    accessibility_status: string | null;
+    dsfr_status: string | null;
+    mon_service_securise: boolean | null;
+    analyse_risques: boolean | null;
+    analyse_risques_url: string | null;
+    dashlord_url: string | null;
+    tech_audit_url: string | null;
+    ecodesign_url: string | null;
+    stats: boolean | null;
+    stats_url: string | null;
+  }>,
+) {
+  return db
+    .updateTable("startups")
+    .set({ ...values, updated_at: new Date() })
+    .where("startups.uuid", "=", startupUuid)
+    .returning([
+      "startups.uuid",
+      "startups.ghid",
+      "startups.accessibility_status",
+      "startups.dsfr_status",
+      "startups.mon_service_securise",
+      "startups.analyse_risques",
+      "startups.analyse_risques_url",
+      "startups.dashlord_url",
+      "startups.tech_audit_url",
+      "startups.ecodesign_url",
+      "startups.stats",
+      "startups.stats_url",
+    ])
+    .executeTakeFirstOrThrow();
+}
+
+// techno, thematiques et usertypes sont des colonnes jsonb : un tableau JS
+// passe tel quel est serialise par pg en litteral de TABLEAU, que Postgres
+// refuse en 22P02 invalid input syntax for type json.
+const STARTUP_JSONB_COLUMNS = ["techno", "thematiques", "usertypes"] as const;
+
+const serializeJsonbColumns = (values: Record<string, unknown>) => {
+  const out: Record<string, unknown> = { ...values };
+  for (const column of STARTUP_JSONB_COLUMNS) {
+    if (Array.isArray(out[column])) out[column] = JSON.stringify(out[column]);
+  }
+  return out;
+};
+
+/** PATCH descriptif : ni ghid, ni incubator_id, ni phases, ni standards. */
+export function updateStartupDescriptive(
+  startupUuid: string,
+  values: Record<string, unknown>,
+) {
+  return db
+    .updateTable("startups")
+    .set({ ...serializeJsonbColumns(values), updated_at: new Date() })
+    .where("startups.uuid", "=", startupUuid)
+    .returningAll()
+    .executeTakeFirstOrThrow();
 }
 
 const selectLastStartupPhase = (selectFrom, startupId) =>

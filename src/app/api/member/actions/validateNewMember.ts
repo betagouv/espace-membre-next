@@ -18,7 +18,7 @@ import {
   withErrorHandling,
 } from "@/lib/error";
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
-import { canEditMember } from "@/lib/canEditMember";
+import { canEditMember } from "@/lib/authorization/member";
 import {
   resumeMemberOnboarding,
   startMemberOnboarding,

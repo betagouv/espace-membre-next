@@ -16,6 +16,10 @@ interface FakeDataStartup {
   name?: string;
   ghid: string;
   incubator?: string;
+  // Incubateurs co-incubants, en plus du principal : sans ce champ, aucun test
+  // de co-incubation n'est ecrivable. `incubator` est conserve tel quel pour ne
+  // pas casser les fichiers existants.
+  incubators?: string[];
 }
 
 interface FakeDataMission {
@@ -288,6 +292,24 @@ const createStartup = async function (
         )
         .execute();
     });
+  }
+  if (typeof startup !== "string" && startup.incubators?.length) {
+    for (const ghid of startup.incubators) {
+      const linked = await createIncubator(
+        data.incubators!.find((incubator) => incubator.ghid === ghid)!,
+        data,
+      );
+      await db
+        .insertInto("startups_incubators")
+        .values({
+          startup_id: insertedStartup.uuid,
+          incubator_id: linked.uuid,
+        })
+        .onConflict((oc) =>
+          oc.columns(["startup_id", "incubator_id"]).doNothing(),
+        )
+        .execute();
+    }
   }
   return insertedStartup;
 };

@@ -34,7 +34,7 @@ import {
   withErrorHandling,
   BusinessError,
 } from "@/lib/error";
-import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { canEditMember as _canEditMember } from "@/lib/authorization/member";
 import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
 
 async function changeSecondaryEmailForUser(

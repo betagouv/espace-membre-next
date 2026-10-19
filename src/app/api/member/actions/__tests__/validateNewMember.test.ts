@@ -4,7 +4,7 @@ import * as nextAuth from "next-auth/next";
 import * as eventsLib from "@/lib/events";
 import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
-import * as canEditMemberLib from "@/lib/canEditMember";
+import * as canEditMemberLib from "@/lib/authorization/member";
 import * as teamEmailLib from "@/lib/email/send-email-to-team-when-new-member";
 import * as onboardingLib from "@/lib/onboarding/startMemberOnboarding";
 import { validateNewMember } from "../validateNewMember";

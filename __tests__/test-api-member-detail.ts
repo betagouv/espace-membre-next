@@ -1,12 +1,13 @@
 import { expect } from "chai";
 import { subDays } from "date-fns";
 
+import { apiRequest, createTestApiKey, deleteTestApiKey } from "./utils/apiKey";
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
-import { GET } from "@/app/api/protected/members/[username]/route";
+import { GET } from "@/app/api/v1/members/[id]/route";
 import { db } from "@/lib/kysely";
 import { Domaine } from "@/models/member";
 
-// La fiche detaillee /api/protected/members/{username} est le successeur formalise
+// La fiche detaillee /api/v1/members/{username} est le successeur formalise
 // de l'ancienne route /member/{username}. On verifie son contrat sur les points
 // ajustes lors de la revue : missions[].startups en { uuid, ghid }, isCurrent
 // correct pour une mission sans date de fin, et exposition assumee de la PII.
@@ -33,10 +34,18 @@ const testData: FakeDataInterface = {
 };
 
 // La route ne lit pas la requete : un objet vide suffit.
-const makeReq = () => ({}) as unknown as Request;
+// Les routes v1 passent par withApiV1 : une VRAIE clef est inseree en base et
+// le jeton voyage en Bearer, donc le test traverse aussi le perimetre.
+let apiKey: { token: string; uuid: string };
+const makeReq = (search = "") =>
+  apiRequest(
+    apiKey.token,
+    `http://localhost:3000/api/v1/resource${search ? `?${search}` : ""}`,
+  );
 
-describe("GET /api/protected/members/[username]", () => {
+describe("GET /api/v1/members/[username]", () => {
   before(async () => {
+    apiKey = await createTestApiKey({ scopes: ["members:read"] });
     await createData(testData);
     const user = await db
       .selectFrom("users")
@@ -60,22 +69,23 @@ describe("GET /api/protected/members/[username]", () => {
   });
 
   after(async () => {
+    await deleteTestApiKey(apiKey.uuid);
     await deleteData(testData);
   });
 
   it("renvoie 404 pour un membre inconnu", async () => {
     const res = await GET(makeReq(), {
-      params: Promise.resolve({ username: "membre-inexistant" }),
+      params: Promise.resolve({ id: "membre-inexistant" }),
     });
     expect(res.status).to.equal(404);
   });
 
   it("expose les startups de mission en { uuid, ghid }", async () => {
     const res = await GET(makeReq(), {
-      params: Promise.resolve({ username: "test-detail-member" }),
+      params: Promise.resolve({ id: "test-detail-member" }),
     });
     expect(res.status).to.equal(200);
-    const body = await res.json();
+    const body = (await res.json()).data;
 
     expect(body.missions).to.have.length(1);
     const missionStartups = body.missions[0].startups;
@@ -86,9 +96,9 @@ describe("GET /api/protected/members/[username]", () => {
 
   it("isCurrent vaut true pour une mission sans date de fin", async () => {
     const res = await GET(makeReq(), {
-      params: Promise.resolve({ username: "test-detail-member" }),
+      params: Promise.resolve({ id: "test-detail-member" }),
     });
-    const body = await res.json();
+    const body = (await res.json()).data;
     const startup = body.startups.find(
       (s: { ghid: string | null }) => s.ghid === "test-detail-startup",
     );
@@ -98,9 +108,9 @@ describe("GET /api/protected/members/[username]", () => {
 
   it("expose la fiche detaillee (PII assumee : role, domaine, avatar, isActive)", async () => {
     const res = await GET(makeReq(), {
-      params: Promise.resolve({ username: "test-detail-member" }),
+      params: Promise.resolve({ id: "test-detail-member" }),
     });
-    const body = await res.json();
+    const body = (await res.json()).data;
     expect(body).to.have.property("role");
     expect(body).to.have.property("domaine");
     expect(body).to.have.property("avatar");

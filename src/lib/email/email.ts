@@ -13,6 +13,7 @@ export enum EMAIL_TYPES {
   EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
   EMAIL_MATOMO_ACCOUNT_CREATED = "EMAIL_MATOMO_ACCOUNT_CREATED",
   EMAIL_MATOMO_ACCOUNT_UPDATED = "EMAIL_MATOMO_ACCOUNT_UPDATED",
+  EMAIL_API_KEY_REMINDER = "EMAIL_API_KEY_REMINDER",
 }
 
 export type SubjectFunction = {
@@ -103,6 +104,32 @@ export type EmailStartupNewMemberArrival = {
   };
 };
 
+// Un seul type pour deux usages, discrimines par `event` : la notification de
+// creation d'une clef d'application et le rappel des clefs sans expiration. Le
+// corps ne contient JAMAIS le jeton, seulement son prefixe.
+export type EmailApiKeyReminder = {
+  type: EMAIL_TYPES.EMAIL_API_KEY_REMINDER;
+  variables: {
+    event: "created" | "reminder";
+    keyName: string;
+    tokenPrefix: string;
+    kindLabel: string;
+    createdAt: string;
+    manageUrl: string;
+    // Branche reminder uniquement. ageInDays se compte depuis la date de
+    // reference, c'est-a-dire depuis confirmedAt s'il existe, et non depuis la
+    // creation : sans confirmedAt le corps annoncerait un age faux.
+    ageInDays?: number;
+    confirmedAt?: string | null;
+    confirmUrl?: string;
+    revokeUrl?: string;
+    // Branche created uniquement.
+    scopesLabel?: string;
+    perimeterLabel?: string;
+    createdByFullname?: string;
+  };
+};
+
 export type EmailVariants =
   // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   | EmailLogin
@@ -111,7 +138,8 @@ export type EmailVariants =
   | EmailStartupNewMemberArrival
   | EmailStartupAskPhase
   | EmailVerificationWaiting
-  | EmailNewMemberValidation;
+  | EmailNewMemberValidation
+  | EmailApiKeyReminder;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
@@ -264,5 +292,9 @@ export const EmailDocumentation: Record<
   },
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: {
     description: "Notification de mise à jour d’un compte Matomo.",
+  },
+  [EMAIL_TYPES.EMAIL_API_KEY_REMINDER]: {
+    description:
+      "Email de rappel d'une clef d'API sans expiration, et notification de création d'une clef d'application.",
   },
 };

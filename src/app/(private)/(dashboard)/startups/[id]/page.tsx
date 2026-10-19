@@ -17,7 +17,8 @@ import {
 } from "@/models/mapper";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authoptions";
-import { canEditStartup } from "@/lib/canEditStartup";
+import { canEditStartup } from "@/lib/authorization/startup";
+import { toAuthSubject } from "@/lib/authorization/subject";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -124,7 +125,10 @@ export default async function Page(props: Props) {
     .groupBy(["users.username", "users.fullname", "users.uuid"])
     .execute();
 
-  const canEditMembers = await canEditStartup(session, dbSe.uuid);
+  const canEditMembers = await canEditStartup(
+    toAuthSubject(session)!,
+    dbSe.uuid,
+  );
 
   return (
     <>

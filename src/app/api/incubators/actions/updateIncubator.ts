@@ -2,18 +2,44 @@
 
 import _ from "lodash";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 
+import { assertCanEditIncubator } from "@/lib/authorization/incubator";
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
-import { incubatorSchemaType } from "@/models/incubator";
-import { authOptions } from "@/lib/authoptions";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
-  AuthorizationError,
-  NoDataError,
-  UnwrapPromise,
-  withErrorHandling,
-} from "@/lib/error";
+  incubatorUpdateSchema,
+  incubatorUpdateSchemaType,
+} from "@/models/actions/incubator";
+import { incubatorSchemaType } from "@/models/incubator";
+import { NoDataError, UnwrapPromise, withErrorHandling } from "@/lib/error";
+
+// hstore n'accepte ni objet imbrique ni tableau : les textes longs sont
+// encodes (comme updateTeam le fait pour mission) et highlighted_startups est
+// joint en chaine.
+const flattenIncubator = (row: {
+  title: string;
+  ghid: string;
+  short_description: string | null;
+  description: string | null;
+  contact: string | null;
+  address: string | null;
+  website: string | null;
+  github: string | null;
+  owner_id: string | null;
+  highlighted_startups: string[] | null;
+}): Record<string, string> => ({
+  title: row.title,
+  ghid: row.ghid,
+  short_description: encodeURIComponent(row.short_description || ""),
+  description: encodeURIComponent(row.description || ""),
+  contact: row.contact || "",
+  address: row.address || "",
+  website: row.website || "",
+  github: row.github || "",
+  owner_id: row.owner_id || "",
+  highlighted_startups: (row.highlighted_startups || []).join(","),
+});
 
 export async function updateIncubator({
   incubator,
@@ -22,10 +48,8 @@ export async function updateIncubator({
   incubator: incubatorUpdateSchemaType["incubator"];
   incubatorUuid: string;
 }): Promise<incubatorSchemaType> {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new AuthorizationError();
-  }
+  const subject = await assertCanEditIncubator(incubatorUuid);
+  const data = incubatorUpdateSchema.shape.incubator.parse(incubator);
   const previousIncubatorData = await db
     .selectFrom("incubators")
     .selectAll()
@@ -40,8 +64,8 @@ export async function updateIncubator({
     updatedIncubator = await trx
       .updateTable("incubators")
       .set({
-        ...incubator,
-        owner_id: incubator.owner_id || undefined, // explicitly set owner_id to undefined
+        ...data,
+        owner_id: data.owner_id || undefined, // explicitly set owner_id to undefined
       })
       .where("uuid", "=", incubatorUuid)
       .returningAll()
@@ -51,6 +75,19 @@ export async function updateIncubator({
   if (!updatedIncubator) {
     throw new Error("Incubator data could not be inserted into db");
   }
+
+  await addEvent({
+    action_code: EventCode.INCUBATOR_UPDATED,
+    created_by_username: subject.username,
+    action_metadata: {
+      uuid: incubatorUuid,
+      // hstore est plat : les textes longs sont encodes comme le fait
+      // updateTeam pour mission, et highlighted_startups est joint.
+      value: flattenIncubator(updatedIncubator),
+      old_value: flattenIncubator(previousIncubatorData),
+    },
+  });
+
   return updatedIncubator;
 }
 

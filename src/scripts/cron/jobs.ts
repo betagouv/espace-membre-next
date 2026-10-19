@@ -6,6 +6,7 @@ import {
   sendLegacyEmailLoginReminders,
 } from "@/lib/auth/legacyEmailLogin";
 import type { CronJob } from "@/scripts/runJobs";
+import { apiKeysMaintenance } from "@/server/queueing/workers/api-keys-maintenance";
 import { cleanTeamsMembers } from "@/server/queueing/workers/clean-teams-members";
 import { startSync } from "@/server/queueing/workers/sync-dinum-emails";
 import { syncMatrixAccounts } from "@/server/queueing/workers/sync-matrix-accounts";
@@ -35,6 +36,9 @@ export const CRON_SLOTS = {
   "business-hours": [{ name: "sync-dinum-emails", run: startSync }],
   nightly: [{ name: "sync-matrix-accounts", run: () => syncMatrixAccounts() }],
   morning: [
+    // Avant clean-teams-members : les rappels de clefs d'application résolvent
+    // leurs destinataires dans users_teams, que ce job vide des membres expirés.
+    { name: "api-keys-maintenance", run: () => apiKeysMaintenance() },
     { name: "clean-teams-members", run: () => cleanTeamsMembers() },
     // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
     {

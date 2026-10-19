@@ -3,6 +3,8 @@ fileignoreconfig:
   checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
 - filename: src/lib/onboarding/startMemberOnboarding.ts
   checksum: af588f46520f619aaa25ed580acfa76be3fc62be1192e887120131ce40c38603
+- filename: docs/api-keys.md
+  checksum: 29a384f51ae05f25d9a85e822ee4a1fb20ff43c447a91999cfd7474305a34f02
 - filename: .env.development
   checksum: 8c5abacb4d10f1674a882841bb7937eba4a14fdf4535251c2adb439644fe12ee
 - filename: .env.test
