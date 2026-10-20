@@ -2,8 +2,9 @@ import { expect } from "chai";
 import { addDays, subDays } from "date-fns";
 import { NextRequest } from "next/server";
 
+import { apiRequest, createTestApiKey, deleteTestApiKey } from "./utils/apiKey";
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
-import { GET } from "@/app/api/protected/incubators/[ghid]/members/route";
+import { GET } from "@/app/api/v1/incubators/[id]/members/route";
 import { IncubatorMemberAttachment } from "@/models/api/member";
 
 const now = new Date();
@@ -69,31 +70,37 @@ const testData: FakeDataInterface = {
 };
 
 // Le handler ne lit que req.nextUrl.searchParams : un mock minimal suffit.
+// Les routes v1 passent par withApiV1 : une VRAIE clef est inseree en base et
+// le jeton voyage en Bearer, donc le test traverse aussi le perimetre.
+let apiKey: { token: string; uuid: string };
 const makeReq = (search = "") =>
-  ({
-    nextUrl: { searchParams: new URLSearchParams(search) },
-  }) as unknown as NextRequest;
+  apiRequest(
+    apiKey.token,
+    `http://localhost:3000/api/v1/resource${search ? `?${search}` : ""}`,
+  );
 
-describe("GET /api/protected/incubators/[ghid]/members", () => {
+describe("GET /api/v1/incubators/[ghid]/members", () => {
   before(async () => {
+    apiKey = await createTestApiKey({ scopes: ["members:read"] });
     await createData(testData);
   });
 
   after(async () => {
+    await deleteTestApiKey(apiKey.uuid);
     await deleteData(testData);
   });
 
   it("renvoie 404 pour un incubateur inconnu", async () => {
     const res = await GET(makeReq(), {
-      params: Promise.resolve({ ghid: "incubateur-inexistant" }),
+      params: Promise.resolve({ id: "incubateur-inexistant" }),
     });
     expect(res.status).to.equal(404);
   });
 
   it("renvoie par defaut tous les rattaches, missions terminees comprises", async () => {
-    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-api-incub" }) });
+    const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-api-incub" }) });
     expect(res.status).to.equal(200);
-    const body = await res.json();
+    const body = (await res.json()).data;
 
     const usernames = body.map(
       (member: { username: string }) => member.username,
@@ -107,8 +114,8 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
   });
 
   it("expose le discriminant attachment et les GHID de startups des missions", async () => {
-    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-api-incub" }) });
-    const body = await res.json();
+    const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-api-incub" }) });
+    const body = (await res.json()).data;
     const byUsername = Object.fromEntries(
       body.map((member: { username: string }) => [member.username, member]),
     );
@@ -136,8 +143,8 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
   });
 
   it("n'expose pas les champs exclus (bio, domaine, role, avatar, etc.)", async () => {
-    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-api-incub" }) });
-    const body = await res.json();
+    const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-api-incub" }) });
+    const body = (await res.json()).data;
     const member = body[0];
 
     expect(member).to.include.keys([
@@ -147,8 +154,6 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
       "github",
       "primary_email",
       "secondary_email",
-      "communication_email",
-      "primary_email_status",
       "attachment",
       "teams",
       "missions",
@@ -170,10 +175,10 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
 
   it("filtre les membres inactifs avec ?status=active", async () => {
     const res = await GET(makeReq("status=active"), {
-      params: Promise.resolve({ ghid: "test-api-incub" }),
+      params: Promise.resolve({ id: "test-api-incub" }),
     });
     expect(res.status).to.equal(200);
-    const body = await res.json();
+    const body = (await res.json()).data;
     const usernames = body.map(
       (member: { username: string }) => member.username,
     );

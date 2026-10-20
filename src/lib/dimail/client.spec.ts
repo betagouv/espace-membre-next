@@ -104,13 +104,13 @@ describe("dimail client", () => {
   describe("patchMailbox", () => {
     it("should call axios.patch and return success", async () => {
       const scope = nock(process.env.DIMAIL_API_URL as string)
-        .patch("/domains/domain.com/mailboxes/user")
+        .patch("/v2/domains/domain.com/mailboxes/user", { imap_active: "yes" })
         .reply(200, {});
 
       const result = await clientModule.patchMailbox({
         domain_name: "domain.com",
         user_name: "user",
-        data: { active: "yes" },
+        data: { imap_active: "yes" },
       });
       expect(scope.isDone()).to.be.true;
       expect(result).to.deep.equal({ success: true });
@@ -123,6 +123,36 @@ describe("dimail client", () => {
       const token = await (clientModule as any).getAccessToken();
       expect(axiosGetStub.calledOnce).to.be.true;
       expect(token).to.equal("token123");
+    });
+  });
+
+  describe("createMailboxCode", () => {
+    it("should call axios.post with all params and return mailbox code result", async () => {
+      const mockResponse = {
+        email: "user@domain.com",
+        code: "abc123",
+        expires_at: 1700000000,
+        expires_in: 3600,
+        maxuse: 1,
+        nbuse: 0,
+      };
+
+      const scope = nock(process.env.DIMAIL_API_URL as string)
+        .post("/domains/domain.com/mailboxes/user/code", {
+          expires_in: 7200,
+          maxuse: 3,
+        })
+        .reply(201, mockResponse);
+
+      const result = await clientModule.createMailboxCode({
+        domain_name: "domain.com",
+        user_name: "user",
+        expires_in: 7200,
+        maxuse: 3,
+      });
+
+      expect(scope.isDone()).to.be.true;
+      expect(result).to.deep.equal(mockResponse);
     });
   });
 });

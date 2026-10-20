@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import { NextRequest } from "next/server";
 
+import { apiRequest, createTestApiKey, deleteTestApiKey } from "./utils/apiKey";
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
-import { GET as getStartups } from "@/app/api/protected/startups/route";
+import { GET as getStartups } from "@/app/api/v1/startups/route";
 import { db } from "@/lib/kysely";
 
 const testData: FakeDataInterface = {
@@ -16,11 +17,14 @@ const testData: FakeDataInterface = {
   ],
 };
 
-// Le handler ne lit que req.nextUrl.searchParams : un mock minimal suffit.
+// Les routes v1 passent par withApiV1 : une VRAIE clef est inseree en base et
+// le jeton voyage en Bearer, donc le test traverse aussi le perimetre.
+let apiKey: { token: string; uuid: string };
 const makeReq = (search = "") =>
-  ({
-    nextUrl: { searchParams: new URLSearchParams(search) },
-  }) as unknown as NextRequest;
+  apiRequest(
+    apiKey.token,
+    `http://localhost:3000/api/v1/resource${search ? `?${search}` : ""}`,
+  );
 
 type ApiStartup = {
   ghid: string;
@@ -31,8 +35,9 @@ type ApiStartup = {
 const findStartup = (body: ApiStartup[]) =>
   body.find((startup) => startup.ghid === "test-phase-startup");
 
-describe("GET /api/protected/startups (phases)", () => {
+describe("GET /api/v1/startups (phases)", () => {
   before(async () => {
+    apiKey = await createTestApiKey({ scopes: ["startups:read"] });
     await createData(testData);
     // createData crée une phase "acceleration" à maintenant. On ajoute une phase
     // terminale plus récente pour vérifier l'ordre chronologique et la phase
@@ -53,13 +58,15 @@ describe("GET /api/protected/startups (phases)", () => {
   });
 
   after(async () => {
+    await deleteTestApiKey(apiKey.uuid);
     await deleteData(testData);
   });
 
   it("expose les phases ordonnées chronologiquement et la phase courante", async () => {
     const res = await getStartups(makeReq());
     expect(res.status).to.equal(200);
-    const startup = findStartup(await res.json());
+    const payload = await res.json();
+    const startup = findStartup(payload.data);
     expect(startup, "startup présente dans la réponse").to.exist;
     expect(startup!.phases.map((phase) => phase.name)).to.deep.equal([
       "acceleration",
@@ -69,16 +76,16 @@ describe("GET /api/protected/startups (phases)", () => {
   });
 
   it("filtre par ?phase sans filtre par défaut", async () => {
-    const all = findStartup(await (await getStartups(makeReq())).json());
+    const all = findStartup((await (await getStartups(makeReq())).json()).data);
     expect(all, "présente sans filtre").to.exist;
 
     const matching = findStartup(
-      await (await getStartups(makeReq("phase=abandon"))).json(),
+      (await (await getStartups(makeReq("phase=abandon"))).json()).data,
     );
     expect(matching, "présente quand la phase courante correspond").to.exist;
 
     const notMatching = findStartup(
-      await (await getStartups(makeReq("phase=construction"))).json(),
+      (await (await getStartups(makeReq("phase=construction"))).json()).data,
     );
     expect(notMatching, "absente quand la phase courante ne correspond pas").to
       .be.undefined;

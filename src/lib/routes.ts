@@ -3,51 +3,69 @@ export const routes = {
   account: () => `/account`,
   accountEditBaseInfo: () => `/account/base-info`,
   accountEditPrivateInfo: () => `/account/info`,
+  support: () => `/support`,
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   signIn: () => `/signin`,
   community: () => `/community`,
-  communityMember: ({ username }: { username: string }) => `/community/${username}`,
+  communityMember: ({ username }: { username: string }) =>
+    `/community/${username}`,
   communityCreateMember: () => `/community/create`,
   dashboard: () => `/dashboard`,
-  incubatorDetailsEdit: ({ incubatorId }: { incubatorId: string }) => `/incubators/${incubatorId}`,
+  incubatorDetailsEdit: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}`,
   incubatorList: () => `/incubators`,
   incubatorCreate: () => `/incubators/create-form`,
-  incubatorDetails: ({ incubatorId }: { incubatorId: string }) => `/incubators/${incubatorId}`,
+  incubatorDetails: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}`,
   teamDetailsEdit: ({ teamId }: { teamId: string }) => `/teams/${teamId}`,
   teamList: () => `/teams`,
   teamCreate: () => `/teams/create-form`,
   teamDetails: ({ teamId }: { teamId: string }) => `/teams/${teamId}`,
   startupList: () => `/startups`,
-  startupDetails: ({ startupId }: { startupId: string }) => `/startups/${startupId}`,
-  startupDetailsEdit: ({ startupId }: { startupId: string }) => `/startups/${startupId}/info-form`,
-  startupDocs: ({ startupId }: { startupId: string }) => `/startups/${startupId}/files`,
+  startupDetails: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}`,
+  startupDetailsEdit: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}/info-form`,
+  startupDocs: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}/files`,
   startupCreate: () => `/startups/create-form`,
   home: () => `/`,
   login: () => `/login`,
   onboarding: () => `/onboarding`,
   onboardingSuccess: () => `/onboardingSuccess`,
   metabase: () => `/metabase`,
-  keskispasse: () => `/keskispasse`,
   eventsList: () => `/events`,
   formationList: () => `/formations`,
   formationProposal: () => `/formations/proposer`,
   formationDetails: () => `/formations/.*`,
   verifyMember: () => `/verify`,
   organizationList: () => `/organizations`,
-  organizationDetails: ({ organizationId }: { organizationId: string }) => `/organizations/${organizationId}`,
-  organizationDetailsEdit: ({ organizationId }: { organizationId: string }) => `/organizations/${organizationId}/info-form`,
+  organizationDetails: ({ organizationId }: { organizationId: string }) =>
+    `/organizations/${organizationId}`,
+  organizationDetailsEdit: ({ organizationId }: { organizationId: string }) =>
+    `/organizations/${organizationId}/info-form`,
   organizationCreate: () => `/organizations/create-form`,
   serviceList: () => `/services`,
   opsRequest: () => `/services/ops`,
   segurAccessRequest: () => `/demandes/segur`,
+  incubatorApiKeys: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}/api-keys`,
+  adminApiKeys: () => `/admin/api-keys`,
+  accountApiKeyDetails: ({ apiKeyId }: { apiKeyId: string }) =>
+    `/account/api-keys/${apiKeyId}`,
+  admin: () => `/admin`,
 } as const;
 
 // Route title generators
 export const routeTitles: {
   [routeName in keyof typeof routes]:
-    | (() => string)
-    | ((id?: string) => string);
+    (() => string) | ((id?: string) => string);
 } = {
   account: () => "Compte",
+  incubatorApiKeys: () => "Clefs d'API de l'incubateur",
+  adminApiKeys: () => "Clefs d'API",
+  accountApiKeyDetails: () => "Clef d'API",
+  admin: () => "Administration",
   accountEditBaseInfo: () => "Mise à jour de mes informations",
   accountEditPrivateInfo: () => "Mise à jour de mes informations privées",
   community: () => "Rechercher un ou une membre",
@@ -64,18 +82,20 @@ export const routeTitles: {
   organizationDetailsEdit: (id?: string) => `Modifier la fiche de ${id}`,
   organizationCreate: () => "Créer une fiche organisation sponsor",
   home: () => "",
+  support: () => "Aide à la connexion",
+  // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
   signIn: () => "Me connecter",
   login: () => "Me connecter",
   onboarding: () => "Créer une fiche membre",
   onboardingSuccess: () => "Fiche membre créée",
   metabase: () => "Observatoire",
-  keskispasse: () => "Qu'est-ce qui se passe ?",
   eventsList: () => "Événements à venir",
   formationList: () => "Catalogue des formations",
   formationProposal: () => "Proposer une formation",
   formationDetails: (id?: string) => `Formation ${id}`,
   verifyMember: () => "Vérifie les informations de ton compte",
-  incubatorDetailsEdit: (id?: string) => `Modifier la fiche incubateur de ${id}`,
+  incubatorDetailsEdit: (id?: string) =>
+    `Modifier la fiche incubateur de ${id}`,
   incubatorList: () => "Rechercher un incubateur",
   incubatorCreate: () => "Créer une fiche incubateur",
   incubatorDetails: () => "Fiche incubateur",

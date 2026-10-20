@@ -11,6 +11,8 @@ import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { AuthorizationError, BusinessError } from "@/lib/error";
+import * as bossClient from "@/server/queueing/client";
+import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
 
 describe(`Test creating new user flow : A new member cannot be validated by someone who is not an a team member`, () => {
   let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
@@ -38,6 +40,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       .insertInto("incubators")
       .values({
         title: "un autre incubator",
+        ghid: `un-autre-incubator-validation-${Math.random().toString(36).slice(2, 8)}`,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -203,6 +206,10 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       user: { id: userA.username, isAdmin: false, uuid: userA.uuid },
     };
     getServerSessionStub.resolves(mockSession);
+    const bossSendStub = sinon.stub().resolves("job-id");
+    const getBossClientInstanceStub = sinon
+      .stub(bossClient, "getBossClientInstance")
+      .resolves({ send: bossSendStub } as any);
     const validateNewMember = proxyquire(
       "@/app/api/member/actions/validateNewMember",
       {
@@ -218,10 +225,21 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       .where("uuid", "=", newUser.uuid)
       .selectAll()
       .executeTakeFirstOrThrow();
+    // personal email : the onboarding starts with the mailbox creation,
+    // the ProConnect invitation will be sent by the worker
     updatedUser?.primary_email_status?.should.equals(
-      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      EmailStatusCode.EMAIL_CREATION_WAITING,
     );
-    // try to do the action a second time
+    bossSendStub.calledOnce.should.be.true;
+    bossSendStub.firstCall.args[0].should.equals(createDimailMailboxTopic);
+    bossSendStub.firstCall.args[1].should.deep.equals({
+      userUuid: newUser.uuid,
+      username: newUser.username,
+      onboarding: true,
+    });
+    // try to do the action a second time : the mailbox job is still pending,
+    // pg-boss creates no second job with the same singletonKey
+    bossSendStub.resolves(null);
     try {
       await validateNewMember({ memberUuid: newUser.uuid });
     } catch (error) {
@@ -246,5 +264,11 @@ describe(`Test creating new user flow : A new member cannot be validated by some
       error.should.be.instanceof(BusinessError);
       (error as BusinessError).code.should.be.equals("userAlreadyValided");
     }
+    // no second onboarding
+    bossSendStub.calledTwice.should.be.true;
+    bossSendStub.secondCall.args[2].singletonKey.should.equals(
+      bossSendStub.firstCall.args[2].singletonKey,
+    );
+    getBossClientInstanceStub.restore();
   });
 });
