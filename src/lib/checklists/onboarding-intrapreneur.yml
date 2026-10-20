@@ -76,12 +76,14 @@
   items:
     - id: onboarding-forum-beta
       title: Participer à la journée d'embarquement obligatoire lors du forum mensuel
+    - id: onboarding-video-achat-prestations
+      title: "Regarder la vidéo [Acheter des prestations pour développer son produit numérique](https://tube.numerique.gouv.fr/w/ctbNzqfD2qUKco7MEhsvo6)"
     - id: onboarding-focus-prestataires
       title: "Participer à la session focus : Pilote tes prestataires avec un cadre, pas seulement avec de la confiance"
     - id: onboarding-focus-4
       title: "Participer à la session focus : Maîtrise le feedback pour bien travailler avec des gens différents"
-    - id: onboarding-focus-5
-      title: "Participer à la session focus : Comment ne pas finir en prison quand on bosse sur un produit numérique"
+    - id: onboarding-video-rgpd
+      title: "Regarder la vidéo [RGPD & conformité. Comment ne pas finir en prison à cause de son produit numérique](https://tube.numerique.gouv.fr/w/hiKU2tvCuRycMSD9ZtSU1S)"
     - id: onboarding-focus-6
       title: "Participer à la session focus : Recrute et chéris tes utilisateurs"
     - id: onboarding-rencontres-metiers
