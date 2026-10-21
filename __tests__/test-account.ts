@@ -1,5 +1,3 @@
-import chai from "chai";
-import chaiHttp from "chai-http";
 import * as nextAuth from "next-auth/next";
 import sinon from "sinon";
 
@@ -11,8 +9,6 @@ import {
 } from "@/app/api/member/actions";
 import { db } from "@/lib/kysely";
 import { CommunicationEmailCode } from "@/models/member";
-
-chai.use(chaiHttp);
 
 describe("Test Account", () => {
   describe("Authenticated user should be able to perform use action", () => {
