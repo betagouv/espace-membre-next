@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import L from "leaflet";
 import { useMap } from "react-leaflet";
-import "leaflet.markercluster/dist/leaflet.markercluster";
+import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 
 import "./styles-marker-cluster.css";

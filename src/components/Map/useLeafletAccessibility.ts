@@ -1,8 +1,6 @@
-import { MutableRefObject, useEffect } from "react";
+import { RefObject, useEffect } from "react";
 
-export function useLeafletAccessibility(
-  ref: MutableRefObject<HTMLElement | null>,
-) {
+export function useLeafletAccessibility(ref: RefObject<HTMLElement | null>) {
   useEffect(() => {
     const leafletDivContainer = ref.current;
     if (leafletDivContainer) {
