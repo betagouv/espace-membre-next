@@ -195,10 +195,6 @@ export const OpsRequestForm = ({
         <Link href={OPS_TCHAP_CHANNEL_URL}>canal Tchap demandes-OPS</Link>
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {/* Identifiant Tchap et email : préremplis et masqués, mais envoyés à Grist. */}
-        <input type="hidden" {...register("tchapId")} />
-        <input type="hidden" {...register("email")} />
-
         {/* Le projet vaut pour toutes les demandes : il ouvre le formulaire au
             lieu de le clore, où il se lisait comme une question annexe. */}
         <Champ>
@@ -275,12 +271,8 @@ export const OpsRequestForm = ({
                       shouldValidate: true,
                       shouldDirty: true,
                     });
-                    setValue("startupName", startup?.label ?? "", {
-                      shouldDirty: true,
-                    });
                   }}
                 />
-                <input type="hidden" {...register("startupName")} />
               </Champ>
             );
           }
@@ -345,8 +337,6 @@ export const OpsRequestForm = ({
             </Champ>
           );
         })}
-
-        <input type="hidden" {...register("prenomNom")} />
 
         <Button
           className={fr.cx("fr-mt-3w")}

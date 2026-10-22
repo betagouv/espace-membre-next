@@ -5,17 +5,13 @@ import {
   OPS_DEMANDE_FIELDS,
   OPS_DEMANDE_TYPE,
   OPS_FIELDS,
-  OPS_STATUT,
 } from "../ops";
 
+// L'auteur de la demande (email, identifiant Tchap, nom), son statut et le nom
+// du produit ne figurent pas ici : le serveur les tire de la session et de la
+// base, pour qu'ils ne puissent pas être modifiés depuis le navigateur.
 export const opsRequestSchema = z
   .object({
-    tchapId: z
-      .string({ required_error: "Ton identifiant Tchap est requis" })
-      .min(1, "Ton identifiant Tchap est requis"),
-    email: z
-      .string({ required_error: "Ton email est requis" })
-      .email("Email invalide"),
     demande: z.nativeEnum(OPS_DEMANDE_TYPE, {
       required_error: "Précise le type de demande",
       invalid_type_error: "Précise le type de demande",
@@ -33,7 +29,6 @@ export const opsRequestSchema = z
     emailsNotifier: z.string().optional(),
     // Structured Sentry / Matomo fields (feed dedicated Grist columns).
     startupId: z.string().optional(),
-    startupName: z.string().optional(),
     siteName: z.string().optional(),
     projetRattachement: z.string().optional(),
     nomWorkspace: z.string().optional(),
@@ -41,8 +36,6 @@ export const opsRequestSchema = z
     nomChaine: z.string().optional(),
     nomCompte: z.string().optional(),
     commentaires: z.string().optional(),
-    prenomNom: z.string().optional(),
-    statut: z.nativeEnum(OPS_STATUT).optional(),
   })
   .superRefine((data, ctx) => {
     const fields = OPS_DEMANDE_FIELDS[data.demande] ?? [];
