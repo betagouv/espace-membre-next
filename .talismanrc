@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: src/app/api/services/ops/actions.ts
+  checksum: a65cfe9a8f9f2f96b4eefc22acd7a4579b8f811b5c1ab56cb895b75ddfe970be
 - filename: connexion.md
   checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
 - filename: src/lib/onboarding/startMemberOnboarding.ts
