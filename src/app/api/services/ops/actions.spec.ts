@@ -17,6 +17,7 @@ describe("submitOpsRequest", () => {
         incubator: "ops-incubateur",
       },
       { ghid: "ops-autre-produit", name: "Autre produit" },
+      { ghid: "ops-ancien-produit", name: "Ancien produit" },
     ],
     users: [
       {
@@ -29,10 +30,50 @@ describe("submitOpsRequest", () => {
             end: new Date("2099-01-01"),
             startups: ["ops-produit-membre"],
           },
+          {
+            start: new Date("2020-01-01"),
+            end: new Date("2021-01-01"),
+            startups: ["ops-ancien-produit"],
+          },
         ],
       },
     ],
   };
+  // Colonnes du doc Grist de prod : une colonne qui n'y existe pas fait
+  // échouer toutes les demandes (400). La liste est écrite en dur pour qu'un
+  // ajout dans GRIST_OPS_COLUMNS ne passe pas sans qu'on crée la colonne.
+  const COLONNES_GRIST = [
+    "Date",
+    "Demande",
+    "Email",
+    "Email_associer",
+    "Email_collaborateur",
+    "Email_equipe",
+    "Emails_notifier",
+    "Handle_ovh",
+    "Incubateur",
+    "Nom_app",
+    "Nom_chaine",
+    "Nom_compte",
+    "Nom_workspace",
+    "Notes",
+    "Prenom_Nom",
+    "Projet",
+    "Projet_rattachement",
+    "Site_name",
+    "Site_type",
+    "Site_url",
+    "Startup_id",
+    "Startup_name",
+    "Statut",
+    "Tchap",
+    "Team_slug",
+    "Url_surveiller",
+    "User_uuid",
+    "Username",
+    "Zone_dns",
+    "Zone_scalingo",
+  ];
   const getServerSessionStub = sinon.stub();
   const addGristRecordsStub = sinon.stub();
   const { submitOpsRequest } = proxyquire("./actions", {
@@ -100,6 +141,71 @@ describe("submitOpsRequest", () => {
     });
   });
 
+  it("écrit exactement les colonnes qui existent dans le Grist de prod", async () => {
+    const res = await submitOpsRequest({
+      demande: OPS_DEMANDE_TYPE.AUTRE,
+      commentaires: "Besoin d'aide",
+    });
+
+    expect(res.success, res.message).to.be.true;
+    expect(Object.keys(ligneGrist()).sort()).to.deep.equal(
+      [...COLONNES_GRIST].sort(),
+    );
+  });
+
+  it("prend l'identifiant Matrix du membre quand il en a un", async () => {
+    await db
+      .insertInto("matrix_accounts")
+      .values({
+        user_id: userUuid,
+        matrix_id: "@ops.membre-beta.gouv.fr:agent.tchap.gouv.fr",
+      })
+      .execute();
+
+    const res = await submitOpsRequest({
+      demande: OPS_DEMANDE_TYPE.AUTRE,
+      commentaires: "Besoin d'aide",
+    });
+
+    expect(res.success, res.message).to.be.true;
+    expect(ligneGrist()).to.include({
+      Tchap: "@ops.membre-beta.gouv.fr:agent.tchap.gouv.fr",
+    });
+  });
+
+  it("se rabat sur l'email secondaire sans email principal", async () => {
+    await db
+      .updateTable("users")
+      .set({ primary_email: null, secondary_email: "ops.perso@example.com" })
+      .where("uuid", "=", userUuid)
+      .execute();
+
+    const res = await submitOpsRequest({
+      demande: OPS_DEMANDE_TYPE.AUTRE,
+      commentaires: "Besoin d'aide",
+    });
+
+    expect(res.success, res.message).to.be.true;
+    expect(ligneGrist()).to.include({ Email: "ops.perso@example.com" });
+  });
+
+  it("refuse la demande d'un compte sans aucun email", async () => {
+    await db
+      .updateTable("users")
+      .set({ primary_email: null, secondary_email: null })
+      .where("uuid", "=", userUuid)
+      .execute();
+
+    const res = await submitOpsRequest({
+      demande: OPS_DEMANDE_TYPE.AUTRE,
+      commentaires: "Besoin d'aide",
+    });
+
+    expect(res.success).to.be.false;
+    expect(res.message).to.match(/Aucun email/);
+    expect(addGristRecordsStub.called).to.be.false;
+  });
+
   it("n'envoie que les champs de la ressource choisie", async () => {
     const res = await submitOpsRequest({
       demande: OPS_DEMANDE_TYPE.AUTRE,
@@ -154,6 +260,19 @@ describe("submitOpsRequest", () => {
     });
 
     expect(res.success).to.be.false;
+    expect(res.message).to.match(/produit dont tu fais partie/);
+    expect(addGristRecordsStub.called).to.be.false;
+  });
+
+  it("refuse un produit dont la mission du membre est terminée", async () => {
+    const res = await submitOpsRequest({
+      demande: OPS_DEMANDE_TYPE.SENTRY,
+      startupId: await startupUuid("ops-ancien-produit"),
+      emailAssocier: "ops.membre@beta.gouv.fr",
+    });
+
+    expect(res.success).to.be.false;
+    expect(res.message).to.match(/produit dont tu fais partie/);
     expect(addGristRecordsStub.called).to.be.false;
   });
 
