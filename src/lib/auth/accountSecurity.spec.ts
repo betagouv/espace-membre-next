@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 
 import { authOptions } from "@/lib/authoptions";
 import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
+import { getRefusalFromLogoutState } from "@/lib/auth/proConnectLogout";
 import { isMfaSession } from "@/lib/auth/sessionMfa";
 import { switchLegacyExtPrimaryEmail } from "@/lib/auth/switchLegacyExtPrimaryEmail";
 import { db } from "@/lib/kysely";
@@ -286,6 +287,38 @@ describe("ProConnect login refusals", () => {
         error = e as Error;
       }
       expect(error?.message).to.equal(code);
+    }
+  });
+
+  it("should close the ProConnect session on the way back to /login", async () => {
+    const env = process.env;
+    process.env = {
+      ...env,
+      NEXT_PUBLIC_APP_BASE_URL: "https://espace-membre.example.fr",
+      NEXT_PUBLIC_PRO_CONNECT_BASE_URL: "https://proconnect.example.fr",
+    };
+    try {
+      const refusals = [
+        { code: "UnknownMember", profile: { loginRefusal: "UnknownMember" } },
+        // acr granted without a second factor
+        { code: "MfaRequired", profile: {} },
+      ];
+      for (const { code, profile } of refusals) {
+        const url = await signIn({
+          user: { id: "refused-proconnect-login" } as any,
+          account: {
+            provider: "proconnect",
+            id_token: jwt.sign({ acr: "eidas1" }, "test"),
+          } as any,
+          profile: profile as any,
+        });
+        expect(url).to.be.a("string");
+        const params = new URL(url as string).searchParams;
+        expect(params.get("id_token_hint")).to.be.a("string");
+        expect(getRefusalFromLogoutState(params.get("state"))).to.equal(code);
+      }
+    } finally {
+      process.env = env;
     }
   });
 });
