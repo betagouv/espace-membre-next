@@ -277,24 +277,12 @@ export function DashboardPage(props: DashboardPageProps) {
         <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
           <Tile
             className={fr.cx("fr-tile--sm")}
-            title="Accès à Ségur"
-            desc="Demander un accès aux bureaux du bâtiment Ségur."
+            title="Demandes Ségur"
+            desc="Demander un accès au bâtiment Ségur ou réserver une salle de réunion."
             orientation="horizontal"
             imageUrl={(cityHall as StaticImageData).src}
             linkProps={{
-              href: routes["segurAccessRequest"](),
-            }}
-          />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-          <Tile
-            className={fr.cx("fr-tile--sm")}
-            title="Salle de réunion à Ségur"
-            desc="Réserver une salle de réunion dans le bâtiment Ségur."
-            orientation="horizontal"
-            imageUrl={(cityHall as StaticImageData).src}
-            linkProps={{
-              href: routes["segurMeetingRoomRequest"](),
+              href: routes["segurRequests"](),
             }}
           />
         </div>
