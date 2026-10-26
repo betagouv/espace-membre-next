@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import cityHall from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/buildings/city-hall.svg";
+import calendar from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/calendar.svg";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { Metadata } from "next";
 import { StaticImageData } from "next/image";
@@ -48,7 +49,7 @@ export default async function SegurRequestsPage() {
             title="Salle de réunion à Ségur"
             desc="Réserver une salle de réunion dans le bâtiment Ségur."
             orientation="horizontal"
-            imageUrl={(cityHall as StaticImageData).src}
+            imageUrl={(calendar as StaticImageData).src}
             linkProps={{
               href: routes.segurMeetingRoomRequest(),
             }}
