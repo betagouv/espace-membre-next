@@ -278,7 +278,7 @@ export function DashboardPage(props: DashboardPageProps) {
           <Tile
             className={fr.cx("fr-tile--sm")}
             title="Demandes Ségur"
-            desc="Demander un accès au bâtiment Ségur."
+            desc="Demander un accès au bâtiment Ségur ou réserver une salle de réunion."
             orientation="horizontal"
             imageUrl={(cityHall as StaticImageData).src}
             linkProps={{
