@@ -28,7 +28,6 @@ import {
   premiereDateVenue,
   SEGUR_CONTACT_DELAI_COURT,
   SEGUR_DELAI_MINIMUM_HEURES,
-  SEGUR_DEMANDE_CHOICES,
   SEGUR_DEMANDE_TYPE,
   SEGUR_DUREE_MAXIMUM_MOIS,
   SEGUR_JOURS,
@@ -36,6 +35,9 @@ import {
 } from "@/models/segur";
 
 interface SegurRequestFormProps {
+  // Chaque type de demande a sa page, et donc son formulaire : le type est
+  // fixé par la page, pas choisi dans le formulaire.
+  typeDemande: SEGUR_DEMANDE_TYPE;
   defaultValues?: Partial<segurRequestSchemaType>;
 }
 
@@ -45,7 +47,10 @@ const ChampCourt = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
+export const SegurRequestForm = ({
+  typeDemande,
+  defaultValues,
+}: SegurRequestFormProps) => {
   const {
     register,
     handleSubmit,
@@ -60,6 +65,7 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
       nbParticipants: 1,
       datesReunion: [{ date: "" }],
       ...defaultValues,
+      typeDemande,
     },
   });
   const {
@@ -84,7 +90,6 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>();
 
-  const typeDemande = watch("typeDemande");
   const isSalleReunion = typeDemande === SEGUR_DEMANDE_TYPE.SALLE_REUNION;
   const isAcces = typeDemande === SEGUR_DEMANDE_TYPE.ACCES;
 
@@ -220,13 +225,20 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
           description={alertMessage.message}
         />
       )}
-      <p className="fr-text--sm">
-        Les membres de la communauté beta.gouv.fr peuvent travailler
-        ponctuellement dans l'open space de la DINUM (20 avenue de Ségur, Paris)
-        et y réserver une salle de réunion. Ce formulaire permet de faire l'une
-        ou l'autre de ces demandes. Il ne permet pas d'obtenir un badge
-        permanent.
-      </p>
+      {isSalleReunion ? (
+        <p className="fr-text--sm">
+          Les membres de la communauté beta.gouv.fr peuvent réserver une salle
+          de réunion à la DINUM (20 avenue de Ségur, Paris). Ce formulaire
+          permet d'en faire la demande.
+        </p>
+      ) : (
+        <p className="fr-text--sm">
+          Les membres de la communauté beta.gouv.fr peuvent travailler
+          ponctuellement dans l'open space de la DINUM (20 avenue de Ségur,
+          Paris). Ce formulaire permet de faire une demande d'accès à ces
+          bureaux. Il ne permet pas d'obtenir un badge permanent.
+        </p>
+      )}
       <Alert
         className="fr-mb-4v"
         severity="info"
@@ -234,54 +246,36 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
         description="Toutes les informations sont obligatoires."
       />
       <form onSubmit={handleSubmit(onSubmit)}>
-        <RadioButtons
-          className={fr.cx("fr-mb-4w")}
-          legend="Quelle est ta demande ?"
-          state={errors.typeDemande ? "error" : undefined}
-          stateRelatedMessage={errors.typeDemande?.message}
-          options={SEGUR_DEMANDE_CHOICES.map((choice) => ({
-            label: choice,
-            nativeInputProps: {
-              value: choice,
-              ...register("typeDemande"),
-            },
-          }))}
-        />
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Prénom et Nom"
+            state={errors.prenomNom ? "error" : undefined}
+            stateRelatedMessage={errors.prenomNom?.message}
+            nativeInputProps={{ ...register("prenomNom") }}
+          />
+        </ChampCourt>
 
-        {!!typeDemande && (
-          <>
-            <ChampCourt>
-              <Input
-                className={fr.cx("fr-mb-4w")}
-                label="Prénom et Nom"
-                state={errors.prenomNom ? "error" : undefined}
-                stateRelatedMessage={errors.prenomNom?.message}
-                nativeInputProps={{ ...register("prenomNom") }}
-              />
-            </ChampCourt>
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Adresse mail professionnelle"
+            hintText="@beta.gouv.fr ou @xxx.gouv.fr"
+            state={errors.email ? "error" : undefined}
+            stateRelatedMessage={errors.email?.message}
+            nativeInputProps={{ type: "email", ...register("email") }}
+          />
+        </ChampCourt>
 
-            <ChampCourt>
-              <Input
-                className={fr.cx("fr-mb-4w")}
-                label="Adresse mail professionnelle"
-                hintText="@beta.gouv.fr ou @xxx.gouv.fr"
-                state={errors.email ? "error" : undefined}
-                stateRelatedMessage={errors.email?.message}
-                nativeInputProps={{ type: "email", ...register("email") }}
-              />
-            </ChampCourt>
-
-            <ChampCourt>
-              <Input
-                className={fr.cx("fr-mb-4w")}
-                label="Nom de ta Startup"
-                state={errors.startupName ? "error" : undefined}
-                stateRelatedMessage={errors.startupName?.message}
-                nativeInputProps={{ ...register("startupName") }}
-              />
-            </ChampCourt>
-          </>
-        )}
+        <ChampCourt>
+          <Input
+            className={fr.cx("fr-mb-4w")}
+            label="Nom de ta Startup"
+            state={errors.startupName ? "error" : undefined}
+            stateRelatedMessage={errors.startupName?.message}
+            nativeInputProps={{ ...register("startupName") }}
+          />
+        </ChampCourt>
 
         {isAcces && (
           <>
@@ -603,28 +597,24 @@ export const SegurRequestForm = ({ defaultValues }: SegurRequestFormProps) => {
           </>
         )}
 
-        {!!typeDemande && (
-          <>
-            <Alert
-              className="fr-mb-4v"
-              severity="warning"
-              small
-              description={
-                isSalleReunion
-                  ? "Important : la réservation se fait dans la limite des disponibilités. Une pièce d'identité est requise pour accéder au bâtiment (ou l'accès te sera refusé). Ta demande sera transmise au service concerné de la DINUM, et tu seras ajouté·e en copie de l'email."
-                  : "Important : une pièce d'identité est requise pour accéder au bâtiment (ou l'accès te sera refusé). Ta demande sera transmise au service concerné de la DINUM, et tu seras ajouté·e en copie de l'email."
-              }
-            />
+        <Alert
+          className="fr-mb-4v"
+          severity="warning"
+          small
+          description={
+            isSalleReunion
+              ? "Important : la réservation se fait dans la limite des disponibilités. Une pièce d'identité est requise pour accéder au bâtiment (ou l'accès te sera refusé). Ta demande sera transmise au service concerné de la DINUM, et tu seras ajouté·e en copie de l'email."
+              : "Important : une pièce d'identité est requise pour accéder au bâtiment (ou l'accès te sera refusé). Ta demande sera transmise au service concerné de la DINUM, et tu seras ajouté·e en copie de l'email."
+          }
+        />
 
-            <Button
-              className={fr.cx("fr-mt-3w")}
-              disabled={isSaving}
-              nativeButtonProps={{ type: "submit", disabled: isSubmitting }}
-            >
-              {isSubmitting ? "Envoi en cours..." : "Je valide ma demande"}
-            </Button>
-          </>
-        )}
+        <Button
+          className={fr.cx("fr-mt-3w")}
+          disabled={isSaving}
+          nativeButtonProps={{ type: "submit", disabled: isSubmitting }}
+        >
+          {isSubmitting ? "Envoi en cours..." : "Je valide ma demande"}
+        </Button>
       </form>
     </>
   );

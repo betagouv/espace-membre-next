@@ -10,11 +10,6 @@ export enum SEGUR_DEMANDE_TYPE {
   SALLE_REUNION = "Demande de salle de réunion à Ségur",
 }
 
-export const SEGUR_DEMANDE_CHOICES: SEGUR_DEMANDE_TYPE[] = [
-  SEGUR_DEMANDE_TYPE.ACCES,
-  SEGUR_DEMANDE_TYPE.SALLE_REUNION,
-];
-
 // Days that can be picked for a recurring access request.
 export const SEGUR_JOURS: string[] = [
   "Lundi",

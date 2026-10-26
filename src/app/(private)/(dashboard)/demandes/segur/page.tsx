@@ -1,44 +1,23 @@
 import { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 
+import { getSegurDefaultValues } from "./defaultValues";
 import { SegurRequestForm } from "@/components/Service/SegurRequestForm";
 import { routeTitles } from "@/lib/routes";
-import {
-  getUserBasicInfo,
-  getUserStartupsActive,
-} from "@/lib/kysely/queries/users";
-import { userStartupToModel } from "@/models/mapper/startupMapper";
-import { authOptions } from "@/lib/authoptions";
+import { SEGUR_DEMANDE_TYPE } from "@/models/segur";
 
 export const metadata: Metadata = {
   title: `${routeTitles.segurAccessRequest()} / Espace Membre`,
 };
 
 export default async function SegurAccessRequestPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect("/login");
-  }
-
-  const user = await getUserBasicInfo({ uuid: session.user.uuid });
-  const email = user?.primary_email || user?.secondary_email || "";
-
-  // Pré-remplit le nom de la startup avec le premier produit actif du membre.
-  const startups = (await getUserStartupsActive(session.user.uuid)).map(
-    (startup) => userStartupToModel(startup),
-  );
-  const startupName = startups[0]?.name || "";
+  const defaultValues = await getSegurDefaultValues();
 
   return (
     <div>
       <h1>{routeTitles.segurAccessRequest()}</h1>
       <SegurRequestForm
-        defaultValues={{
-          prenomNom: user?.fullname || "",
-          email,
-          startupName,
-        }}
+        typeDemande={SEGUR_DEMANDE_TYPE.ACCES}
+        defaultValues={defaultValues}
       />
     </div>
   );

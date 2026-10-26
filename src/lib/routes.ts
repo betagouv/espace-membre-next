@@ -48,6 +48,7 @@ export const routes = {
   serviceList: () => `/services`,
   opsRequest: () => `/services/ops`,
   segurAccessRequest: () => `/demandes/segur`,
+  segurMeetingRoomRequest: () => `/demandes/segur/salle-reunion`,
   incubatorApiKeys: ({ incubatorId }: { incubatorId: string }) =>
     `/incubators/${incubatorId}/api-keys`,
   adminApiKeys: () => `/admin/api-keys`,
@@ -105,5 +106,6 @@ export const routeTitles: {
   teamDetails: () => "Fiche équipe",
   serviceList: () => "Mes outils",
   opsRequest: () => "Demandes OPS",
-  segurAccessRequest: () => "Demande d'accès ou de salle de réunion à Ségur",
+  segurAccessRequest: () => "Demande d'accès aux bureaux Ségur",
+  segurMeetingRoomRequest: () => "Réservation d'une salle de réunion à Ségur",
 };
