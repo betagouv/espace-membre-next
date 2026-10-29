@@ -70,10 +70,9 @@ sequenceDiagram
   PC->>M: Authentification et second facteur
   PC-->>EM: Jeton d'identité et adresse email
   EM->>EM: Retrouver le membre par cette adresse
-  alt adresse refusée ou inconnue
-    EM-->>M: Refus
-  else pas de second facteur
-    EM-->>M: Refus
+  alt adresse refusée ou inconnue, ou pas de second facteur
+    EM->>PC: Fermer la session ProConnect
+    PC-->>M: Retour sur la page de connexion, avec le motif
   else fiche, adresse ou mission pas en règle
     EM-->>M: Refus
   else connexion acceptée
