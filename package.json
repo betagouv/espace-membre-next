@@ -14,6 +14,7 @@
     "migrate": "NODE_OPTIONS='--import tsx/esm' knex migrate:latest",
     "rolldown": "NODE_OPTIONS='--import tsx/esm' knex migrate:down",
     "e2e": "npx playwright test",
+    "e2e:cucumber": "NODE_OPTIONS='--loader ts-node/esm' cucumber-js \"e2e/cucumber/features/**/*.feature\" --require \"e2e/cucumber/support/**/*.ts\" --format progress --publish-quiet",
     "test": "NODE_ENV=test ts-mocha --paths -p tsconfig.json 'src/**/*.{spec,test}.ts' '__tests__/*.ts' --exit --require ts-node/register --require ts-node/esm --icu-data-dir=./node_modules/full-icu --require ./__tests__/env-setup.ts --timeout 30000",
     "seed": "NODE_OPTIONS='--import tsx/esm' knex seed:run",
     "seed:api-key-profiles": "tsx src/scripts/seed-api-key-profiles",
@@ -92,6 +93,8 @@
   },
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
+    "@cucumber/cucumber": "^7.3.2",
+    "@cucumber/playwright": "^3.1.0",
     "@eslint/compat": "^2.1.0",
     "@eslint/eslintrc": "^3.3.6",
     "@playwright/test": "^1.48.0",

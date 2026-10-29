@@ -113,6 +113,19 @@ base. `FAKE_PROCONNECT_LOGIN=false` la désactive.
 npm run test
 ```
 
+#### Tests de bout-en-bout (E2E)
+
+Les tests bout-en-bout sont à priviliégier pour la conception de
+nouvelles fonctionnalités. Ces tests sont écrits avec Cucumber, voir
+les exemples dans `e2e/cucumber/features/`.
+
+Pour les lancer:
+
+```sh
+make cucumber # via Docker
+npm run e2e:cucumber # en local
+```
+
 ### Debug avec le serveur SMTP Maildev
 
 [Maildev](http://maildev.github.io/maildev/) est un serveur SMTP avec une interface web conçu pour le développement et les tests.

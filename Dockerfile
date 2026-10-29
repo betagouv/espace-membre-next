@@ -7,6 +7,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
+# Install Chromium + its system dependencies so the Cucumber E2E tests
+# (which drive a real browser via Playwright) can run in this base image.
+RUN npx playwright install --with-deps chromium
+
 # now copy everything else
 COPY . ./
 
