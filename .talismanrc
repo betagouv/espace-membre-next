@@ -1,10 +1,4 @@
 fileignoreconfig:
-- filename: connexion.md
-  checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
-- filename: src/lib/onboarding/startMemberOnboarding.ts
-  checksum: af588f46520f619aaa25ed580acfa76be3fc62be1192e887120131ce40c38603
-- filename: docs/api-keys.md
-  checksum: 29a384f51ae05f25d9a85e822ee4a1fb20ff43c447a91999cfd7474305a34f02
 - filename: .env.development
   checksum: 8c5abacb4d10f1674a882841bb7937eba4a14fdf4535251c2adb439644fe12ee
 - filename: .env.test
@@ -12,7 +6,7 @@ fileignoreconfig:
 - filename: .github/workflows/nodejs.yml
   checksum: f6e47073886dc4ed95f91dc618254153743d03b6dc81310b8989633688c2fcda
 - filename: .github/workflows/playwright.yml
-  checksum: 2bf3b8babdc7578c6e99e67c1cf8022a26fb4ac9bd6d411019e064f68f766a00
+  checksum: 133563382ceace034bc990f353dea27a56d7802eb4dd46186ee09d1c68b80149
 - filename: README.md
   checksum: 554368306b26bb92ec5176538398adf7aab1d84b741666bc6dafb45f66d9a989
 - filename: __tests__/htmlbuilder.spec.ts
@@ -23,6 +17,8 @@ fileignoreconfig:
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
 - filename: connexion.md
   checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
+- filename: docs/api-keys.md
+  checksum: 29a384f51ae05f25d9a85e822ee4a1fb20ff43c447a91999cfd7474305a34f02
 - filename: e2e/auth.valid.member.setup.ts
   checksum: 55197d4fc1d2b140e6b691846b79372dafdd1bcf82db0c9d32f5a4c494a34047
 - filename: e2e/legacy-email-login.spec.ts
