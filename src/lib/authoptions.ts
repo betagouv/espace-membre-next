@@ -26,6 +26,10 @@ import {
   isFakeProConnectEnabled,
 } from "@/lib/auth/fakeProConnect";
 import { isMemberReadyToLogin } from "@/lib/auth/loginStatus";
+import {
+  getRefusalLogoutUrl,
+  PROCONNECT_REFUSALS,
+} from "@/lib/auth/proConnectLogout";
 import { switchLegacyExtPrimaryEmail } from "@/lib/auth/switchLegacyExtPrimaryEmail";
 import {
   findUsersByPendingPrimaryEmail,
@@ -240,10 +244,23 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     // legacy-email-login: drop `email` with src/lib/auth/legacyEmailLogin
     async signIn({ user, account, profile, email }) {
+      // the ProConnect session is closed on the way back to /login, otherwise
+      // it would answer again with the same address (prompt=login is not
+      // enough : some identity providers log in again without asking)
+      const refuse = (code: string) => {
+        if (
+          account?.provider === "proconnect" &&
+          account.id_token &&
+          PROCONNECT_REFUSALS.includes(code)
+        ) {
+          return getRefusalLogoutUrl(code, account.id_token);
+        }
+        throw new Error(code);
+      };
       const loginRefusal = (profile as { loginRefusal?: string } | undefined)
         ?.loginRefusal;
       if (loginRefusal) {
-        throw new Error(loginRefusal);
+        return refuse(loginRefusal);
       }
       if (user.id) {
         // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
@@ -257,7 +274,7 @@ export const authOptions: NextAuthOptions = {
           !hasRequiredProConnectAcr(account.id_token)
         ) {
           console.log(`ProConnect: acr without MFA refused for ${user.id}`);
-          throw new Error("MfaRequired");
+          return refuse("MfaRequired");
         }
         const dbUser = await getUserInfos({
           username: user.id,
@@ -269,7 +286,7 @@ export const authOptions: NextAuthOptions = {
           console.log(
             `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`,
           );
-          throw new Error("UnknownMember");
+          return refuse("UnknownMember");
         }
         if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
           console.log(`Cannot login expired member ${user.id}`);

@@ -10,6 +10,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+import {
+  getRefusalFromLogoutState,
+  PROCONNECT_REFUSALS,
+} from "@/lib/auth/proConnectLogout";
+
 // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
 import { LegacyEmailLoginForm } from "@/components/LegacyEmailLogin/LegacyEmailLoginForm";
 
@@ -86,15 +91,6 @@ const ConnectBlock = ({ children }) => {
   );
 };
 
-// refused by us after the ProConnect login : its session is still open and,
-// without prompt=login, would answer again with the same address
-const PROCONNECT_REFUSALS = [
-  "UnknownMember",
-  "SecondaryEmailNotAllowed",
-  "ExtEmailNotAllowed",
-  "MfaRequired",
-];
-
 const oAuthErrors = {
   OAuthCallback: "Impossible de se connecter via ProConnect",
   OAuthSignin: "Impossible de se connecter via ProConnect",
@@ -164,7 +160,9 @@ export const LoginPage = function ({
   } | null;
 }) {
   const searchParams = useSearchParams();
-  const error = searchParams.get("error");
+  const error =
+    searchParams.get("error") ??
+    getRefusalFromLogoutState(searchParams.get("state"));
   const next = searchParams.get("next");
 
   const errorMessage =
