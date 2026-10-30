@@ -43,7 +43,9 @@ const goToSupportPage = () => window.location.assign("/support");
 export const LiveChatProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // Ouverture demandée par showLiveChat, en attente de l'événement `opened`
-  const pendingOpening = useRef<ReturnType<typeof setTimeout>>();
+  const pendingOpening = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   const showLiveChat = useCallback(() => {
     const loaderButton = getWidgetElement("loader", "button");

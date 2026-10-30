@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import { UseAutocompleteProps } from "@mui/base";
+import { UseAutocompleteProps } from "@mui/material/useAutocomplete";
 import { InternalStandardProps as StandardProps } from "@mui/material";
 import MuiAutocomplete, {
   AutocompleteValue as MuiAutocompleteValue,
