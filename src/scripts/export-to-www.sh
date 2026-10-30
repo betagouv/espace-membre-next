@@ -28,16 +28,30 @@ if [[ `git status --porcelain content` ]]; then
 
     # make PR from fork
     FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY" )";
-    curl -sS --fail-with-body --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
+    PR_JSON="$(curl -sS --fail-with-body --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
         --data-raw "{
             \"base\": \"master\",
             \"head\": \"$FORK_USER:$BRANCH\",
             \"title\": \"$COMMIT\"
-        }" | grep -o ' "html_url": "[^"]*' | cut -d '"' -f 4
+        }")"
+    node -e 'console.log(JSON.parse(require("fs").readFileSync(0, "utf8")).html_url)' <<< "$PR_JSON"
 
-else    
+    # enable auto-merge: the PR is squashed once approved (approval workflow
+    # on beta.gouv.fr) and the `test` check is green. Not fatal: without it,
+    # the PR waits for a manual merge.
+    PR_NODE_ID="$(node -e 'console.log(JSON.parse(require("fs").readFileSync(0, "utf8")).node_id)' <<< "$PR_JSON")"
+    curl -sS --fail-with-body --location --request POST "https://api.github.com/graphql" \
+        --header "Authorization: Bearer $GITHUB_TOKEN" \
+        --header 'Content-Type: application/json' \
+        --data-raw "{
+            \"query\": \"mutation(\$id: ID!) { enablePullRequestAutoMerge(input: { pullRequestId: \$id, mergeMethod: SQUASH }) { clientMutationId } }\",
+            \"variables\": { \"id\": \"$PR_NODE_ID\" }
+        }" || echo "Auto-merge not enabled"
+    echo
+
+else
     echo "No changes detected"
 fi;
 
