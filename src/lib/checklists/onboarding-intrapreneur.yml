@@ -78,6 +78,8 @@
       title: Participer à la journée d'embarquement obligatoire lors du forum mensuel
     - id: onboarding-video-achat-prestations
       title: "Regarder la vidéo [Acheter des prestations pour développer son produit numérique](https://tube.numerique.gouv.fr/w/ctbNzqfD2qUKco7MEhsvo6)"
+    - id: onboarding-elearning-selection-prestataires
+      title: "Avant de sélectionner une première personne en prestation, consulte le e-learning [Sélectionner des prestataires pour renforcer l'équipe d'un produit numérique](https://docs.numerique.gouv.fr/docs/6ed95201-7a12-47c1-907a-08d5ad8c8f38/)"
     - id: onboarding-focus-prestataires
       title: "Participer à la session focus : Pilote tes prestataires avec un cadre, pas seulement avec de la confiance"
     - id: onboarding-focus-4
