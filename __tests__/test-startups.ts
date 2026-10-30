@@ -1,5 +1,3 @@
-import chai from "chai";
-import chaiHttp from "chai-http";
 import * as nextAuth from "next-auth/next";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
@@ -10,8 +8,6 @@ import { db } from "@/lib/kysely";
 import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
 import { AuthorizationError } from "@/lib/error";
-
-chai.use(chaiHttp);
 
 describe("Test startup server action", () => {
   describe("post /api/startups/:startup unauthenticated", () => {

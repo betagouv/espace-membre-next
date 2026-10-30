@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { incubatorRefSchema } from "./incubator";
 
+import { CommunicationEmailCode } from "@/models/member";
 import { teamSchema } from "@/models/team";
 
 // Chemin de rattachement d'un membre a un incubateur.
@@ -45,6 +46,8 @@ export const apiMemberSchema = z.object({
   primary_email: z.string().nullable(),
   // secondary_email reste expose sans portee ni masquage : c'est une decision.
   secondary_email: z.string().nullable(),
+  // L'adresse que le membre a choisie pour etre contacte, parmi les deux.
+  communication_email: z.nativeEnum(CommunicationEmailCode),
   missions: z.array(apiMissionSchema),
 });
 export type apiMemberSchemaType = z.infer<typeof apiMemberSchema>;
@@ -100,6 +103,7 @@ export const memberDetailApiResponseSchema = z.object({
   github: z.string().nullable().optional(),
   primary_email: z.string().nullable(),
   secondary_email: z.string().nullable(),
+  communication_email: z.nativeEnum(CommunicationEmailCode),
   competences: z.array(z.string()).nullable().optional(),
   created_at: z.coerce.date().nullable().optional(),
   updated_at: z.coerce.date().nullable().optional(),
