@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_TAGS } from "@/models/arrayLimits";
+
 export const typesDocuments = [
   "Document de comité",
   "Rapport annuel",
@@ -22,6 +24,7 @@ export const docComiteDataSchema = z.object({
     .describe("Date du comité d'investissement"),
   contenu: z
     .array(z.string().describe("Contenu du document"))
+    .max(MAX_TAGS)
     .optional()
     .nullable()
     .describe("Que contient ce document ?"),

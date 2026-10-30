@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_RELATED_IDS } from "@/models/arrayLimits";
+
 export enum Status {
   "independent" = "independent",
   "admin" = "admin",
@@ -56,7 +58,7 @@ export const missionSchema = z.object({
     .optional()
     .nullable()
     .describe("Entité avec qui tu as contractualisé"),
-  startups: z.array(z.string()).optional(),
+  startups: z.array(z.string()).max(MAX_RELATED_IDS).optional(),
 });
 
 export type missionSchemaType = z.infer<typeof missionSchema>;

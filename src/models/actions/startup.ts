@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_RELATED_IDS, MAX_TIMELINE_ITEMS } from "@/models/arrayLimits";
+
 import { sponsorSchema } from "../sponsor";
 import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
 
@@ -10,6 +12,7 @@ export const startupInfoUpdateSchema = z.object({
     incubator_ids: z
       .array(z.string().uuid())
       .min(1, "Au moins un incubateur est obligatoire")
+      .max(MAX_RELATED_IDS)
       .describe("Incubateurs"),
     contact_dinum: startupSchema.shape.contact_dinum,
     contact_incubator: startupSchema.shape.contact_incubator,
@@ -50,30 +53,38 @@ export const startupInfoUpdateSchema = z.object({
     .optional(),
   shouldDeleteShot: z.boolean().optional(),
   shouldDeleteHero: z.boolean().optional(),
-  startupSponsors: z.array(z.string()),
-  newSponsors: z.array(
-    sponsorSchema.omit({
-      uuid: true,
-    }),
-  ),
-  startupPhases: z.array(
-    phaseSchema.omit({
-      uuid: true,
-      startup_id: true,
-    }),
-  ),
-  startupEvents: z.array(
-    eventSchema.omit({
-      uuid: true,
-      startup_id: true,
-    }),
-  ),
-  newPhases: z.array(
-    phaseSchema.omit({
-      uuid: true,
-      startup_id: true,
-    }),
-  ),
+  startupSponsors: z.array(z.string()).max(MAX_RELATED_IDS),
+  newSponsors: z
+    .array(
+      sponsorSchema.omit({
+        uuid: true,
+      }),
+    )
+    .max(MAX_RELATED_IDS),
+  startupPhases: z
+    .array(
+      phaseSchema.omit({
+        uuid: true,
+        startup_id: true,
+      }),
+    )
+    .max(MAX_TIMELINE_ITEMS),
+  startupEvents: z
+    .array(
+      eventSchema.omit({
+        uuid: true,
+        startup_id: true,
+      }),
+    )
+    .max(MAX_TIMELINE_ITEMS),
+  newPhases: z
+    .array(
+      phaseSchema.omit({
+        uuid: true,
+        startup_id: true,
+      }),
+    )
+    .max(MAX_TIMELINE_ITEMS),
 });
 
 export type startupInfoUpdateSchemaType = z.infer<

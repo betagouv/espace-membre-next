@@ -1,6 +1,12 @@
 import { z } from "zod";
 
 import {
+  MAX_MEETING_DATES,
+  MAX_MEETING_PARTICIPANTS,
+  MAX_TAGS,
+} from "@/models/arrayLimits";
+
+import {
   derniereDateFin,
   premiereDateVenue,
   SEGUR_DEMANDE_TYPE,
@@ -166,6 +172,7 @@ export const segurRequestSchema = z
     dateFin: z.string().optional(),
     joursRecurrents: z
       .array(z.enum(SEGUR_JOURS as [string, ...string[]]))
+      .max(MAX_TAGS)
       .optional(),
     // Radio optionnel : un choix non coché arrive en null — nullish() accepte
     // null/undefined pour que le champ reste facultatif. L'action traite null
@@ -184,7 +191,7 @@ export const segurRequestSchema = z
       })
       .refine(Number.isInteger, "Indique un nombre entier")
       .min(1, "Il y a au moins une personne")
-      .max(200, "Nombre trop élevé")
+      .max(MAX_MEETING_PARTICIPANTS, "Nombre trop élevé")
       .optional(),
     // Autres personnes présentes à la réunion (nombre illimité).
     autresMembres: z
@@ -198,10 +205,14 @@ export const segurRequestSchema = z
             .optional(),
         }),
       )
+      .max(MAX_MEETING_PARTICIPANTS)
       .optional(),
     // Une ou plusieurs dates, avec le même créneau horaire, et le matériel
     // nécessaire.
-    datesReunion: z.array(z.object({ date: z.string().optional() })).optional(),
+    datesReunion: z
+      .array(z.object({ date: z.string().optional() }))
+      .max(MAX_MEETING_DATES)
+      .optional(),
     heureDebut: z.string().optional(),
     heureFin: z.string().optional(),
     materiel: z.string().optional(),

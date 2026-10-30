@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_TAGS } from "@/models/arrayLimits";
+
 import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
@@ -83,10 +85,12 @@ const formationProposalObject = z.object({
   }),
   thematiques: z
     .array(z.enum(FORMATION_THEMATIQUES as [string, ...string[]]))
-    .min(1, "Choisis au moins une catégorie"),
+    .min(1, "Choisis au moins une catégorie")
+    .max(MAX_TAGS),
   audience: z
     .array(z.enum(FORMATION_AUDIENCES as [string, ...string[]]))
-    .min(1, "Choisis au moins une audience"),
+    .min(1, "Choisis au moins une audience")
+    .max(MAX_TAGS),
   // Une session est créée avec la formation, à cette date. Facultative ici
   // parce qu'un e-learning n'en a pas : la règle est dans le superRefine.
   dateDebut: z.string().trim().optional(),

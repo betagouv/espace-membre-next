@@ -51,7 +51,7 @@ export const GET = withApiV1<{ id: string }>(
           errors: [
             {
               pointer: "/status",
-              code: "invalid_enum_value",
+              code: "invalid_value",
               detail: "Valeur acceptee : active.",
             },
           ],

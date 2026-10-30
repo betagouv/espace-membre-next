@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_RELATED_IDS, MAX_TAGS } from "@/models/arrayLimits";
+
 import { missionSchemaShape } from "./mission";
 
 // todo: extract types from single "phases" array ?
@@ -138,7 +140,7 @@ export const startupSchema = z.object({
     })
     .min(1)
     .describe("Objectif du produit"),
-  sponsors: z.array(z.string()).optional(),
+  sponsors: z.array(z.string()).max(MAX_RELATED_IDS).optional(),
   // FIXME: la notion d'incubateur "principal" n'a pas de sens métier (rien
   // n'établit qu'un incubateur prime sur un autre pour une startup co-incubée).
   // Elle n'existe que pour ne pas casser les consommateurs de l'API protégée,
@@ -152,7 +154,11 @@ export const startupSchema = z.object({
     })
     .min(1)
     .describe("Incubateur principal ou fabrique numérique"),
-  incubator_ids: z.array(z.string().uuid()).optional().describe("Incubateurs"),
+  incubator_ids: z
+    .array(z.string().uuid())
+    .max(MAX_RELATED_IDS)
+    .optional()
+    .describe("Incubateurs"),
   contact_dinum: z
     .preprocess(
       (val) => (val === "" ? null : val),
@@ -220,10 +226,11 @@ export const startupSchema = z.object({
     .optional()
     .nullable()
     .describe("URL de l'analyse de risque"),
-  techno: z.array(z.string()).optional().nullable(),
+  techno: z.array(z.string()).max(MAX_TAGS).optional().nullable(),
   mailing_list: z.string().optional().nullable(),
   usertypes: z
     .array(z.string())
+    .max(MAX_TAGS)
     .optional()
     .nullable()
     .describe("Utilisateurs cibles du service"),
@@ -231,6 +238,7 @@ export const startupSchema = z.object({
   fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
   thematiques: z
     .array(z.string())
+    .max(MAX_TAGS)
     .optional()
     .nullable()
     .describe("Thématiques addressées par la startup"),

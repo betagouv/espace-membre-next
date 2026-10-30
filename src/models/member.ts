@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+import {
+  MAX_MEMBER_MISSIONS,
+  MAX_RELATED_IDS,
+  MAX_TAGS,
+} from "@/models/arrayLimits";
+
 import { missionSchema } from "./mission";
 import { teamSchema } from "./team";
 
@@ -232,19 +238,22 @@ export const memberSchema = z.object({
   github: z.string().optional().nullable().describe("Login GitHub"),
   competences: z
     .array(z.string())
+    .max(MAX_TAGS)
     .optional()
     .nullable()
     .describe("Liste des compétences"),
   teams: z
     .array(teamSchema)
+    .max(MAX_MEMBER_MISSIONS)
     .optional()
     .nullable()
     .describe("Liste des équipes incubateurs"),
   missions: z
     .array(missionSchema)
-    .min(1, "Vous devez définir au moins une mission"),
-  startups: z.array(z.string()).optional().nullable(),
-  previously: z.array(z.string()).optional().nullable(),
+    .min(1, "Vous devez définir au moins une mission")
+    .max(MAX_MEMBER_MISSIONS),
+  startups: z.array(z.string()).max(MAX_RELATED_IDS).optional().nullable(),
+  previously: z.array(z.string()).max(MAX_RELATED_IDS).optional().nullable(),
   domaine: z.nativeEnum(
     Domaine, // ??
     {
