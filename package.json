@@ -39,7 +39,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@mui/base": "^5.0.0-beta.69",
     "@mui/material": "^5.15.10",
-    "@sentry/nextjs": "10.69.0",
+    "@sentry/nextjs": "10.75.2",
     "@sentry/node": "10.69.0",
     "@sindresorhus/slugify": "^1.1.0",
     "@socialgouv/matomo-next": "^1.9.1",
