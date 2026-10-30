@@ -339,7 +339,7 @@ PostgreSQL-->Cron
 end
 
 App-->ProConnect
-App-->Crisp
+App-->Messages
 App-->Brevo
 
 Cron-->Dimail
