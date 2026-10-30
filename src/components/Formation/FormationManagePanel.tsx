@@ -18,6 +18,7 @@ import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import {
   updateFormation,
@@ -108,7 +109,11 @@ export const FormationManagePanel = ({
     handleSubmit,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<formationUpdateSchemaType>({
+  } = useForm<
+    z.input<typeof formationUpdateSchema>,
+    unknown,
+    z.output<typeof formationUpdateSchema>
+  >({
     resolver: zodResolver(formationUpdateSchema),
     mode: "onChange",
     defaultValues,

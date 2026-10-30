@@ -25,7 +25,7 @@ const proposition = {
 
 const erreursSur = (result: {
   success: boolean;
-  error?: { issues: { path: (string | number)[] }[] };
+  error?: { issues: { path: PropertyKey[] }[] };
 }) => (result.error?.issues ?? []).map((issue) => issue.path.join("."));
 
 describe("formationProposalSchema", () => {
