@@ -134,7 +134,7 @@
       "nodemailer": "$nodemailer"
     },
     "next": {
-      "postcss": "8.5.26"
+      "postcss": "^8.5.26"
     }
   }
 }
