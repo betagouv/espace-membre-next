@@ -131,17 +131,34 @@ const verifierSalleReunion = (data: SegurRequestData, ctx: z.RefinementCtx) => {
 export const segurRequestSchema = z
   .object({
     typeDemande: z.nativeEnum(SEGUR_DEMANDE_TYPE, {
-      required_error: "Précise le type de demande",
-      invalid_type_error: "Précise le type de demande",
+      error: (issue) =>
+        typeof issue.input === "string" || typeof issue.input === "number"
+          ? undefined
+          : "Précise le type de demande",
     }),
     prenomNom: z
-      .string({ required_error: "Ton prénom et nom sont requis" })
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Ton prénom et nom sont requis"
+            : undefined,
+      })
       .min(1, "Ton prénom et nom sont requis"),
     email: z
-      .string({ required_error: "Ton adresse mail est requise" })
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Ton adresse mail est requise"
+            : undefined,
+      })
       .email("Email invalide"),
     startupName: z
-      .string({ required_error: "Le nom de ta startup est requis" })
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Le nom de ta startup est requis"
+            : undefined,
+      })
       .min(1, "Le nom de ta startup est requis"),
     // Demande d'accès : dates de début/fin de venue, au format "YYYY-MM-DD".
     // Les contraintes de délai et de durée sont dans verifierAcces.
@@ -161,8 +178,11 @@ export const segurRequestSchema = z
     // z.coerce n'en fasse pas un 0 qui ferait échouer le min(1) pendant la
     // frappe. Ici on ne voit donc qu'un nombre ou rien.
     nbParticipants: z.coerce
-      .number({ invalid_type_error: "Indique un nombre" })
-      .int("Indique un nombre entier")
+      .number({
+        error: (issue) =>
+          issue.code === "invalid_type" ? "Indique un nombre" : undefined,
+      })
+      .refine(Number.isInteger, "Indique un nombre entier")
       .min(1, "Il y a au moins une personne")
       .max(200, "Nombre trop élevé")
       .optional(),

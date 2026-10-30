@@ -210,18 +210,14 @@ export const memberSchema = z.object({
   username: z.string({}).readonly(),
   fullname: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "Le nom est obligatoire",
-      }),
+      error: "Le nom est obligatoire",
     })
     .min(1)
     .readonly()
     .describe("Nom complet"),
   role: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "Le rôle est un champ obligatoire",
-      }),
+      error: "Le rôle est un champ obligatoire",
     })
     .min(1)
     .describe("Rôle actuel"),
@@ -232,18 +228,18 @@ export const memberSchema = z.object({
       z.string().trim().url({ message: "URL invalide" }).optional(),
     ])
     .describe("Adresse du profil LinkedIn ou site web"),
-  avatar: z.string().describe("URL ou slug de l'avatar").nullable().optional(),
-  github: z.string().describe("Login GitHub").optional().nullable(),
+  avatar: z.string().nullable().optional().describe("URL ou slug de l'avatar"),
+  github: z.string().optional().nullable().describe("Login GitHub"),
   competences: z
     .array(z.string())
-    .describe("Liste des compétences")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("Liste des compétences"),
   teams: z
     .array(teamSchema)
-    .describe("Liste des équipes incubateurs")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("Liste des équipes incubateurs"),
   missions: z
     .array(missionSchema)
     .min(1, "Vous devez définir au moins une mission"),
@@ -252,28 +248,22 @@ export const memberSchema = z.object({
   domaine: z.nativeEnum(
     Domaine, // ??
     {
-      errorMap: (issue, ctx) => ({
-        message: "Le domaine est un champ obligatoire",
-      }),
+      error: "Le domaine est un champ obligatoire",
     },
   ), // ??
   bio: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message:
-          "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
-      }),
+      error:
+        "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
     })
-    .describe("Courte bio")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("Courte bio"),
   memberType: z.nativeEnum(MemberType).optional().nullable(),
   // email relative info
   secondary_email: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "L'email est obligatoire",
-      }),
+      error: "L'email est obligatoire",
     })
     .email()
     .describe("Email"),
@@ -285,36 +275,32 @@ export const memberSchema = z.object({
     .nativeEnum(
       GenderCode, // ??
       {
-        errorMap: (issue, ctx) => ({
-          message: "Le champ gender est obligatoire",
-        }),
+        error: "Le champ gender est obligatoire",
       },
     )
     .optional()
     .nullable(),
   average_nb_of_days: z
     .number()
-    .describe("Nombre de jour moyen travaillé par semaine")
     .max(5)
     .nullable()
-    .optional(),
+    .optional()
+    .describe("Nombre de jour moyen travaillé par semaine"),
   legal_status: z
     .nativeEnum(
       LegalStatus, // ??
       {
-        errorMap: (issue, ctx) => ({
-          message: "Le status legal n'a pas une valeur correcte",
-        }),
+        error: "Le status legal n'a pas une valeur correcte",
       },
     )
-    .describe(`Status legal de l'entreprise`)
-    .optional(),
+    .optional()
+    .describe(`Status legal de l'entreprise`),
   workplace_insee_code: z
     .string()
-    .describe("Code postal de la ville")
     .nullable()
-    .optional(),
-  osm_city: z.string().describe("Ville internationale").nullable().optional(),
+    .optional()
+    .describe("Code postal de la ville"),
+  osm_city: z.string().nullable().optional().describe("Ville internationale"),
   primary_email: z.string().email().nullable(),
   primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
   primary_email_status_updated_at: z.date().readonly(),

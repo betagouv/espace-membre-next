@@ -11,14 +11,24 @@ import {
 export const opsRequestSchema = z
   .object({
     tchapId: z
-      .string({ required_error: "Ton identifiant Tchap est requis" })
+      .string({
+        error: (issue) =>
+          issue.input === undefined
+            ? "Ton identifiant Tchap est requis"
+            : undefined,
+      })
       .min(1, "Ton identifiant Tchap est requis"),
     email: z
-      .string({ required_error: "Ton email est requis" })
+      .string({
+        error: (issue) =>
+          issue.input === undefined ? "Ton email est requis" : undefined,
+      })
       .email("Email invalide"),
     demande: z.nativeEnum(OPS_DEMANDE_TYPE, {
-      required_error: "Précise le type de demande",
-      invalid_type_error: "Précise le type de demande",
+      error: (issue) =>
+        typeof issue.input === "string" || typeof issue.input === "number"
+          ? undefined
+          : "Précise le type de demande",
     }),
     projet: z.string().optional(),
     // Per-demande conditional fields (see OPS_DEMANDE_FIELDS).

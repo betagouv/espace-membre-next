@@ -14,6 +14,7 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { submitSegurRequest } from "@/app/api/demandes/segur/actions";
 import { parseParticipantsCsv } from "@/lib/parseParticipantsCsv";
@@ -58,7 +59,11 @@ export const SegurRequestForm = ({
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<segurRequestSchemaType>({
+  } = useForm<
+    z.input<typeof segurRequestSchema>,
+    unknown,
+    z.output<typeof segurRequestSchema>
+  >({
     resolver: zodResolver(segurRequestSchema),
     mode: "onChange",
     defaultValues: {

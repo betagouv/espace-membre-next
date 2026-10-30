@@ -18,7 +18,7 @@ const { Readable } = require("stream"); // import doesnt work for some reason
 
 type FmReturn<T> = ReturnType<typeof fm<T>>;
 
-export const parseMarkdown = async <T extends ZodSchema>(
+export const parseMarkdown = async <T extends ZodSchema<any>>(
   id: string,
   content: string,
 ) => {

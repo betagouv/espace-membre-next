@@ -62,7 +62,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     defaultValues,
   });
 
-  const createMemberSchemaShape = createMemberSchema._def.schema.shape;
+  const createMemberSchemaShape = createMemberSchema.shape;
   const { fields: missionsFields } = useFieldArray({
     rules: { minLength: 1 },
     control,

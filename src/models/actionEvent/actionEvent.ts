@@ -390,11 +390,9 @@ export const EventTeamUpdatedPayload = z.object({
 export const EventMemberCreatedPayload = z.object({
   action_code: z.literal(EventCode.MEMBER_CREATED),
   action_metadata: z.object({
-    member: createMemberSchema._def.schema.shape.member,
-    missions: createMemberSchema._def.schema.shape.missions,
-    incubator_id: createMemberSchema._def.schema.shape.incubator_id
-      .optional()
-      .nullable(),
+    member: createMemberSchema.shape.member,
+    missions: createMemberSchema.shape.missions,
+    incubator_id: createMemberSchema.shape.incubator_id.optional().nullable(),
   }),
 });
 

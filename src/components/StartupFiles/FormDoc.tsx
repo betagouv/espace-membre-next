@@ -30,9 +30,7 @@ export const contenusTypes = [
   { label: "budget", description: "Budget du produit" },
 ];
 
-function isComiteSchema(
-  schema: z.AnyZodObject,
-): schema is typeof docComiteSchema {
+function isComiteSchema(schema: z.ZodObject): schema is typeof docComiteSchema {
   return (
     schema &&
     schema.shape &&
