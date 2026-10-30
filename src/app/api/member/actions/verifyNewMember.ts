@@ -13,10 +13,12 @@ import { authOptions } from "@/lib/authoptions";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { AdminEmailNotAllowedError, BusinessError } from "@/lib/error";
 import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
+import { activateWithLoginEmail } from "@/lib/onboarding/startMemberOnboarding";
 
 // when the user verifies its membership (from AccountVerifyClientPage)
 // the email account (mailbox or public service email) has already been set up
-// at invitation/validation : this only saves the profile and activates the account
+// at invitation/validation : this only saves the profile and activates the account.
+// A fiche accepted by the former flow has no login email yet : it gets one here.
 export async function verifyNewMember(
   memberData: memberValidateInfoSchemaType & { username: string },
 ): Promise<{ success: boolean; message: string }> {
@@ -60,6 +62,29 @@ export async function verifyNewMember(
       return { success: false, message: error.message };
     }
     throw error;
+  }
+
+  if (!dbUser.primary_email) {
+    await updateMember(data, session.user.uuid, {}, session.user.id);
+    try {
+      const activation = await activateWithLoginEmail(session.user.uuid);
+      if (activation === "mailbox") {
+        return {
+          success: true,
+          message:
+            "Ta fiche est vérifiée. Ta boîte @beta.gouv.fr est en cours de création : le lien pour y accéder t'arrivera sur ton email perso. C'est avec elle que tu te connecteras avec ProConnect.",
+        };
+      }
+    } catch (error) {
+      if (error instanceof BusinessError) {
+        return { success: false, message: error.message };
+      }
+      throw error;
+    }
+    return {
+      success: true,
+      message: "L'utilisateur a bien été vérifié",
+    };
   }
 
   await updateMember(
