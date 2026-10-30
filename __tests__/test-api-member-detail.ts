@@ -5,7 +5,7 @@ import { apiRequest, createTestApiKey, deleteTestApiKey } from "./utils/apiKey";
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
 import { GET } from "@/app/api/v1/members/[id]/route";
 import { db } from "@/lib/kysely";
-import { Domaine } from "@/models/member";
+import { CommunicationEmailCode, Domaine } from "@/models/member";
 
 // La fiche detaillee /api/v1/members/{username} est le successeur formalise
 // de l'ancienne route /member/{username}. On verifie son contrat sur les points
@@ -115,6 +115,7 @@ describe("GET /api/v1/members/[username]", () => {
     expect(body).to.have.property("domaine");
     expect(body).to.have.property("avatar");
     expect(body).to.have.property("isActive");
+    expect(body.communication_email).to.equal(CommunicationEmailCode.PRIMARY);
     expect(body.role).to.equal("Developpeuse");
     expect(body.domaine).to.equal(Domaine.DEVELOPPEMENT);
   });
