@@ -77,6 +77,7 @@ export const GET = withApiV1<{ id: string }>(
         github: row.github,
         primary_email: row.primary_email,
         secondary_email: row.secondary_email,
+        communication_email: row.communication_email,
         attachment:
           row.viaStartups && row.viaTeams
             ? IncubatorMemberAttachment.BOTH

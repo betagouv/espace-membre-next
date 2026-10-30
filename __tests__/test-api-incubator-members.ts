@@ -6,6 +6,7 @@ import { apiRequest, createTestApiKey, deleteTestApiKey } from "./utils/apiKey";
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
 import { GET } from "@/app/api/v1/incubators/[id]/members/route";
 import { IncubatorMemberAttachment } from "@/models/api/member";
+import { CommunicationEmailCode } from "@/models/member";
 
 const now = new Date();
 
@@ -57,6 +58,8 @@ const testData: FakeDataInterface = {
     },
     {
       username: "test-api-both",
+      secondary_email: "test-api-both@perso.example",
+      communication_email: "secondary",
       teams: ["test-api-team"],
       missions: [
         {
@@ -142,6 +145,21 @@ describe("GET /api/v1/incubators/[ghid]/members", () => {
     ]);
   });
 
+  it("expose l'adresse de communication choisie, primary par defaut", async () => {
+    const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-api-incub" }) });
+    const body = (await res.json()).data;
+    const byUsername = Object.fromEntries(
+      body.map((member: { username: string }) => [member.username, member]),
+    );
+
+    expect(byUsername["test-api-both"].communication_email).to.equal(
+      CommunicationEmailCode.SECONDARY,
+    );
+    expect(byUsername["test-api-startup-active"].communication_email).to.equal(
+      CommunicationEmailCode.PRIMARY,
+    );
+  });
+
   it("n'expose pas les champs exclus (bio, domaine, role, avatar, etc.)", async () => {
     const res = await GET(makeReq(), { params: Promise.resolve({ id: "test-api-incub" }) });
     const body = (await res.json()).data;
@@ -154,6 +172,7 @@ describe("GET /api/v1/incubators/[ghid]/members", () => {
       "github",
       "primary_email",
       "secondary_email",
+      "communication_email",
       "attachment",
       "teams",
       "missions",
