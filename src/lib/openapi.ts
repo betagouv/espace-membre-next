@@ -18,6 +18,7 @@ import {
   incubatorMemberSchema,
   memberDetailApiResponseSchema,
 } from "@/models/api/member";
+import { PERIMETER_LABEL_PATTERN } from "@/models/api/perimeter";
 import { problemSchema } from "@/models/api/problem";
 import { API_SCOPES } from "@/models/api/scope";
 import {
@@ -33,12 +34,12 @@ import {
 } from "@/models/api/startup";
 
 // extendZodWithOpenApi patche le prototype zod PARTAGE par tout le repo (ajout de
-// .openapi et wrapping de .optional/.nullable/.pick/...). C'est idempotent et sans
-// effet sur la validation, mais ce n'est PAS confine a ce module. On l'accepte
-// parce que la route /api/v1/openapi.json est generee statiquement au build
-// (dynamic = "force-static") : ce patch ne s'execute donc qu'au build, jamais dans
-// le serveur en production. Les modeles n'importent pas zod-to-openapi, ce qui
-// garde ce fichier + la route retirables sans toucher au reste de l'API.
+// .openapi). C'est idempotent et sans effet sur la validation, mais ce n'est PAS
+// confine a ce module. On l'accepte parce que la route /api/v1/openapi.json est
+// generee statiquement au build (dynamic = "force-static") : ce patch ne
+// s'execute donc qu'au build, jamais dans le serveur en production. Les modeles
+// n'importent pas zod-to-openapi, ce qui garde ce fichier + la route retirables
+// sans toucher au reste de l'API.
 extendZodWithOpenApi(z);
 
 const PROBLEM_DESCRIPTIONS: Record<number, string> = {
@@ -55,6 +56,13 @@ const PROBLEM_DESCRIPTIONS: Record<number, string> = {
 // On construit un registre neuf a chaque appel pour eviter tout etat partage.
 export function buildOpenApiDocument() {
   const registry = new OpenAPIRegistry();
+  // Zod 4 copie les methodes du prototype sur chaque instance a sa
+  // construction : un schema de modele, construit a l'import donc avant
+  // extendZodWithOpenApi, n'a pas .openapi, que registry.register appelle. Le
+  // clone est construit apres le patch, et seul l'enregistre devient un $ref,
+  // comme avant.
+  const register = <T extends z.ZodType>(refId: string, schema: T) =>
+    registry.register(refId, schema.clone());
 
   registry.registerComponent("securitySchemes", "BearerApiKey", {
     type: "http",
@@ -65,41 +73,29 @@ export function buildOpenApiDocument() {
       "Le jeton n'est affiche qu'une seule fois a la creation.",
   });
 
-  const Problem = registry.register("Problem", problemSchema);
-  const IncubatorRef = registry.register("IncubatorRef", incubatorRefSchema);
-  const Incubator = registry.register("Incubator", incubatorApiResponseSchema);
-  const IncubatorPatch = registry.register(
-    "IncubatorPatch",
-    incubatorPatchSchema,
-  );
-  const Startup = registry.register("Startup", startupApiResponseSchema);
-  const StartupWithIncubators = registry.register(
+  const Problem = register("Problem", problemSchema);
+  const IncubatorRef = register("IncubatorRef", incubatorRefSchema);
+  const Incubator = register("Incubator", incubatorApiResponseSchema);
+  const IncubatorPatch = register("IncubatorPatch", incubatorPatchSchema);
+  const Startup = register("Startup", startupApiResponseSchema);
+  const StartupWithIncubators = register(
     "StartupWithIncubators",
     startupWithIncubatorApiResponseSchema,
   );
-  const StartupPatch = registry.register("StartupPatch", startupPatchSchema);
-  const IncubatorStartup = registry.register(
+  const StartupPatch = register("StartupPatch", startupPatchSchema);
+  const IncubatorStartup = register(
     "IncubatorStartup",
     incubatorStartupApiResponseSchema,
   );
-  const Member = registry.register("Member", apiMemberSchema);
-  const IncubatorMember = registry.register(
-    "IncubatorMember",
-    incubatorMemberSchema,
-  );
-  const MemberDetail = registry.register(
-    "MemberDetail",
-    memberDetailApiResponseSchema,
-  );
-  const StartupStandards = registry.register(
-    "StartupStandards",
-    startupStandardsSchema,
-  );
-  const StartupStandardsPatch = registry.register(
+  const Member = register("Member", apiMemberSchema);
+  const IncubatorMember = register("IncubatorMember", incubatorMemberSchema);
+  const MemberDetail = register("MemberDetail", memberDetailApiResponseSchema);
+  const StartupStandards = register("StartupStandards", startupStandardsSchema);
+  const StartupStandardsPatch = register(
     "StartupStandardsPatch",
     startupStandardsPatchSchema,
   );
-  const StartupStandardsResponse = registry.register(
+  const StartupStandardsResponse = register(
     "StartupStandardsResponse",
     startupStandardsResponseSchema,
   );
@@ -173,9 +169,16 @@ export function buildOpenApiDocument() {
   const item = (schema: z.ZodTypeAny) => ({
     "application/json": { schema: z.object({ data: schema }) },
   });
+  // Le generateur rend le motif par RegExp.toString(), drapeaux compris : sans
+  // cette surcharge, le pattern publie finirait par "/u".
+  const collectionMeta = collectionMetaSchema.extend({
+    perimeter: collectionMetaSchema.shape.perimeter
+      .clone()
+      .openapi({ pattern: PERIMETER_LABEL_PATTERN.source }),
+  });
   const collection = (schema: z.ZodTypeAny) => ({
     "application/json": {
-      schema: z.object({ data: z.array(schema), meta: collectionMetaSchema }),
+      schema: z.object({ data: z.array(schema), meta: collectionMeta }),
     },
   });
 

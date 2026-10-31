@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_RELATED_IDS, MAX_TAGS } from "@/models/arrayLimits";
+
 import { missionSchemaShape } from "./mission";
 
 // todo: extract types from single "phases" array ?
@@ -83,9 +85,7 @@ export const phaseSchema = z.object({
     },
     z
       .date({
-        errorMap: (issue, ctx) => ({
-          message: "Champ obligatoire",
-        }),
+        error: "Champ obligatoire",
       })
       .describe("Date de début de la phase"),
   ),
@@ -115,9 +115,7 @@ export const eventSchema = z.object({
     },
     z
       .date({
-        errorMap: (issue, ctx) => ({
-          message: "Champ obligatoire",
-        }),
+        error: "Champ obligatoire",
       })
       .describe("Date"),
   ),
@@ -132,21 +130,17 @@ export const startupSchema = z.object({
   ghid: z.string(),
   name: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "Le nom est obligatoire",
-      }),
+      error: "Le nom est obligatoire",
     })
     .min(1)
     .describe("Nom du produit"),
   pitch: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "L'objectif du produit est obligatoire",
-      }),
+      error: "L'objectif du produit est obligatoire",
     })
     .min(1)
     .describe("Objectif du produit"),
-  sponsors: z.array(z.string()).optional(),
+  sponsors: z.array(z.string()).max(MAX_RELATED_IDS).optional(),
   // FIXME: la notion d'incubateur "principal" n'a pas de sens métier (rien
   // n'établit qu'un incubateur prime sur un autre pour une startup co-incubée).
   // Elle n'existe que pour ne pas casser les consommateurs de l'API protégée,
@@ -156,13 +150,15 @@ export const startupSchema = z.object({
   // À supprimer dès que les dépendants se seront adaptés.
   incubator_id: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "L'incubateur est obligatoire",
-      }),
+      error: "L'incubateur est obligatoire",
     })
     .min(1)
     .describe("Incubateur principal ou fabrique numérique"),
-  incubator_ids: z.array(z.string().uuid()).optional().describe("Incubateurs"),
+  incubator_ids: z
+    .array(z.string().uuid())
+    .max(MAX_RELATED_IDS)
+    .optional()
+    .describe("Incubateurs"),
   contact_dinum: z
     .preprocess(
       (val) => (val === "" ? null : val),
@@ -177,115 +173,115 @@ export const startupSchema = z.object({
     .describe("Point de contact Incubateur"),
   contact: z
     .string({
-      errorMap: () => ({
-        message: "Un email de contact est obligatoire",
-      }),
+      error: "Un email de contact est obligatoire",
     })
     .email()
     .min(1)
     .describe("Email de contact du produit"),
   link: z
     .string()
-    .describe("URL du site web")
     .url({
       message:
         "L'URL fournie doit respecter le format suivant : https://exemple.com",
     })
     .or(z.literal(""))
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL du site web"),
   repository: z
     .string()
-    .describe("URL du repository pour le code source")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL du repository pour le code source"),
   accessibility_status: z.string().optional().nullable(),
   dashlord_url: z
     .string()
-    .describe("URL du rapport DashLord")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL du rapport DashLord"),
   stats_url: z
     .string()
-    .describe("URL de la page de statistiques d'usage")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL de la page de statistiques d'usage"),
   budget_url: z
     .string()
-    .describe("URL de la page de budget")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL de la page de budget"),
   mon_service_securise: z
     .boolean()
-    .describe("L'équipe a mené une démarche de sécurité sur MonServiceSécurisé")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe(
+      "L'équipe a mené une démarche de sécurité sur MonServiceSécurisé",
+    ),
   analyse_risques: z
     .boolean()
-    .describe("Nous avons réalisé une analyse de risque")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("Nous avons réalisé une analyse de risque"),
   analyse_risques_url: z
     .string()
-    .describe("URL de l'analyse de risque")
     .optional()
-    .nullable(),
-  techno: z.array(z.string()).optional().nullable(),
+    .nullable()
+    .describe("URL de l'analyse de risque"),
+  techno: z.array(z.string()).max(MAX_TAGS).optional().nullable(),
   mailing_list: z.string().optional().nullable(),
   usertypes: z
     .array(z.string())
+    .max(MAX_TAGS)
     .optional()
-    .describe("Utilisateurs cibles du service")
-    .nullable(),
+    .nullable()
+    .describe("Utilisateurs cibles du service"),
   //redirect_from: z.array(z.string()).optional(),
   fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
   thematiques: z
     .array(z.string())
+    .max(MAX_TAGS)
     .optional()
-    .describe("Thématiques addressées par la startup")
-    .nullable(),
+    .nullable()
+    .describe("Thématiques addressées par la startup"),
   description: z
     .string({
-      errorMap: (issue, ctx) => ({
-        message: "La description doit faire minimum 30 caractères",
-      }),
+      error: "La description doit faire minimum 30 caractères",
     })
     .min(30)
     .describe("Décrivez votre produit, son public, ses objectifs"),
   has_mobile_app: z
     .boolean()
-    .describe("Le produit propose une application mobile")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("Le produit propose une application mobile"),
   is_private_url: z
     .boolean()
-    .describe("L'application n'est pas accessible au public (accès restreint)")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("L'application n'est pas accessible au public (accès restreint)"),
   dsfr_status: z
     .union([z.enum(DSFR_STATUSES), z.string()])
-    .describe("Implémentation du design systeme de l'état")
-    .optional(),
+    .optional()
+    .describe("Implémentation du design systeme de l'état"),
   tech_audit_url: z
     .string()
-    .describe("URL de l'audit technique")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL de l'audit technique"),
   roadmap_url: z
     .string()
-    .describe("URL de la roadmap ou tickets")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL de la roadmap ou tickets"),
   ecodesign_url: z
     .string()
-    .describe("URL de la déclaration d'écoconception")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL de la déclaration d'écoconception"),
   impact_url: z
     .string()
-    .describe("URL de la matrice d'impact")
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("URL de la matrice d'impact"),
 });
 
 export type startupSchemaType = z.infer<typeof startupSchema>;

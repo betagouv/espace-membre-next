@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_TAGS } from "@/models/arrayLimits";
+
 export const typesDocuments = [
   "Document de comité",
   "Rapport annuel",
@@ -16,17 +18,16 @@ export const docComiteDataSchema = z.object({
         return val;
       },
       z.date({
-        errorMap: (issue, ctx) => ({
-          message: "Champ obligatoire",
-        }),
+        error: "Champ obligatoire",
       }),
     )
     .describe("Date du comité d'investissement"),
   contenu: z
     .array(z.string().describe("Contenu du document"))
-    .describe("Que contient ce document ?")
+    .max(MAX_TAGS)
     .optional()
-    .nullable(),
+    .nullable()
+    .describe("Que contient ce document ?"),
 });
 
 export const docSchema = z.object({
@@ -34,8 +35,8 @@ export const docSchema = z.object({
   type: z.enum(typesDocuments).describe("Type de document"),
   comments: z
     .string()
-    .describe("Commentaires sur le contenu du document")
-    .optional(),
+    .optional()
+    .describe("Commentaires sur le contenu du document"),
   data: z.any().optional().nullable(),
 });
 
