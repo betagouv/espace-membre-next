@@ -94,7 +94,8 @@ export const canEditMember = async ({
  * canEditMember ouvre l'edition complete des missions. Sinon, sa propre fiche,
  * ou une fiche sans mission en cours ni a venir : c'est le parcours « Mettre a
  * jour les missions » que MemberExpirationNotice propose a tout membre pour
- * faire revenir quelqu'un. Ces deux cas ne peuvent que prolonger.
+ * faire revenir quelqu'un. Dans ces deux cas, une mission existante ne peut pas
+ * etre raccourcie. Ajouter une mission ou changer ses produits reste possible.
  */
 export async function getMemberMissionsRight(
   subject: Pick<AuthSubject, "uuid" | "isAdmin">,

@@ -5,6 +5,7 @@ import sinon from "sinon";
 
 import { createData, deleteData } from "./utils/fakeData";
 import { testUsers } from "./utils/users-data";
+import { updateMember } from "@/app/api/member/updateMember";
 import { db } from "@/lib/kysely";
 
 const userUuid = async (username: string) =>
@@ -174,5 +175,75 @@ describe("safeUpdateMemberMissions authorization", () => {
 
     res.success.should.equal(true);
     (await countMissions(target)).should.equal(before + 1);
+  });
+});
+
+describe("updateMember mission ownership", () => {
+  const missionsOf = (userId: string) =>
+    db
+      .selectFrom("missions")
+      .select(["uuid", "start", "end", "status", "employer", "user_id"])
+      .where("user_id", "=", userId)
+      .execute();
+
+  beforeEach(async () => {
+    await createData(testUsers);
+  });
+
+  afterEach(async () => {
+    await deleteData(testUsers);
+  });
+
+  it("should refuse a mission that belongs to another member", async () => {
+    const self = await userUuid("membre.nouveau");
+    const [stolen] = await missionsOf(await userUuid("membre.actif"));
+
+    let error: unknown;
+    try {
+      await updateMember(
+        {
+          fullname: "Membre Nouveau",
+          missions: [
+            ...(await missionsOf(self)),
+            { ...stolen, end: addMonths(stolen.start, 1), startups: [] },
+          ],
+        } as never,
+        self,
+        {},
+        "membre.nouveau",
+      );
+    } catch (e) {
+      error = e;
+    }
+
+    (error as Error).message.should.include("n'appartient pas");
+    const after = await db
+      .selectFrom("missions")
+      .select(["user_id", "end"])
+      .where("uuid", "=", stolen.uuid)
+      .executeTakeFirstOrThrow();
+    after.user_id!.should.equal(stolen.user_id!);
+    format(after.end!, "yyyy-MM-dd").should.equal(
+      format(stolen.end!, "yyyy-MM-dd"),
+    );
+  });
+
+  it("should still update the member's own missions", async () => {
+    const self = await userUuid("membre.nouveau");
+    const [own, ...others] = await missionsOf(self);
+    const newEnd = addMonths(own.start, 2);
+
+    await updateMember(
+      {
+        fullname: "Membre Nouveau",
+        missions: [{ ...own, end: newEnd, startups: [] }, ...others],
+      } as never,
+      self,
+      {},
+      "membre.nouveau",
+    );
+
+    const after = (await missionsOf(self)).find((m) => m.uuid === own.uuid)!;
+    format(after.end!, "yyyy-MM-dd").should.equal(format(newEnd, "yyyy-MM-dd"));
   });
 });
