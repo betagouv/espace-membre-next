@@ -279,7 +279,9 @@ Les permissions sont vérifiées côté serveur (routes sous
   lié compte une équipe où il siège. Changer les incubateurs d'un produit, comme en
   gérer les membres, exige en plus d'être agent public en mission dessus ou dans une
   telle équipe. Il ne peut pas modifier la fiche d'un autre membre en dehors du cas
-  ci-dessus.
+  ci-dessus. Il peut prolonger ses propres missions et celles d'une fiche expirée,
+  pour faire revenir quelqu'un, mais pas celles d'un membre actif
+  (`getMemberMissionsRight`).
 - **Anonymous** : aucun accès aux pages privées (redirection vers `/login`).
 
 ### Matrice des droits

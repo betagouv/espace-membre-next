@@ -1,4 +1,4 @@
-import { isAfter } from "date-fns";
+import { isAfter, startOfDay } from "date-fns";
 
 import { AuthorizationError } from "@/lib/error";
 import { getUserTeamIncubatorIds } from "@/lib/kysely/queries/authorization";
@@ -89,6 +89,30 @@ export const canEditMember = async ({
 
   return false;
 };
+
+/**
+ * canEditMember ouvre l'edition complete des missions. Sinon, sa propre fiche,
+ * ou une fiche sans mission en cours ni a venir : c'est le parcours « Mettre a
+ * jour les missions » que MemberExpirationNotice propose a tout membre pour
+ * faire revenir quelqu'un. Ces deux cas ne peuvent que prolonger.
+ */
+export async function getMemberMissionsRight(
+  subject: Pick<AuthSubject, "uuid" | "isAdmin">,
+  member: { uuid: string; missions: { end?: Date | null }[] },
+): Promise<"full" | "extend" | null> {
+  if (await canEditMember({ memberUuid: member.uuid, sessionUser: subject })) {
+    return "full";
+  }
+  if (subject.uuid === member.uuid) return "extend";
+  // Meme borne que checkUserIsExpired : la fiche reste active tout le dernier
+  // jour de mission. Les fins arrivent a minuit UTC, `end >= now` la donnait
+  // expiree des le matin.
+  const today = startOfDay(new Date());
+  const hasCurrentOrFutureMission = member.missions.some(
+    (m) => !m.end || startOfDay(m.end) >= today,
+  );
+  return hasCurrentOrFutureMission ? null : "extend";
+}
 
 export async function assertCanEditMember(
   memberUuid: string,

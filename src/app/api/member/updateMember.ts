@@ -1,5 +1,3 @@
-"use server";
-
 import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
@@ -41,7 +39,9 @@ export async function updateMember(
     | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
   created_by_username: string,
 ) {
-  // todo: auth
+  // Aucun controle d'acces ici : updateMemberInfo et verifyNewMember le font.
+  // Ne pas remettre "use server" sur ce fichier, la fonction deviendrait une
+  // server action appelable sans garde.
   const { missions, ...memberData } = data;
   const previousInfo = await getUserInfos({ uuid: memberUuid });
   if (!previousInfo) {
