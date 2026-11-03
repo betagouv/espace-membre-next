@@ -93,6 +93,7 @@ RFC 9457, `application/problem+json`, avec un `type` en URI stable.
 | `insufficient_scope` | 403 | portée manquante pour cette opération |
 | `out_of_perimeter` | 403 | la ressource existe mais sort du périmètre |
 | `not_found` | 404 | l'identifiant ne désigne rien |
+| `gone` | 410 | appel à l'ancienne API `/api/protected`, retirée au profit de `/api/v1` |
 | `method_not_allowed` | 405 | méthode non exposée |
 | `unsupported_media_type` | 415 | écriture sans le bon `Content-Type` |
 | `invalid_request` | 422 | corps ou paramètre invalide, avec pointeur JSON |

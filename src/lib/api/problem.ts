@@ -31,6 +31,10 @@ export const PROBLEM_TYPES = {
     status: StatusCodes.NOT_FOUND,
     title: "Ressource introuvable",
   },
+  gone: {
+    status: StatusCodes.GONE,
+    title: "API retiree",
+  },
   method_not_allowed: {
     status: StatusCodes.METHOD_NOT_ALLOWED,
     title: "Methode non autorisee sur cette ressource",
