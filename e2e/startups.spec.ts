@@ -38,4 +38,9 @@ test("hide edit link on a product without mission", async ({ page }) => {
   await expect(
     page.getByRole("link").getByText("Modifier la fiche"),
   ).toHaveCount(0);
+
+  await page.goto(`${page.url()}/info-form`);
+
+  await expect(page).not.toHaveURL(/info-form/);
+  await expect(page.getByRole("heading").getByText("Startup 1")).toBeVisible();
 });
