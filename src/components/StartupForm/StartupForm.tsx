@@ -86,6 +86,7 @@ export interface StartupFormProps {
   startupPhases?: phaseSchemaType[];
   startupEvents?: eventSchemaType[];
   incubatorOptions: Option[];
+  canEditIncubators?: boolean;
   sponsorOptions: Option[];
   memberOptions: Option[];
   save: (data: startupInfoUpdateSchemaType) => Promise<ActionResponse>;
@@ -459,9 +460,12 @@ export function StartupForm(props: StartupFormProps) {
               <span className="fr-hint-text">
                 Structure(s) dans laquelle/lesquelles est porté votre produit.
                 Un produit co-incubé peut en avoir plusieurs.
+                {props.canEditIncubators === false &&
+                  " Seuls les admins, les équipes des incubateurs liés et les agents publics du produit peuvent changer ce champ."}
               </span>
             </label>
             <AutoComplete
+              disabled={props.canEditIncubators === false}
               options={props.incubatorOptions.map((incubator) => ({
                 id: incubator.value,
                 label: incubator.label,

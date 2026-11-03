@@ -17,7 +17,11 @@ import { startupChangeToModel, startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema } from "@/models/startup";
 import { authOptions } from "@/lib/authoptions";
-
+import {
+  canEditStartup,
+  canEditStartupInfo,
+} from "@/lib/authorization/startup";
+import { toAuthSubject } from "@/lib/authorization/subject";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -68,6 +72,11 @@ export default async function Page(props) {
   if (!startup) {
     redirect("/startups");
   }
+  const subject = toAuthSubject(session);
+  if (!subject || !(await canEditStartupInfo(subject, startup.uuid))) {
+    redirect(`/startups/${startup.uuid}`);
+  }
+  const canEditIncubators = await canEditStartup(subject, startup.uuid);
   // The primary incubator is guaranteed to be part of the join table, so it is
   // listed first only to keep the form order stable.
   const linkedIncubatorIds = await getStartupIncubatorIds(startup.uuid);
@@ -173,6 +182,7 @@ export default async function Page(props) {
       label: u.fullname,
     })),
     changes: changes.map((change) => startupChangeToModel(change)),
+    canEditIncubators,
   };
 
   return (

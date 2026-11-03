@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import * as nextAuth from "next-auth/next";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
@@ -91,13 +92,12 @@ describe("Test startup server action", () => {
         .selectAll()
         .where("username", "=", "membre.actif")
         .executeTakeFirstOrThrow();
-      // Le role Member ne peut plus editer une fiche produit : il faut etre
-      // admin, membre d'une equipe d'un incubateur lie, ou agent public actif
-      // sur le produit.
+      // membre.actif est prestataire (aucun legal_status) en mission active sur
+      // test-startup : il edite la fiche sans etre admin ni agent public.
       const mockSession = {
         user: {
           id: "membre.actif",
-          isAdmin: true,
+          isAdmin: false,
           uuid: user.uuid,
         },
       };
@@ -106,6 +106,23 @@ describe("Test startup server action", () => {
         .selectAll()
         .where("ghid", "=", "test-startup")
         .executeTakeFirstOrThrow();
+      const incubator = await db
+        .selectFrom("incubators")
+        .select("uuid")
+        .executeTakeFirstOrThrow();
+      // startups_principal_incubator_linked est differee : le principal et son
+      // lien doivent atterrir dans la meme transaction.
+      await db.transaction().execute(async (trx) => {
+        await trx
+          .updateTable("startups")
+          .set({ incubator_id: incubator.uuid })
+          .where("uuid", "=", startup.uuid)
+          .execute();
+        await trx
+          .insertInto("startups_incubators")
+          .values({ startup_id: startup.uuid, incubator_id: incubator.uuid })
+          .execute();
+      });
       getServerSessionStub.resolves(mockSession);
     });
     afterEach(async () => {
@@ -156,6 +173,94 @@ describe("Test startup server action", () => {
         "la description de la startup de test",
       );
     });
+
+    it("should refuse a member without mission on the product", async () => {
+      const otherUser = await db
+        .selectFrom("users")
+        .select("uuid")
+        .where("username", "=", "membre.parti")
+        .executeTakeFirstOrThrow();
+      getServerSessionStub.resolves({
+        user: { id: "membre.parti", isAdmin: false, uuid: otherUser.uuid },
+      });
+
+      let error: unknown;
+      try {
+        await updateStartup({
+          formData: {
+            startup: {
+              contact: "lamissiondelastartup@beta.gouv.fr",
+              description: "la description de la startup de test",
+              incubator_ids: [
+                (
+                  await db
+                    .selectFrom("incubators")
+                    .selectAll()
+                    .executeTakeFirstOrThrow()
+                ).uuid,
+              ],
+              name: "title de la se",
+              pitch: "lamissiondelastartup",
+            },
+            startupEvents: [],
+            startupPhases: [],
+            startupSponsors: [],
+            newSponsors: [],
+            newPhases: [],
+          },
+          startupUuid: startup.uuid,
+        });
+      } catch (e) {
+        error = e;
+      }
+      error!.should.be.instanceof(AuthorizationError);
+    });
+
+    it("should refuse an incubator change from a non-agent with a mission", async () => {
+      let error: unknown;
+      try {
+        await updateStartup({
+          formData: {
+            startup: {
+              contact: "lamissiondelastartup@beta.gouv.fr",
+              description: "la description de la startup de test",
+              incubator_ids: [randomUUID()],
+              name: "title de la se",
+              pitch: "lamissiondelastartup",
+            },
+            startupEvents: [],
+            startupPhases: [],
+            startupSponsors: [],
+            newSponsors: [],
+            newPhases: [],
+          },
+          startupUuid: startup.uuid,
+        });
+      } catch (e) {
+        error = e;
+      }
+      error!.should.be.instanceof(AuthorizationError);
+      const unchanged = await db
+        .selectFrom("startups")
+        .select("name")
+        .where("uuid", "=", startup.uuid)
+        .executeTakeFirstOrThrow();
+      unchanged.name.should.equal("test-startup");
+    });
+
+    it("should keep member management closed to a non-agent with a mission", async () => {
+      const actions = proxyquire("@/app/api/startups/actions", {
+        "next/cache": { revalidatePath: sinon.stub() },
+      });
+
+      let error: unknown;
+      try {
+        await actions.addMember(startup.uuid, "membre.nouveau");
+      } catch (e) {
+        error = e;
+      }
+      error!.should.be.instanceof(AuthorizationError);
+    });
   });
 
   describe("post /api/startups/:startup/create-form authenticated", () => {
@@ -182,9 +287,6 @@ describe("Test startup server action", () => {
         .selectAll()
         .where("username", "=", "membre.actif")
         .executeTakeFirstOrThrow();
-      // Le role Member ne peut plus editer une fiche produit : il faut etre
-      // admin, membre d'une equipe d'un incubateur lie, ou agent public actif
-      // sur le produit.
       const mockSession = {
         user: {
           id: "membre.actif",

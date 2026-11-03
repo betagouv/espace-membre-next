@@ -19,19 +19,16 @@ export async function getStartup(params: { ghid: string } | { uuid: string }) {
   return (startups.rows.length && startups.rows[0]) || undefined;
 }
 
-/**
- * return true if the user is active in the given startup and is public agent
- */
-export const isStartupAgent = async (memberId: string, startupId: string) => {
-  const isStartupAgentQuery = db
-    .selectFrom("users")
-    .select(["users.uuid", "users.legal_status"])
-    .rightJoin("missions", "missions.user_id", "users.uuid")
-    .rightJoin(
+const activeStartupMission = (memberId: string, startupId: string) =>
+  db
+    .selectFrom("missions")
+    .innerJoin("users", "users.uuid", "missions.user_id")
+    .innerJoin(
       "missions_startups",
       "missions_startups.mission_id",
       "missions.uuid",
     )
+    .select("missions.uuid")
     .where("users.uuid", "=", memberId)
     .where("missions_startups.startup_id", "=", startupId)
     .where("missions.start", "<=", new Date())
@@ -39,7 +36,7 @@ export const isStartupAgent = async (memberId: string, startupId: string) => {
     // NULL sur ces lignes et les rejetait. Le formulaire ne laisse justement
     // une mission sans terme qu'au statut « Agent Public »
     // (models/actions/member.ts:11-13), c'est-a-dire exactement la population
-    // que ce predicat est cense reconnaitre. Meme lecture du NULL que
+    // que isStartupAgent est cense reconnaitre. Meme lecture du NULL que
     // liveMission, getActiveUsers, incubatorMembersBase et checkUserIsExpired.
     .where((eb) =>
       eb.or([
@@ -47,8 +44,20 @@ export const isStartupAgent = async (memberId: string, startupId: string) => {
         eb("missions.end", ">", new Date()),
       ]),
     )
-    .where("users.legal_status", "in", ["fonctionnaire", "contractuel"]);
+    .limit(1);
 
-  const result = await isStartupAgentQuery.execute();
-  return result.length > 0;
-};
+/**
+ * return true if the user is active in the given startup, whatever their legal status
+ */
+export const hasActiveStartupMission = async (
+  memberId: string,
+  startupId: string,
+) => !!(await activeStartupMission(memberId, startupId).executeTakeFirst());
+
+/**
+ * return true if the user is active in the given startup and is public agent
+ */
+export const isStartupAgent = async (memberId: string, startupId: string) =>
+  !!(await activeStartupMission(memberId, startupId)
+    .where("users.legal_status", "in", ["fonctionnaire", "contractuel"])
+    .executeTakeFirst());
