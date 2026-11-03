@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { getUserInfos } from "@/lib/kysely/queries/users";
+import { getLastMission } from "@/lib/member.utils";
 import { userInfosToModel } from "@/models/mapper";
 import {
   EMAIL_PLAN_TYPE,
@@ -47,10 +48,7 @@ export function checkUserIsExpired(
 ) {
   if (!user) return false;
   if (!user.missions || !user.missions.length) return true;
-  const latestMission = user.missions.reduce((a, v) =>
-    //@ts-ignore todo
-    !v.end || v.end > a.end ? v : a,
-  );
+  const latestMission = getLastMission(user.missions)!;
   if (!latestMission.end) {
     return false;
   }
