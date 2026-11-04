@@ -22,11 +22,16 @@ export const ONBOARDING_NOT_STARTED_STATUSES = [
   EmailStatusCode.EMAIL_VERIFICATION_WAITING,
 ];
 
-async function enqueueOnboardingMailboxJob(userUuid: string, username: string) {
+// without onboarding, the worker activates the fiche once the mailbox exists
+async function enqueueMailboxJob(
+  userUuid: string,
+  username: string,
+  onboarding: boolean,
+) {
   const bossClient = await getBossClientInstance();
   return bossClient.send(
     createDimailMailboxTopic,
-    { userUuid, username, onboarding: true },
+    { userUuid, username, onboarding },
     {
       retryLimit: 5,
       retryBackoff: true,
@@ -34,6 +39,19 @@ async function enqueueOnboardingMailboxJob(userUuid: string, username: string) {
       singletonKey: `onboarding-mailbox-${userUuid}`,
     },
   );
+}
+
+// the public service email becomes the login email : it must not belong to someone else
+async function assertLoginEmailAvailable(email: string, userUuid: string) {
+  const otherUsers = await findUsersUsingEmail(email, {
+    excludeUserUuid: userUuid,
+  });
+  if (otherUsers.length) {
+    throw new BusinessError(
+      "emailAlreadyUsed",
+      `L'email ${email} est déjà utilisé par un autre membre.`,
+    );
+  }
 }
 
 // idempotent. When the mailbox job cannot be enqueued, the status goes back to
@@ -65,10 +83,7 @@ export async function startMemberOnboarding(userUuid: string) {
     }
     // the ProConnect invitation is sent by the worker, once the mailbox exists
     try {
-      const jobId = await enqueueOnboardingMailboxJob(
-        userUuid,
-        dbUser.username,
-      );
+      const jobId = await enqueueMailboxJob(userUuid, dbUser.username, true);
       if (!jobId) {
         throw new Error(
           `startMemberOnboarding: mailbox job not created for ${userUuid}`,
@@ -96,16 +111,7 @@ export async function startMemberOnboarding(userUuid: string) {
     return;
   }
 
-  // the public service email becomes the login email : it must not belong to someone else
-  const otherUsers = await findUsersUsingEmail(dbUser.secondary_email, {
-    excludeUserUuid: userUuid,
-  });
-  if (otherUsers.length) {
-    throw new BusinessError(
-      "emailAlreadyUsed",
-      `L'email ${dbUser.secondary_email} est déjà utilisé par un autre membre.`,
-    );
-  }
+  await assertLoginEmailAvailable(dbUser.secondary_email, userUuid);
   const result = await db
     .updateTable("users")
     .set({
@@ -144,7 +150,10 @@ export async function resumeMemberOnboarding(
       return true;
     }
     if (status === EmailStatusCode.EMAIL_CREATION_WAITING) {
-      return !!(await enqueueOnboardingMailboxJob(userUuid, dbUser.username));
+      return !!(await enqueueMailboxJob(userUuid, dbUser.username, true));
+    }
+    if (status === EmailStatusCode.EMAIL_ACTIVE) {
+      return !!(await activateWithLoginEmail(userUuid));
     }
     return false;
   }
@@ -160,8 +169,90 @@ export async function resumeMemberOnboarding(
   }
   if (dbUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`)) {
     // the worker waits for the new mailbox to accept emails before inviting
-    return !!(await enqueueOnboardingMailboxJob(userUuid, dbUser.username));
+    return !!(await enqueueMailboxJob(userUuid, dbUser.username, true));
   }
   await sendNewMemberVerificationEmail({ userId: userUuid });
   return true;
+}
+
+const ACTIVATION_STATUSES = [
+  ...ONBOARDING_NOT_STARTED_STATUSES,
+  EmailStatusCode.EMAIL_ACTIVE,
+];
+
+// activates a fiche without login email and without a new verification : the
+// former flows accepted, or even activated, fiches with only a contact email.
+// A public service email becomes the login email, otherwise a mailbox is
+// created, its webmail access sent to the contact email. Returns null when
+// there is nothing to do.
+export async function activateWithLoginEmail(
+  userUuid: string,
+): Promise<"publicServiceEmail" | "mailbox" | null> {
+  const dbUser = await getUserBasicInfo({ uuid: userUuid });
+  if (
+    !dbUser ||
+    dbUser.primary_email ||
+    !dbUser.secondary_email ||
+    !ACTIVATION_STATUSES.includes(
+      dbUser.primary_email_status as EmailStatusCode,
+    )
+  ) {
+    return null;
+  }
+  const previousStatus = dbUser.primary_email_status as EmailStatusCode;
+
+  if (await isPublicServiceEmail(dbUser.secondary_email)) {
+    await assertLoginEmailAvailable(dbUser.secondary_email, userUuid);
+    const result = await db
+      .updateTable("users")
+      .set({
+        primary_email: dbUser.secondary_email,
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        primary_email_status_updated_at: new Date(),
+      })
+      .where("uuid", "=", userUuid)
+      .where("primary_email_status", "in", ACTIVATION_STATUSES)
+      .where("primary_email", "is", null)
+      .executeTakeFirst();
+    return Number(result.numUpdatedRows) ? "publicServiceEmail" : null;
+  }
+
+  const result = await db
+    .updateTable("users")
+    .set({
+      primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
+      primary_email_status_updated_at: new Date(),
+    })
+    .where("uuid", "=", userUuid)
+    .where("primary_email_status", "in", ACTIVATION_STATUSES)
+    .where("primary_email", "is", null)
+    .executeTakeFirst();
+  if (!Number(result.numUpdatedRows)) {
+    return null;
+  }
+  try {
+    const jobId = await enqueueMailboxJob(userUuid, dbUser.username, false);
+    if (!jobId) {
+      throw new Error(
+        `activateWithLoginEmail: mailbox job not created for ${userUuid}`,
+      );
+    }
+  } catch (e) {
+    await db
+      .updateTable("users")
+      .set({
+        primary_email_status: previousStatus,
+        primary_email_status_updated_at: new Date(),
+      })
+      .where("uuid", "=", userUuid)
+      .where(
+        "primary_email_status",
+        "=",
+        EmailStatusCode.EMAIL_CREATION_WAITING,
+      )
+      .where("primary_email", "is", null)
+      .executeTakeFirst();
+    throw e;
+  }
+  return "mailbox";
 }

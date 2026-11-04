@@ -6,6 +6,7 @@ import * as controllerUtils from "@/lib/utils";
 import * as updateMemberModule from "@/app/api/member/updateMember";
 import * as usersQueries from "@/lib/kysely/queries/users";
 import * as bossClient from "@/server/queueing/client";
+import * as onboardingLib from "@/lib/onboarding/startMemberOnboarding";
 import { verifyNewMember } from "../verifyNewMember";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { AdminEmailNotAllowedError, BusinessError } from "@/lib/error";
@@ -178,5 +179,50 @@ describe("verifyNewMember", () => {
     expect(extraParams).to.not.have.property("secondary_email");
     // no mailbox creation from here
     expect(getBossClientInstanceStub.called).to.be.false;
+  });
+
+  describe("fiche accepted by the former flow, without login email", () => {
+    let activateStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      getUserBasicInfoStub.resolves({
+        uuid: mockSession.user.uuid,
+        username: "johndoe",
+        primary_email: null,
+        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      } as any);
+      activateStub = sinon
+        .stub(onboardingLib, "activateWithLoginEmail")
+        .resolves("publicServiceEmail");
+    });
+
+    it("saves the profile without activating it, then gives it a login email", async () => {
+      const result = await verifyNewMember(baseMemberData);
+
+      expect(result.success).to.be.true;
+      expect(updateMemberStub.calledOnce).to.be.true;
+      expect(updateMemberStub.firstCall.args[2]).to.deep.equal({});
+      expect(activateStub.calledOnceWith(mockSession.user.uuid)).to.be.true;
+      expect(activateStub.calledAfter(updateMemberStub)).to.be.true;
+    });
+
+    it("tells the member a mailbox is on its way", async () => {
+      activateStub.resolves("mailbox");
+
+      const result = await verifyNewMember(baseMemberData);
+
+      expect(result.success).to.be.true;
+      expect(result.message).to.include("en cours de création");
+    });
+
+    it("returns the refusal when the email belongs to another member", async () => {
+      activateStub.rejects(
+        new BusinessError("emailAlreadyUsed", "déjà utilisé"),
+      );
+
+      const result = await verifyNewMember(baseMemberData);
+
+      expect(result).to.deep.equal({ success: false, message: "déjà utilisé" });
+    });
   });
 });
