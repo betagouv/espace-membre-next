@@ -88,10 +88,7 @@ export const memberValidateInfoSchema = z.object({
   secondary_email: memberSchema.shape.secondary_email,
   average_nb_of_days: z
     .number({
-      errorMap: () => ({
-        message:
-          "Le nombre de jours moyen travaillés par semaine est obligatoire",
-      }),
+      error: "Le nombre de jours moyen travaillés par semaine est obligatoire",
     })
     .max(5)
     .describe("Nombre de jour moyen travaillé par semaine"),
@@ -113,27 +110,21 @@ export const createMemberSchema = z
       // to create user in
       firstname: z
         .string({
-          errorMap: (issue, ctx) => ({
-            message: "Le prénom est obligatoire",
-          }),
+          error: "Le prénom est obligatoire",
         })
         .describe("Prénom")
         .min(1),
       lastname: z
         .string({
-          errorMap: (issue, ctx) => ({
-            message: "Le Nom est obligatoire",
-          }),
+          error: "Le Nom est obligatoire",
         })
         .describe("Nom")
         .min(1),
       email: z
         .string({
-          errorMap: (issue, ctx) => ({
-            message: "L'email est obligatoire",
-          }),
+          error: "L'email est obligatoire",
         })
-        .email()
+        .email({ abort: true })
         .transform((email) => email.toLowerCase())
         .describe("Email"),
       domaine: memberSchema.shape.domaine,

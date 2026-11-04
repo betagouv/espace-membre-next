@@ -5,7 +5,7 @@ import { db, jsonArrayFrom } from "@/lib/kysely";
 import { applyStartupPerimeter } from "@/lib/api/perimeter";
 import { ApiPerimeter } from "@/models/api/perimeter";
 import { getAllIncubators, getAllStartupsIncubators } from "./incubators";
-import { withMemberMissions } from "./users";
+import { withCommunicationEmail, withMemberMissions } from "./users";
 import { ResourceRef } from "@/lib/api/identifier";
 
 export const getLatests = () =>
@@ -75,10 +75,12 @@ export function getStartupMembers(
       "users.github",
       "users.primary_email",
       "users.secondary_email",
-      "users.communication_email",
       "users.primary_email_status",
     ])
-    .select((eb) => [withMemberMissions(eb, { startupId: startupUuid })])
+    .select((eb) => [
+      withMemberMissions(eb, { startupId: startupUuid }),
+      withCommunicationEmail(eb),
+    ])
     // Tri stable : sans le second critere, deux homonymes peuvent s'echanger
     // entre deux pages et un enregistrement disparaitre.
     .orderBy("users.fullname", "asc")

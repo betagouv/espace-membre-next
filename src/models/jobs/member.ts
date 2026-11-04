@@ -7,7 +7,7 @@ import { memberSchema } from "../member";
 export const SendNewMemberValidationEmailSchema =
   MaintenanceWrapperDataSchema.extend({
     userId: memberSchema.shape.uuid,
-    incubator_id: createMemberSchema._def.schema.shape.incubator_id,
+    incubator_id: createMemberSchema.shape.incubator_id,
   }).strict();
 
 export type SendNewMemberValidationEmailSchemaType = z.infer<

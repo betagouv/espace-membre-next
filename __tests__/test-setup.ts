@@ -1,11 +1,7 @@
-import chai from "chai";
-import chaiHttp from "chai-http";
+import "chai/register-should";
 import nock from "nock";
 
 import utils from "./utils";
-
-chai.use(chaiHttp);
-chai.should();
 
 before(async () => {
   await utils.setupTestDatabase();

@@ -13,6 +13,7 @@ import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { submitFormationProposal } from "@/app/api/formations/actions";
 import { AlertMessageType } from "@/models/common";
@@ -58,7 +59,11 @@ export const FormationProposalForm = ({
     setValue,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<formationProposalSchemaType>({
+  } = useForm<
+    z.input<typeof formationProposalSchema>,
+    unknown,
+    z.output<typeof formationProposalSchema>
+  >({
     resolver: zodResolver(formationProposalSchema),
     mode: "onChange",
     defaultValues: { thematiques: [], audience: [], ...defaultValues },

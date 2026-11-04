@@ -43,6 +43,7 @@ interface FakeDataUser {
   role?: string;
   username: string;
   secondary_email?: string;
+  communication_email?: string;
   primary_email?: string;
   primary_email_status?: EmailStatusCode;
   domaine?: Domaine;
@@ -175,6 +176,7 @@ const createUser = async (
     primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     github: originalData.github,
     secondary_email: originalData.secondary_email,
+    communication_email: originalData.communication_email,
     domaine: (originalData.domaine || Domaine.ANIMATION) as UsersDomaineEnum,
     role: originalData.role || "",
   };

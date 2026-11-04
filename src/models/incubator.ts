@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_RELATED_IDS } from "@/models/arrayLimits";
+
 export const incubatorSchema = z.object({
   uuid: z.string(),
   // id: z.number(),
@@ -18,7 +20,10 @@ export const incubatorSchema = z.object({
   short_description: z
     .string()
     .min(30, "Une description courte est obligatoire"),
-  highlighted_startups: z.array(z.string().uuid()).optional(),
+  highlighted_startups: z
+    .array(z.string().uuid())
+    .max(MAX_RELATED_IDS)
+    .optional(),
   organization_name: z.string().optional(),
 });
 export type incubatorSchemaType = z.infer<typeof incubatorSchema>;

@@ -1,11 +1,10 @@
-import chai from "chai";
+import "chai/register-should";
 
 import htmlBuilder from "../src/lib/htmlbuilder";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { userStartupSchemaType } from "@/models/startup";
 import { EMAIL_TYPES } from "@/lib/email/email";
-chai.should();
 
 // legacy-email-login: remove with src/lib/auth/legacyEmailLogin
 describe(`Test EMAIL_LOGIN`, () => {

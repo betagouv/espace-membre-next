@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_RELATED_IDS } from "@/models/arrayLimits";
+
 // Schema de reponse pour /api/v1/incubators.
 // Volontairement permissif (pas de contraintes de longueur metier) : il decrit
 // le contrat de sortie et ne doit jamais rejeter des donnees valides en base.
@@ -46,7 +48,7 @@ export const incubatorPatchSchema = z
     github: z.string().nullable(),
     // En ghid : la conversion vers uuid se fait a l'ecriture, un ghid inconnu
     // produit un 422 avec le pointeur /highlighted_startups/<index>.
-    highlighted_startups: z.array(z.string()),
+    highlighted_startups: z.array(z.string()).max(MAX_RELATED_IDS),
   })
   .partial();
 export type incubatorPatchSchemaType = z.infer<typeof incubatorPatchSchema>;

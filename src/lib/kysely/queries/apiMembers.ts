@@ -5,7 +5,7 @@ import { applyMemberPerimeter } from "@/lib/api/perimeter";
 import { db as database } from "@/lib/kysely";
 import { ApiPerimeter } from "@/models/api/perimeter";
 
-import { withMemberMissions } from "./users";
+import { withCommunicationEmail, withMemberMissions } from "./users";
 
 /**
  * Base immuable de la collection de membres : perimetre seul, sans colonnes,
@@ -45,7 +45,7 @@ export function listApiMembers(
       "users.secondary_email",
     ])
     // Missions completes : le perimetre filtre des LIGNES, jamais des colonnes.
-    .select((eb) => [withMemberMissions(eb)])
+    .select((eb) => [withMemberMissions(eb), withCommunicationEmail(eb)])
     .orderBy("users.fullname", "asc")
     .orderBy("users.uuid", "asc")
     .limit(window.limit)

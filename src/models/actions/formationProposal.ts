@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_TAGS } from "@/models/arrayLimits";
+
 import {
   FORMATION_AUDIENCES,
   FORMATION_DUREES,
@@ -62,67 +64,88 @@ const optionalUrl = z
   .or(z.literal(""))
   .optional();
 
-export const formationProposalSchema = z
-  .object({
-    titre: z
-      .string({ required_error: "Le sujet est requis" })
-      .trim()
-      .min(1, "Le sujet est requis")
-      .max(150, "150 caractères maximum"),
-    description: z
-      .string({ required_error: "La description est requise" })
-      .trim()
-      .min(1, "La description est requise"),
-    modalite: z.nativeEnum(FORMATION_MODALITE, {
-      errorMap: () => ({ message: "La modalité est requise" }),
-    }),
-    thematiques: z
-      .array(z.enum(FORMATION_THEMATIQUES as [string, ...string[]]))
-      .min(1, "Choisis au moins une catégorie"),
-    audience: z
-      .array(z.enum(FORMATION_AUDIENCES as [string, ...string[]]))
-      .min(1, "Choisis au moins une audience"),
-    // Une session est créée avec la formation, à cette date. Facultative ici
-    // parce qu'un e-learning n'en a pas : la règle est dans le superRefine.
-    dateDebut: z.string().trim().optional(),
-    lienVisioAdmin: optionalUrl,
-    // Lieu d'une formation en présentiel : adresse, bâtiment, salle.
-    adresse: z.string().trim().max(300, "300 caractères maximum").optional(),
-    duree: z.enum(
-      FORMATION_DUREES.map((d) => d.label) as [string, ...string[]],
-      {
-        errorMap: () => ({ message: "La durée est requise" }),
-      },
-    ),
-    // Champ vidé -> undefined côté formulaire (setValueAs), jamais "".
-    // Facultative : sans limite, tout le monde est inscrit et la liste
-    // d'attente ne se déclenche jamais.
-    capacite: z.coerce
-      .number({ invalid_type_error: "Indique un nombre de places" })
-      .int("Indique un nombre entier")
-      .min(1, "Au moins une place")
-      .max(500, "Nombre trop élevé")
-      .optional(),
-    // Pour un e-learning, c'est l'adresse où suivre la formation : les
-    // e-learning repris de l'existant l'ont déjà dans cette colonne.
-    lienSupport: optionalUrl,
-    lienFeedback: optionalUrl,
-    animateur: z
-      .string({ required_error: "Le nom de l'animateur·ice est requis" })
-      .trim()
-      .min(1, "Le nom de l'animateur·ice est requis"),
-    emailOrganisateur: z
-      .string({ required_error: "L'email de l'organisateur·trice est requis" })
-      .trim()
-      .email("Email invalide"),
-    // Le type File n'existe pas dans zod : présence, type et taille sont
-    // validés dans le superRefine ci-dessous.
-    image: z.any(),
-    // Illustration choisie dans la banque du document, plutôt qu'envoyée.
-    // C'est l'identifiant d'une pièce jointe déjà présente : rien à téléverser.
-    imageId: z.string().trim().optional(),
-  })
-  .superRefine((data, ctx) => {
+const formationProposalObject = z.object({
+  titre: z
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "Le sujet est requis" : undefined,
+    })
+    .trim()
+    .min(1, "Le sujet est requis")
+    .max(150, "150 caractères maximum"),
+  description: z
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "La description est requise" : undefined,
+    })
+    .trim()
+    .min(1, "La description est requise"),
+  modalite: z.nativeEnum(FORMATION_MODALITE, {
+    error: "La modalité est requise",
+  }),
+  thematiques: z
+    .array(z.enum(FORMATION_THEMATIQUES as [string, ...string[]]))
+    .min(1, "Choisis au moins une catégorie")
+    .max(MAX_TAGS),
+  audience: z
+    .array(z.enum(FORMATION_AUDIENCES as [string, ...string[]]))
+    .min(1, "Choisis au moins une audience")
+    .max(MAX_TAGS),
+  // Une session est créée avec la formation, à cette date. Facultative ici
+  // parce qu'un e-learning n'en a pas : la règle est dans le superRefine.
+  dateDebut: z.string().trim().optional(),
+  lienVisioAdmin: optionalUrl,
+  // Lieu d'une formation en présentiel : adresse, bâtiment, salle.
+  adresse: z.string().trim().max(300, "300 caractères maximum").optional(),
+  duree: z.enum(FORMATION_DUREES.map((d) => d.label) as [string, ...string[]], {
+    error: "La durée est requise",
+  }),
+  // Champ vidé -> undefined côté formulaire (setValueAs), jamais "".
+  // Facultative : sans limite, tout le monde est inscrit et la liste
+  // d'attente ne se déclenche jamais.
+  capacite: z.coerce
+    .number({
+      error: (issue) =>
+        issue.code === "invalid_type"
+          ? "Indique un nombre de places"
+          : undefined,
+    })
+    .refine(Number.isInteger, "Indique un nombre entier")
+    .min(1, "Au moins une place")
+    .max(500, "Nombre trop élevé")
+    .optional(),
+  // Pour un e-learning, c'est l'adresse où suivre la formation : les
+  // e-learning repris de l'existant l'ont déjà dans cette colonne.
+  lienSupport: optionalUrl,
+  lienFeedback: optionalUrl,
+  animateur: z
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "Le nom de l'animateur·ice est requis"
+          : undefined,
+    })
+    .trim()
+    .min(1, "Le nom de l'animateur·ice est requis"),
+  emailOrganisateur: z
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? "L'email de l'organisateur·trice est requis"
+          : undefined,
+    })
+    .trim()
+    .email("Email invalide"),
+  // Le type File n'existe pas dans zod : présence, type et taille sont
+  // validés dans le superRefine ci-dessous.
+  image: z.any().optional(),
+  // Illustration choisie dans la banque du document, plutôt qu'envoyée.
+  // C'est l'identifiant d'une pièce jointe déjà présente : rien à téléverser.
+  imageId: z.string().trim().optional(),
+});
+
+export const formationProposalSchema = formationProposalObject.superRefine(
+  (data, ctx) => {
     requireVisioWhenRemote(data, ctx);
     requireAdresseWhenPresentiel(data, ctx);
     requireLienWhenELearning(data, ctx);
@@ -165,7 +188,8 @@ export const formationProposalSchema = z
         message: "L'image ne doit pas dépasser 5 Mo",
       });
     }
-  });
+  },
+);
 
 export type formationProposalSchemaType = z.infer<
   typeof formationProposalSchema
@@ -236,13 +260,12 @@ const requireLienWhenELearning = (
  * l'image ni les dates : la session se gère à part, et remplacer l'illustration
  * demande un nouvel envoi de fichier.
  */
-export const formationUpdateSchema = formationProposalSchema
-  .innerType()
+export const formationUpdateSchema = formationProposalObject
   .omit({ image: true, imageId: true, dateDebut: true })
   .extend({
     formationId: z.string().min(1),
   })
-  // `innerType()` laisse les refinements du schéma de dépôt derrière lui : les
+  // L'objet de base ne porte pas les refinements du schéma de dépôt : les
   // règles de lien doivent être rappelées ici, sinon elles ne
   // s'appliqueraient qu'à la création.
   .superRefine((data, ctx) => {
@@ -263,28 +286,39 @@ export const formationScheduleSchema = z
   .object({
     formationId: z.string().min(1),
     dateDebut: z
-      .string({ required_error: "La date est requise" })
+      .string({
+        error: (issue) =>
+          issue.input === undefined ? "La date est requise" : undefined,
+      })
       .trim()
       .min(1, "La date est requise"),
     duree: z.enum(
       FORMATION_DUREES.map((d) => d.label) as [string, ...string[]],
       {
-        errorMap: () => ({ message: "La durée est requise" }),
+        error: "La durée est requise",
       },
     ),
     capacite: z.coerce
-      .number({ invalid_type_error: "Indique un nombre de places" })
-      .int("Indique un nombre entier")
+      .number({
+        error: (issue) =>
+          issue.code === "invalid_type"
+            ? "Indique un nombre de places"
+            : undefined,
+      })
+      .refine(Number.isInteger, "Indique un nombre entier")
       .min(1, "Au moins une place")
       .max(500, "Nombre trop élevé")
       .optional(),
     lienVisioAdmin: optionalUrl,
     frequence: z.nativeEnum(FORMATION_FREQUENCE, {
-      errorMap: () => ({ message: "Le rythme est requis" }),
+      error: "Le rythme est requis",
     }),
     intervalle: z.coerce
-      .number({ invalid_type_error: "Indique un nombre" })
-      .int("Indique un nombre entier")
+      .number({
+        error: (issue) =>
+          issue.code === "invalid_type" ? "Indique un nombre" : undefined,
+      })
+      .refine(Number.isInteger, "Indique un nombre entier")
       .min(1, "Au moins 1")
       .max(MAX_FORMATION_INTERVALLE, `${MAX_FORMATION_INTERVALLE} au maximum`),
     // Champ vide : la série garde le jour de la date de départ.
@@ -293,8 +327,13 @@ export const formationScheduleSchema = z
       .or(z.literal(""))
       .optional(),
     occurrences: z.coerce
-      .number({ invalid_type_error: "Indique un nombre de dates" })
-      .int("Indique un nombre entier")
+      .number({
+        error: (issue) =>
+          issue.code === "invalid_type"
+            ? "Indique un nombre de dates"
+            : undefined,
+      })
+      .refine(Number.isInteger, "Indique un nombre entier")
       .min(1, "Au moins une date")
       .max(
         MAX_FORMATION_OCCURRENCES,
@@ -327,15 +366,23 @@ export type formationScheduleSchemaType = z.infer<
 export const formationSessionUpdateSchema = z.object({
   sessionId: z.string().min(1),
   dateDebut: z
-    .string({ required_error: "La date est requise" })
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? "La date est requise" : undefined,
+    })
     .trim()
     .min(1, "La date est requise"),
   duree: z.enum(FORMATION_DUREES.map((d) => d.label) as [string, ...string[]], {
-    errorMap: () => ({ message: "La durée est requise" }),
+    error: "La durée est requise",
   }),
   capacite: z.coerce
-    .number({ invalid_type_error: "Indique un nombre de places" })
-    .int("Indique un nombre entier")
+    .number({
+      error: (issue) =>
+        issue.code === "invalid_type"
+          ? "Indique un nombre de places"
+          : undefined,
+    })
+    .refine(Number.isInteger, "Indique un nombre entier")
     .min(1, "Au moins une place")
     .max(500, "Nombre trop élevé")
     .optional(),

@@ -29,8 +29,10 @@ import {
 } from "@/lib/error";
 import { addMonths, differenceInDays } from "date-fns";
 import { ca } from "date-fns/locale";
-import { canEditStartup } from "@/lib/authorization/startup";
-import { assertCanEditStartup } from "@/lib/authorization/startup";
+import {
+  assertCanEditStartupInfo,
+  canEditStartup,
+} from "@/lib/authorization/startup";
 import { toAuthSubject } from "@/lib/authorization/subject";
 
 export async function getStartup({ uuid }: { uuid: string }) {
@@ -261,9 +263,7 @@ export async function updateStartup({
   };
   startupUuid: string;
 }): Promise<{ uuid: string; ghid: string }> {
-  // Le role Member perd l'edition de fiche produit : il reste editeur s'il est
-  // agent public actif sur le produit (isStartupAgent).
-  const subject = await assertCanEditStartup(startupUuid);
+  const subject = await assertCanEditStartupInfo(startupUuid);
 
   // The form schema is the only place holding the invariants (at least one
   // incubator, contact normalization); it has to be enforced server-side too.
@@ -307,6 +307,16 @@ export async function updateStartup({
         .execute(),
     );
   const previousIncubatorIds = await getStartupIncubatorIds(startupUuid);
+  // Les incubateurs lies ouvrent canEditStartup a leurs equipes : un editeur de
+  // fiche sans ce droit se l'ouvrirait en liant un incubateur ou il siege.
+  if (
+    _.xor(startup.incubator_ids, previousIncubatorIds).length &&
+    !(await canEditStartup(subject, startupUuid))
+  ) {
+    throw new AuthorizationError(
+      "Seuls les admins, les équipes des incubateurs liés et les agents publics du produit peuvent changer ses incubateurs.",
+    );
+  }
 
   return await db.transaction().execute(async (trx) => {
     // incubator_ids feeds the startups_incubators join table, not the startups

@@ -75,8 +75,8 @@ export default async function Page() {
           </a>
         </li>
         <li>
-          Contacte l'équipe support{" "}
-          <a href="https://faq-betagouv.crisp.help">via CRISP</a>
+          Écris à l'équipe support avec le bouton de contact, en bas à droite de
+          l'écran
         </li>
       </ul>
       {supportEmail ? (

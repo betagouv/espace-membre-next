@@ -6,13 +6,10 @@ export const MAX_LIMIT = 100;
 export const paginationSchema = z.object({
   limit: z.coerce.number().int().min(1).max(MAX_LIMIT).default(DEFAULT_LIMIT),
   // Borne haute obligatoire : au-dela, pg refuse la valeur et la reponse serait
-  // un 500 la ou un parametre de pagination invalide doit rendre 422.
-  offset: z.coerce
-    .number()
-    .int()
-    .min(0)
-    .max(Number.MAX_SAFE_INTEGER)
-    .default(0),
+  // un 500 la ou un parametre de pagination invalide doit rendre 422. En zod 4,
+  // .int() la porte deja (Number.MAX_SAFE_INTEGER) : un .max() en plus
+  // doublerait l'erreur sur /offset.
+  offset: z.coerce.number().int().min(0).default(0),
 });
 export type Pagination = z.infer<typeof paginationSchema>;
 

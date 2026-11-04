@@ -33,6 +33,7 @@ interface StartupInfoUpdateProps {
   heroURL?: string;
   shotURL?: string;
   changes: StartupChangeSchemaType[];
+  canEditIncubators: boolean;
 }
 
 /* Pure component */
@@ -115,6 +116,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             heroURL={props.heroURL}
             shotURL={props.shotURL}
             incubatorOptions={props.incubatorOptions}
+            canEditIncubators={props.canEditIncubators}
             sponsorOptions={props.sponsorOptions}
             memberOptions={props.memberOptions}
           />

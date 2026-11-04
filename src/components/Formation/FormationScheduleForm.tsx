@@ -10,6 +10,7 @@ import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { scheduleFormationSessions } from "@/app/api/formations/actions";
 import {
@@ -58,7 +59,11 @@ export const FormationScheduleForm = ({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<formationScheduleSchemaType>({
+  } = useForm<
+    z.input<typeof formationScheduleSchema>,
+    unknown,
+    z.output<typeof formationScheduleSchema>
+  >({
     resolver: zodResolver(formationScheduleSchema),
     mode: "onChange",
     defaultValues: {

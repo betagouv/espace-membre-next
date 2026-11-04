@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import axios from "axios";
+import { addMonths, subMonths, subYears } from "date-fns";
 
-import { isPublicServiceEmail } from "@/lib/utils";
+import { checkUserIsExpired, isPublicServiceEmail } from "@/lib/utils";
 import config from "@/lib/config";
 
 describe("isPublicServiceEmail", () => {
@@ -112,5 +113,37 @@ describe("isPublicServiceEmail", () => {
       expect(result).to.be.true;
       expect(axiosGetStub.called).to.be.false;
     });
+  });
+});
+
+describe("checkUserIsExpired", () => {
+  const longAgo = subYears(new Date(), 2);
+  const withEnds = (...ends: (Date | null)[]) =>
+    ({ missions: ends.map((end) => ({ start: longAgo, end })) }) as never;
+
+  it("should consider a member without mission as expired", () => {
+    expect(checkUserIsExpired(withEnds())).to.equal(true);
+  });
+
+  it("should consider a member whose last mission ended as expired", () => {
+    expect(
+      checkUserIsExpired(withEnds(longAgo, subMonths(new Date(), 2))),
+    ).to.equal(true);
+  });
+
+  // Les missions arrivent triees par debut : une mission sans fin commencee
+  // avant une mission terminee la precede.
+  it("should keep alive a member whose open mission comes before an ended one", () => {
+    expect(checkUserIsExpired(withEnds(null, longAgo))).to.equal(false);
+  });
+
+  it("should keep alive a member whose open mission comes after an ended one", () => {
+    expect(checkUserIsExpired(withEnds(longAgo, null))).to.equal(false);
+  });
+
+  it("should use the latest end whatever the order", () => {
+    expect(
+      checkUserIsExpired(withEnds(addMonths(new Date(), 2), longAgo)),
+    ).to.equal(false);
   });
 });

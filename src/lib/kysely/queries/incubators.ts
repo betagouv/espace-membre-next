@@ -1,6 +1,6 @@
 import { ExpressionBuilder, sql, SqlBool } from "kysely";
 
-import { withMemberMissions } from "./users";
+import { withCommunicationEmail, withMemberMissions } from "./users";
 import { DB } from "@/@types/db";
 import { ResourceRef } from "@/lib/api/identifier";
 import {
@@ -382,6 +382,7 @@ export function getIncubatorMembers(
     ])
     .select((eb) => [
       withMemberMissions(eb, { incubatorId: incubatorUuid }),
+      withCommunicationEmail(eb),
       jsonArrayFrom(
         eb
           .selectFrom("teams")

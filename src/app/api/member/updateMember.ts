@@ -1,7 +1,6 @@
-"use server";
-
 import { z } from "zod";
 
+import { AuthorizationError } from "@/lib/error";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import {
@@ -41,11 +40,19 @@ export async function updateMember(
     | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
   created_by_username: string,
 ) {
-  // todo: auth
+  // updateMemberInfo et verifyNewMember verifient qui edite quelle fiche. Ne pas
+  // remettre "use server" sur ce fichier, la fonction deviendrait une server
+  // action appelable sans garde.
   const { missions, ...memberData } = data;
   const previousInfo = await getUserInfos({ uuid: memberUuid });
   if (!previousInfo) {
     throw new Error("User does not exists");
+  }
+  // updateMission ne filtre que sur l'uuid. Sans ce controle, la mission d'un
+  // autre membre passerait a celui-ci.
+  const ownMissionUuids = previousInfo.missions.map((m) => m.uuid);
+  if (missions?.some((m) => m.uuid && !ownMissionUuids.includes(m.uuid))) {
+    throw new AuthorizationError("Cette mission n'appartient pas à ce membre.");
   }
   try {
     await db.transaction().execute(async (trx) => {

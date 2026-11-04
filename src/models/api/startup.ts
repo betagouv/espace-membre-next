@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_TAGS } from "@/models/arrayLimits";
+
 import { incubatorRefSchema } from "./incubator";
 
 // Phase d'une startup exposee par l'API protegee. Le nom est brut : la liste des
@@ -84,9 +86,9 @@ export const startupPatchSchema = z
     description: z.string().nullable(),
     link: z.string().nullable(),
     repository: z.string().nullable(),
-    techno: z.array(z.string()),
-    thematiques: z.array(z.string()),
-    usertypes: z.array(z.string()),
+    techno: z.array(z.string()).max(MAX_TAGS),
+    thematiques: z.array(z.string()).max(MAX_TAGS),
+    usertypes: z.array(z.string()).max(MAX_TAGS),
   })
   .partial();
 export type startupPatchSchemaType = z.infer<typeof startupPatchSchema>;

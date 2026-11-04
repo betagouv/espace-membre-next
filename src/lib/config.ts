@@ -111,6 +111,10 @@ export default {
   GRIST_OPS_TABLE_ID: process.env.GRIST_OPS_TABLE_ID || "Demandes_OPS",
   GRIST_SEGUR_DOC_ID: process.env.GRIST_SEGUR_DOC_ID,
   GRIST_SEGUR_TABLE_ID: process.env.GRIST_SEGUR_TABLE_ID || "Demandes_Segur",
+  // Les réservations de salle vont dans leur propre table. L'identifiant réel
+  // est au singulier, contrairement au libellé affiché dans Grist.
+  GRIST_SEGUR_REUNION_TABLE_ID:
+    process.env.GRIST_SEGUR_REUNION_TABLE_ID || "Demande_Segur_reunion",
   // Catalogue de formations (tables Formats / Sessions / Inscriptions / Membres).
   GRIST_FORMATIONS_DOC_ID: process.env.GRIST_FORMATIONS_DOC_ID,
   GRIST_FORMATIONS_FORMATS_TABLE_ID:

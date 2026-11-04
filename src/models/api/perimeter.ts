@@ -19,7 +19,8 @@ export type ApiPerimeter =
  * ni caractere de controle, pour que le libelle publie dans meta.perimeter
  * reste analysable.
  */
-export const perimeterLabelSchema = z
-  .string()
-  .regex(/^(global|(incubator|startup)\/[\p{L}\p{N}._-]+)$/u);
+export const PERIMETER_LABEL_PATTERN =
+  /^(global|(incubator|startup)\/[\p{L}\p{N}._-]+)$/u;
+
+export const perimeterLabelSchema = z.string().regex(PERIMETER_LABEL_PATTERN);
 export type PerimeterLabel = z.infer<typeof perimeterLabelSchema>;

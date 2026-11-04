@@ -4,6 +4,7 @@ import { sql, ExpressionBuilder, Kysely, SelectExpression } from "kysely";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
+import { CommunicationEmailCode } from "@/models/member";
 
 export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
   "users.uuid",
@@ -155,6 +156,19 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
   )
     .$notNull()
     .as("missions");
+}
+
+// Adresse de communication choisie par le membre, ramenee a primary ou secondary
+// comme le fait memberBaseInfoToModel, la colonne etant nullable et sans contrainte.
+export function withCommunicationEmail(eb: ExpressionBuilder<DB, "users">) {
+  return eb
+    .case()
+    .when("users.communication_email", "=", CommunicationEmailCode.SECONDARY)
+    .then(sql.lit(CommunicationEmailCode.SECONDARY))
+    .else(sql.lit(CommunicationEmailCode.PRIMARY))
+    .end()
+    .$castTo<CommunicationEmailCode>()
+    .as("communication_email");
 }
 
 // Missions d'un membre pour l'API protegee : chaque startup d'une mission est

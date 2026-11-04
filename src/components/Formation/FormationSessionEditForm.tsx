@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { formatInTimeZone } from "date-fns-tz";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { updateFormationSession } from "@/app/api/formations/actions";
 import {
@@ -51,7 +52,11 @@ export const FormationSessionEditForm = ({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<formationSessionUpdateSchemaType>({
+  } = useForm<
+    z.input<typeof formationSessionUpdateSchema>,
+    unknown,
+    z.output<typeof formationSessionUpdateSchema>
+  >({
     resolver: zodResolver(formationSessionUpdateSchema),
     mode: "onChange",
     defaultValues: {
