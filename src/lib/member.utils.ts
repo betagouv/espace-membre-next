@@ -10,11 +10,14 @@ export const getLastMission = (
   if (!missions.length) {
     return;
   }
-  const lastMission = missions.reduce((a, v) =>
+  // Hors du reduce : `date > null` vaut vrai, une mission ouverte y perdrait
+  // face a toute mission datee qui la suit.
+  const openMission = missions.find((m) => !m.end);
+  if (openMission) return openMission;
+  return missions.reduce((a, v) =>
     //@ts-ignore todo
-    !v.end || v.end > a.end ? v : a,
+    v.end > a.end ? v : a,
   );
-  return lastMission;
 };
 
 export const getLastMissionDate = (

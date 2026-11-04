@@ -17,7 +17,10 @@ import {
 } from "@/models/mapper";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authoptions";
-import { canEditStartup } from "@/lib/authorization/startup";
+import {
+  canEditStartup,
+  canEditStartupInfo,
+} from "@/lib/authorization/startup";
 import { toAuthSubject } from "@/lib/authorization/subject";
 
 type Props = {
@@ -125,10 +128,9 @@ export default async function Page(props: Props) {
     .groupBy(["users.username", "users.fullname", "users.uuid"])
     .execute();
 
-  const canEditMembers = await canEditStartup(
-    toAuthSubject(session)!,
-    dbSe.uuid,
-  );
+  const subject = toAuthSubject(session)!;
+  const canEditMembers = await canEditStartup(subject, dbSe.uuid);
+  const canEditInfo = await canEditStartupInfo(subject, dbSe.uuid);
 
   return (
     <>
@@ -138,6 +140,7 @@ export default async function Page(props: Props) {
       />
       <StartupPage
         canEditMembers={canEditMembers}
+        canEditInfo={canEditInfo}
         allMembers={allMembers}
         changes={changes.map((change) => startupChangeToModel(change))}
         startupInfos={startup}

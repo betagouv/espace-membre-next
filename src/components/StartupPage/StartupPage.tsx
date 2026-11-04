@@ -55,6 +55,7 @@ export interface StartupPageProps {
     date: Date;
   }[];
   canEditMembers: boolean;
+  canEditInfo: boolean;
 }
 
 export default function StartupPage({
@@ -68,6 +69,7 @@ export default function StartupPage({
   files,
   events,
   canEditMembers,
+  canEditInfo,
 }: StartupPageProps) {
   const router = useRouter();
   const [hash, setHash] = useState<null | string>(null);
@@ -129,7 +131,7 @@ export default function StartupPage({
     <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
       <FicheHeader
         label={startupInfos.name}
-        editLink={`/startups/${startupInfos.uuid}/info-form`}
+        editLink={canEditInfo && `/startups/${startupInfos.uuid}/info-form`}
       />
       <StartupHeader
         startupInfos={startupInfos}
@@ -153,16 +155,20 @@ export default function StartupPage({
         className={fr.cx("fr-col-12", "fr-mt-4w")}
         style={{ textAlign: "center" }}
       >
-        <Button
-          priority="secondary"
-          linkProps={{
-            href: `/startups/${startupInfos.uuid}/info-form`,
-          }}
-        >
-          Modifier la fiche
-        </Button>
-        <br />
-        <br />
+        {canEditInfo && (
+          <>
+            <Button
+              priority="secondary"
+              linkProps={{
+                href: `/startups/${startupInfos.uuid}/info-form`,
+              }}
+            >
+              Modifier la fiche
+            </Button>
+            <br />
+            <br />
+          </>
+        )}
         <LastChange changes={changes} />
       </div>
     </div>

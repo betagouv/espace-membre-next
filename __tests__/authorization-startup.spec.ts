@@ -8,6 +8,7 @@ describe("canEditStartup", () => {
   let getStartupIncubatorIdsStub: sinon.SinonStub;
   let isIncubatorTeamMemberStub: sinon.SinonStub;
   let isStartupAgentStub: sinon.SinonStub;
+  let hasActiveStartupMissionStub: sinon.SinonStub;
 
   // Le sujet est plat : plus de session, plus de `any` implicite.
   const subject = {
@@ -28,11 +29,13 @@ describe("canEditStartup", () => {
     getStartupIncubatorIdsStub = sinon.stub().resolves([]);
     isIncubatorTeamMemberStub = sinon.stub().resolves(false);
     isStartupAgentStub = sinon.stub().resolves(false);
+    hasActiveStartupMissionStub = sinon.stub().resolves(false);
 
     const somemodule = proxyquire("../src/lib/authorization/startup", {
       "@/lib/kysely/queries": {
         getStartup: getStartupStub,
         isStartupAgent: isStartupAgentStub,
+        hasActiveStartupMission: hasActiveStartupMissionStub,
       },
       "@/lib/kysely/queries/incubators": {
         getStartupIncubatorIds: getStartupIncubatorIdsStub,
@@ -163,6 +166,15 @@ describe("canEditStartup", () => {
     expect(result).to.be.false;
   });
 
+  it("should not open member management to a non-agent with an active mission", async () => {
+    getStartupStub.resolves(mockStartup);
+    getStartupIncubatorIdsStub.resolves(["incubator-uuid"]);
+    hasActiveStartupMissionStub.resolves(true);
+
+    expect(await canEditStartup(subject, "startup-uuid")).to.be.false;
+    expect(hasActiveStartupMissionStub.notCalled).to.be.true;
+  });
+
   it("should return false when there is no incubator link and user is not an agent", async () => {
     getStartupStub.resolves(mockStartup);
     getStartupIncubatorIdsStub.resolves([]);
@@ -171,5 +183,104 @@ describe("canEditStartup", () => {
     const result = await canEditStartup(subject, "startup-uuid");
 
     expect(result).to.be.false;
+  });
+});
+
+describe("canEditStartupInfo", () => {
+  let canEditStartupInfo: typeof import("../src/lib/authorization/startup").canEditStartupInfo;
+  let getStartupStub: sinon.SinonStub;
+  let getStartupIncubatorIdsStub: sinon.SinonStub;
+  let isIncubatorTeamMemberStub: sinon.SinonStub;
+  let isStartupAgentStub: sinon.SinonStub;
+  let hasActiveStartupMissionStub: sinon.SinonStub;
+
+  const subject = {
+    uuid: "session-user-uuid",
+    username: "session.user",
+    isAdmin: false,
+  };
+
+  const mockStartup = {
+    uuid: "startup-uuid",
+    incubator_id: "incubator-uuid",
+  };
+
+  beforeEach(() => {
+    sinon.restore();
+
+    getStartupStub = sinon.stub().resolves(mockStartup);
+    getStartupIncubatorIdsStub = sinon.stub().resolves(["incubator-uuid"]);
+    isIncubatorTeamMemberStub = sinon.stub().resolves(false);
+    isStartupAgentStub = sinon.stub().resolves(false);
+    hasActiveStartupMissionStub = sinon.stub().resolves(false);
+
+    const somemodule = proxyquire("../src/lib/authorization/startup", {
+      "@/lib/kysely/queries": {
+        getStartup: getStartupStub,
+        isStartupAgent: isStartupAgentStub,
+        hasActiveStartupMission: hasActiveStartupMissionStub,
+      },
+      "@/lib/kysely/queries/incubators": {
+        getStartupIncubatorIds: getStartupIncubatorIdsStub,
+      },
+      "@/lib/kysely/queries/authorization": {
+        isIncubatorTeamMember: isIncubatorTeamMemberStub,
+      },
+    });
+
+    canEditStartupInfo = somemodule.canEditStartupInfo;
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it("should return true when subject is admin", async () => {
+    const result = await canEditStartupInfo(
+      { ...subject, isAdmin: true },
+      "startup-uuid",
+    );
+
+    expect(result).to.be.true;
+    expect(getStartupStub.notCalled).to.be.true;
+    expect(hasActiveStartupMissionStub.notCalled).to.be.true;
+  });
+
+  it("should return false when startupUuid is null", async () => {
+    expect(await canEditStartupInfo(subject, null)).to.be.false;
+    expect(getStartupStub.notCalled).to.be.true;
+  });
+
+  it("should return false when startup is not found", async () => {
+    getStartupStub.resolves(undefined);
+
+    expect(await canEditStartupInfo(subject, "startup-uuid")).to.be.false;
+    expect(hasActiveStartupMissionStub.notCalled).to.be.true;
+  });
+
+  it("should return true when user is a member of a linked incubator team", async () => {
+    isIncubatorTeamMemberStub
+      .withArgs("session-user-uuid", "incubator-uuid")
+      .resolves(true);
+
+    expect(await canEditStartupInfo(subject, "startup-uuid")).to.be.true;
+    expect(hasActiveStartupMissionStub.notCalled).to.be.true;
+  });
+
+  it("should return true for an active mission whatever the legal status", async () => {
+    hasActiveStartupMissionStub.resolves(true);
+
+    expect(await canEditStartupInfo(subject, "startup-uuid")).to.be.true;
+    expect(
+      hasActiveStartupMissionStub.calledOnceWith(
+        "session-user-uuid",
+        "startup-uuid",
+      ),
+    ).to.be.true;
+    expect(isStartupAgentStub.notCalled).to.be.true;
+  });
+
+  it("should return false without incubator team nor active mission", async () => {
+    expect(await canEditStartupInfo(subject, "startup-uuid")).to.be.false;
   });
 });
