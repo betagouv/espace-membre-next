@@ -6,7 +6,11 @@ import { isLive } from "@/lib/kysely/queries/dimail";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
-import { createMailbox, createMailboxCode } from "@/lib/dimail/client";
+import {
+  createMailbox,
+  createMailboxCode,
+  patchMailbox,
+} from "@/lib/dimail/client";
 import {
   getDimailUsernameForUser,
   isAttributaire,
@@ -30,7 +34,8 @@ const splitFullName = (fullname: string) => {
 créé un email dimail pour un utilisateur
 
  - crée l'email en prenom.nom[.ext]@domain selon le statut légal de l'utilisateur
-   (ou reprend la boite déjà créée par une tentative précédente, cf dinum_emails)
+   (ou reprend la boite déjà créée par une tentative précédente, cf dinum_emails,
+   ou déjà présente chez Dimail : 409)
  - envoie l'email de connexion à l'utilisateur
  - créé un alias pour les anciens utilisateurs
  - met à jour la table dinum_emails
@@ -68,6 +73,25 @@ export async function sendWebmailAccessCode({
       resend,
     },
   });
+}
+
+// a mailbox can exist in Dimail without its dinum_emails row (sync-dinum-emails
+// failing). Its name derives from the unique username, so it belongs to the
+// member : reactivating it confirms it exists and lets the creation resume.
+async function reactivateExistingMailbox(userName: string): Promise<boolean> {
+  try {
+    const { success } = await patchMailbox({
+      domain_name: DIMAIL_MAILBOX_DOMAIN,
+      user_name: userName,
+      data: { imap_active: "yes" },
+    });
+    return success;
+  } catch (e: any) {
+    console.error(
+      `Error reactivating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
+    );
+    return false;
+  }
 }
 
 export async function createDimailMailboxForUser(
@@ -128,20 +152,30 @@ export async function createDimailMailboxForUser(
     );
     mailboxEmail = existingMailbox.email;
   } else {
-    const mailboxInfos = await createMailbox({
+    mailboxEmail = await createMailbox({
       user_name: userName,
       domain: DIMAIL_MAILBOX_DOMAIN,
       displayName: dbUser.fullname,
       givenName,
       surName,
-    }).catch((e) => {
-      console.error(
-        `Error creating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
-      );
-      Sentry.captureException(e);
-      throw e;
-    });
-    mailboxEmail = mailboxInfos.email;
+    })
+      .then((mailboxInfos) => mailboxInfos.email)
+      .catch(async (e) => {
+        if (
+          (e.response?.status ?? e.status) === 409 &&
+          (await reactivateExistingMailbox(userName))
+        ) {
+          console.log(
+            `DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN} already existed, recorded for ${dbUser.username}`,
+          );
+          return `${userName}@${DIMAIL_MAILBOX_DOMAIN}`;
+        }
+        console.error(
+          `Error creating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
+        );
+        Sentry.captureException(e);
+        throw e;
+      });
 
     // recorded right after the creation, so a retry does not create the mailbox again
     await db
