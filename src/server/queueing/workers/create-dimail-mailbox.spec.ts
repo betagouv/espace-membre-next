@@ -9,6 +9,7 @@ const mockGetUserBasicInfo = sinon.stub();
 const mockCreateMailbox = sinon.stub();
 const mockSendEmail = sinon.stub();
 const mockCreateMailboxCode = sinon.stub();
+const mockPatchMailbox = sinon.stub();
 
 // Mock Kysely database
 const mockExecute = sinon.stub();
@@ -43,7 +44,6 @@ const mockSendInvitation = sinon.stub();
 
 const userTestUuid = "9f58ae81-3580-4d37-9334-a979dcc2372f";
 
-
 const mockDb = {
   updateTable: mockUpdateTable,
   insertInto: mockInsertInto,
@@ -57,6 +57,7 @@ const { createDimailMailboxForUser, onboardNewMemberMailbox } = proxyquire(
     "@/lib/dimail/client": {
       createMailbox: mockCreateMailbox,
       createMailboxCode: mockCreateMailboxCode,
+      patchMailbox: mockPatchMailbox,
     },
     "@/server/config/email.config": { sendEmail: mockSendEmail },
     "@/lib/kysely": { db: mockDb },
@@ -89,6 +90,7 @@ describe("create-dimail-mail", () => {
       mockLastMission,
       mockExistingMailbox,
       mockCreateMailboxCode,
+      mockPatchMailbox,
       mockSelectFrom,
       mockGetLastEvent,
       mockSendInvitation,
@@ -128,6 +130,7 @@ describe("create-dimail-mail", () => {
       maxuse: 1,
       nbuse: 0,
     });
+    mockPatchMailbox.resolves({ success: true });
     mockExecute.resolves();
     mockLastMission.resolves(undefined);
     mockExistingMailbox.resolves(undefined);
@@ -387,6 +390,131 @@ describe("create-dimail-mail", () => {
     expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
       "EMAIL_ACTIVE",
     );
+  });
+
+  describe("mailbox already existing in Dimail", () => {
+    const conflictError = () =>
+      Object.assign(new Error("Request failed with status code 409"), {
+        status: 409,
+        response: { status: 409 },
+      });
+
+    beforeEach(() => {
+      mockGetUserBasicInfo.resolves({
+        uuid: userTestUuid,
+        username: "john.doe",
+        fullname: "John Doe",
+        secondary_email: "john.doe@example.com",
+        primary_email: null,
+        legal_status: "something",
+        missions: [],
+      });
+    });
+
+    it("on a 409, reactivates and records the mailbox, then sends the access link", async () => {
+      mockCreateMailbox.rejects(conflictError());
+
+      const result = await createDimailMailboxForUser(userTestUuid);
+
+      expect(result).to.equal(`john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`);
+      expect(
+        mockPatchMailbox.calledOnceWith({
+          domain_name: DIMAIL_MAILBOX_DOMAIN,
+          user_name: "john.doe.ext",
+          data: { imap_active: "yes" },
+        }),
+      ).to.be.true;
+      expect(
+        mockValues.calledOnceWithExactly({
+          email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+          type: "mailbox",
+          status: "ok",
+          user_id: userTestUuid,
+        }),
+      ).to.be.true;
+      expect(mockSendEmail.calledOnce).to.be.true;
+      expect(mockSet.firstCall.args[0]).to.deep.equal({
+        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email_status: "EMAIL_ACTIVE",
+      });
+      expect(consoleErrorStub.called).to.be.false;
+    });
+
+    it("on a 409 the reactivation does not confirm, throws the 409 and leaves the member untouched", async () => {
+      const error = conflictError();
+      mockCreateMailbox.rejects(error);
+      mockPatchMailbox.resolves({ success: false });
+
+      try {
+        await createDimailMailboxForUser(userTestUuid);
+        expect.fail("Should have thrown");
+      } catch (e) {
+        expect(e).to.equal(error);
+      }
+      expect(mockInsertInto.called).to.be.false;
+      expect(mockSendEmail.called).to.be.false;
+      expect(mockUpdateTable.called).to.be.false;
+    });
+
+    it("on a 409 the reactivation fails, throws the 409", async () => {
+      const error = conflictError();
+      mockCreateMailbox.rejects(error);
+      mockPatchMailbox.rejects(
+        Object.assign(new Error("Request failed with status code 404"), {
+          status: 404,
+        }),
+      );
+
+      try {
+        await createDimailMailboxForUser(userTestUuid);
+        expect.fail("Should have thrown");
+      } catch (e) {
+        expect(e).to.equal(error);
+      }
+      expect(mockInsertInto.called).to.be.false;
+      expect(mockUpdateTable.called).to.be.false;
+    });
+
+    it("does not try to reactivate a mailbox on another error", async () => {
+      mockCreateMailbox.rejects(
+        Object.assign(new Error("dimail down"), {
+          status: 500,
+          response: { status: 500 },
+        }),
+      );
+
+      try {
+        await createDimailMailboxForUser(userTestUuid);
+        expect.fail("Should have thrown");
+      } catch (e: any) {
+        expect(e.message).to.equal("dimail down");
+      }
+      expect(mockPatchMailbox.called).to.be.false;
+      expect(mockInsertInto.called).to.be.false;
+    });
+
+    it("lets the onboarding go on and send the invitation", async () => {
+      mockGetUserBasicInfo.resolves({
+        uuid: userTestUuid,
+        username: "john.doe",
+        fullname: "John Doe",
+        secondary_email: "john.doe@example.com",
+        primary_email: null,
+        primary_email_status: "EMAIL_CREATION_WAITING",
+        legal_status: null,
+        missions: [],
+      });
+      mockCreateMailbox.rejects(conflictError());
+
+      await onboardNewMemberMailbox(userTestUuid);
+
+      expect(mockPatchMailbox.calledOnce).to.be.true;
+      expect(mockSet.firstCall.args[0].primary_email_status).to.equal(
+        "EMAIL_VERIFICATION_WAITING",
+      );
+      expect(mockSendInvitation.calledOnceWith({ userId: userTestUuid })).to.be
+        .true;
+    });
   });
 
   describe("onboardNewMemberMailbox", () => {
