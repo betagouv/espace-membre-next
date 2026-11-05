@@ -70,7 +70,8 @@ describe("syncDinumEmailsJob", () => {
   };
   let getAllMailboxesStub: sinon.SinonStub;
   let getAllAliasesStub: sinon.SinonStub;
-  let syncDinumEmailsJob: (domain: string) => Promise<void>;
+  let syncDinumEmailsJob: (domain: string) => Promise<boolean>;
+  let startSync: () => Promise<void>;
   let memberUuid: string;
   let otherUuid: string;
 
@@ -105,12 +106,12 @@ describe("syncDinumEmailsJob", () => {
   beforeEach(async () => {
     getAllMailboxesStub = sinon.stub();
     getAllAliasesStub = sinon.stub();
-    syncDinumEmailsJob = proxyquire("./sync-dinum-emails", {
+    ({ syncDinumEmailsJob, startSync } = proxyquire("./sync-dinum-emails", {
       "@/lib/dimail/client": {
         getAllMailboxes: getAllMailboxesStub,
         getAllAliases: getAllAliasesStub,
       },
-    }).syncDinumEmailsJob;
+    }));
     await createData({ users: [member, other] });
     memberUuid = await getUuid(member.username);
     otherUuid = await getUuid(other.username);
@@ -242,6 +243,61 @@ describe("syncDinumEmailsJob", () => {
     await syncDinumEmailsJob(domain);
     expect((await getRow(`kept@${domain}`))?.status).to.equal("enabled");
     expect((await getRow(`contact@${domain}`))?.status).to.equal("enabled");
+  });
+
+  it("should still sync the aliases when the mailboxes list times out", async () => {
+    await db
+      .insertInto("dinum_emails")
+      .values({ email: `kept@${domain}`, type: "mailbox", status: "enabled" })
+      .execute();
+    getAllMailboxesStub.rejects(new Error("timeout of 120000ms exceeded"));
+    getAllAliasesStub.resolves({
+      success: true,
+      aliases: [{ username: "contact", domain, destination: `kept@${domain}` }],
+    });
+    expect(await syncDinumEmailsJob(domain)).to.be.false;
+    expect((await getRow(`kept@${domain}`))?.status).to.equal("enabled");
+    expect(await getRow(`contact@${domain}`)).to.include({
+      type: "alias",
+      destination: `kept@${domain}`,
+    });
+  });
+
+  it("should report a complete sync", async () => {
+    dimailAnswers([{ email: `sync.member@${domain}`, imap_active: "yes" }]);
+    expect(await syncDinumEmailsJob(domain)).to.be.true;
+  });
+
+  it("should update the statuses, then fail, when a Dimail list is missing", async () => {
+    await db
+      .updateTable("users")
+      .set({ primary_email_status: EmailStatusCode.EMAIL_ACTIVE })
+      .where("uuid", "=", memberUuid)
+      .execute();
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: `sync.member@${domain}`,
+        type: "mailbox",
+        status: "disabled",
+        user_id: memberUuid,
+      })
+      .execute();
+    getAllMailboxesStub.rejects(new Error("timeout of 120000ms exceeded"));
+    getAllAliasesStub.rejects(new Error("timeout of 120000ms exceeded"));
+
+    try {
+      await startSync();
+      expect.fail("Should have thrown");
+    } catch (e: any) {
+      expect(e.message).to.include("could not be read");
+    }
+    const { primary_email_status } = await db
+      .selectFrom("users")
+      .select("primary_email_status")
+      .where("uuid", "=", memberUuid)
+      .executeTakeFirstOrThrow();
+    expect(primary_email_status).to.equal(EmailStatusCode.EMAIL_SUSPENDED);
   });
 });
 

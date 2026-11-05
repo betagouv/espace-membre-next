@@ -117,6 +117,23 @@ describe("dimail client", () => {
     });
   });
 
+  describe("getAllMailboxes", () => {
+    it("should list the mailboxes without their extras", async () => {
+      const scope = nock(process.env.DIMAIL_API_URL as string)
+        .get("/v2/domains/domain.com/mailboxes")
+        .query({ with_extras: "false" })
+        .reply(200, [
+          { type: "mailbox", email: "user@domain.com", imap_active: "yes" },
+        ]);
+
+      const result = await clientModule.getAllMailboxes({
+        domain_name: "domain.com",
+      });
+      expect(scope.isDone()).to.be.true;
+      expect(result.mailboxes).to.have.length(1);
+    });
+  });
+
   describe("getAccessToken", () => {
     it("should call axios.get and return access_token", async () => {
       // either keep using axios.get stub or intercept the GET with nock. Here we verify the axios.get stubed behavior:
