@@ -218,7 +218,9 @@ const requestChange = async (
   if (!context.user.primary_email) {
     throw new BusinessError(
       "memberNotOnboarded",
-      "Cette fiche n'a pas encore d'adresse de connexion : son arrivée doit d'abord aboutir.",
+      context.isSelf
+        ? "Tu n'as pas encore d'adresse de connexion. Contacte l'équipe de ton incubateur pour finaliser ton arrivée."
+        : `Ce membre n'a pas encore d'adresse de connexion. Valide d'abord sa fiche depuis /community/${username}/validate.`,
     );
   }
   const email = await validateNewPrimaryEmail({
