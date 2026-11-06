@@ -1,16 +1,10 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-
 import { updateMember } from "@/app/api/member/updateMember";
+import { assertCanEditMemberFullInfo } from "@/lib/authorization/member";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberInfoUpdateSchema } from "@/models/actions/member";
-import { authOptions } from "@/lib/authoptions";
-import {
-  AuthorizationError,
-  NoDataError,
-  withErrorHandling,
-} from "@/lib/error";
+import { NoDataError, withErrorHandling } from "@/lib/error";
 
 async function updateMemberInfoAction({
   username,
@@ -19,18 +13,15 @@ async function updateMemberInfoAction({
   username: string;
   memberData: unknown;
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session || (session.user.id !== username && !session.user.isAdmin)) {
-    throw new AuthorizationError();
-  }
-
-  const data = memberInfoUpdateSchema.shape.member.parse(memberData);
   const previousInfo = await getUserInfos({ username });
   if (!previousInfo) {
     throw new NoDataError("Utilisateur introuvable.");
   }
+  const subject = await assertCanEditMemberFullInfo(previousInfo.uuid);
 
-  await updateMember(data, previousInfo.uuid, undefined, session.user.id);
+  const data = memberInfoUpdateSchema.shape.member.parse(memberData);
+
+  await updateMember(data, previousInfo.uuid, undefined, subject.username);
 
   const dbUser = await getUserInfos({
     username,
