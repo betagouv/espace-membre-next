@@ -123,6 +123,27 @@ async function handleApiV1Route(req: NextRequest) {
   return forward();
 }
 
+const isRetiredProtectedApi = (pathname: string) =>
+  pathname === "/api/protected" || pathname.startsWith("/api/protected/");
+
+// L'ancienne API a ete retiree au profit de /api/v1. Sans cette branche, ses
+// appelants sans session recevraient le 401 generique du controle de session,
+// et chercheraient le probleme du cote de leur clef.
+function handleRetiredProtectedApi(req: NextRequest) {
+  const headers = getCorsHeaders(req);
+
+  if (req.method === "OPTIONS") {
+    return new NextResponse(null, { status: StatusCodes.NO_CONTENT, headers });
+  }
+
+  return problem("gone", {
+    detail:
+      "/api/protected et l'en-tete X-API-KEY ont ete retires. Utiliser /api/v1 avec l'en-tete Authorization: Bearer em1_... Documentation : /api/docs",
+    instance: req.nextUrl.pathname,
+    headers,
+  });
+}
+
 export async function middleware(req: NextRequest) {
   // API v1 : authentification par jeton, jamais par session. Cette branche doit
   // rester AVANT le controle de session ci-dessous et RETOURNER, sinon une
@@ -130,6 +151,10 @@ export async function middleware(req: NextRequest) {
   // d'autorisation que celle qui n'en porte pas.
   if (req.nextUrl.pathname.startsWith("/api/v1/")) {
     return handleApiV1Route(req);
+  }
+
+  if (isRetiredProtectedApi(req.nextUrl.pathname)) {
+    return handleRetiredProtectedApi(req);
   }
 
   // validate the user is authenticated

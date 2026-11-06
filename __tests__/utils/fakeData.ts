@@ -1,5 +1,4 @@
 import { addDays, subDays } from "date-fns";
-import { tableElements } from "juice";
 import { Selectable } from "kysely/dist/cjs/util/column-type";
 
 import { Incubators, Startups, Teams, UsersDomaineEnum } from "@/@types/db";
