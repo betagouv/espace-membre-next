@@ -10,6 +10,7 @@ import * as utilsLib from "@/lib/utils";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { BusinessError } from "@/lib/error";
 import {
+  activateWithLoginEmail,
   resumeMemberOnboarding,
   startMemberOnboarding,
 } from "@/lib/onboarding/startMemberOnboarding";
@@ -294,6 +295,139 @@ describe("startMemberOnboarding", () => {
       expect(bossSendStub.called).to.be.false;
       expect(sendVerificationEmailStub.called).to.be.false;
       expect(updateSetStub.called).to.be.false;
+    });
+
+    it("activates a fiche left active without login email", async () => {
+      isPublicServiceEmailStub.resolves(true);
+
+      const resumed = await resumeWith({
+        secondary_email: "ada@interieur.gouv.fr",
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+      });
+
+      expect(resumed).to.be.true;
+      expect(updateSetStub.firstCall.args[0]).to.include({
+        primary_email: "ada@interieur.gouv.fr",
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+      });
+      expect(sendVerificationEmailStub.called).to.be.false;
+    });
+  });
+
+  describe("activateWithLoginEmail", () => {
+    const activateWith = (user: Record<string, unknown>) => {
+      getUserBasicInfoStub.resolves({ ...baseUser, ...user } as any);
+      return activateWithLoginEmail(USER_UUID);
+    };
+
+    for (const status of [
+      EmailStatusCode.EMAIL_UNSET,
+      EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      EmailStatusCode.EMAIL_ACTIVE,
+    ]) {
+      it(`public service email: becomes the login email of a ${status} fiche, activated without invitation`, async () => {
+        isPublicServiceEmailStub.resolves(true);
+
+        const activation = await activateWith({
+          secondary_email: "ada@diplomatie.gouv.fr",
+          primary_email_status: status,
+        });
+
+        expect(activation).to.equal("publicServiceEmail");
+        const set = updateSetStub.firstCall.args[0];
+        expect(set.primary_email).to.equal("ada@diplomatie.gouv.fr");
+        expect(set.primary_email_status).to.equal(EmailStatusCode.EMAIL_ACTIVE);
+        expect(updateWhereStub.calledWith("primary_email", "is", null)).to.be
+          .true;
+        expect(bossSendStub.called).to.be.false;
+        expect(sendVerificationEmailStub.called).to.be.false;
+      });
+    }
+
+    it("refuses a public service email already used by another member", async () => {
+      isPublicServiceEmailStub.resolves(true);
+      findUsersUsingEmailStub.resolves([{ username: "someone.else" }]);
+
+      try {
+        await activateWith({
+          secondary_email: "ada@diplomatie.gouv.fr",
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        });
+        expect.fail("Should have thrown");
+      } catch (e) {
+        expect(e).to.be.instanceof(BusinessError);
+      }
+      expect(updateSetStub.called).to.be.false;
+    });
+
+    it("personal email: enqueues a mailbox job that activates the fiche, without invitation", async () => {
+      const activation = await activateWith({
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+      });
+
+      expect(activation).to.equal("mailbox");
+      expect(updateSetStub.firstCall.args[0].primary_email_status).to.equal(
+        EmailStatusCode.EMAIL_CREATION_WAITING,
+      );
+      expect(bossSendStub.calledOnce).to.be.true;
+      expect(bossSendStub.firstCall.args[1]).to.deep.equal({
+        userUuid: USER_UUID,
+        username: "ada.lovelace",
+        onboarding: false,
+      });
+      expect(bossSendStub.firstCall.args[2].singletonKey).to.equal(
+        `onboarding-mailbox-${USER_UUID}`,
+      );
+      expect(sendVerificationEmailStub.called).to.be.false;
+    });
+
+    it("personal email: puts the previous status back when the mailbox job cannot be enqueued", async () => {
+      bossSendStub.rejects(new Error("pg-boss down"));
+
+      try {
+        await activateWith({
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        });
+        expect.fail("Should have thrown");
+      } catch (e: any) {
+        expect(e.message).to.equal("pg-boss down");
+      }
+
+      expect(updateSetStub.calledTwice).to.be.true;
+      expect(updateSetStub.secondCall.args[0].primary_email_status).to.equal(
+        EmailStatusCode.EMAIL_ACTIVE,
+      );
+      expect(
+        updateWhereStub.calledWith(
+          "primary_email_status",
+          "=",
+          EmailStatusCode.EMAIL_CREATION_WAITING,
+        ),
+      ).to.be.true;
+    });
+
+    it("does nothing for a fiche with a login email, without contact email, or not accepted", async () => {
+      expect(
+        await activateWith({
+          primary_email: "ada@interieur.gouv.fr",
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        }),
+      ).to.be.null;
+      expect(
+        await activateWith({
+          secondary_email: null,
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        }),
+      ).to.be.null;
+      for (const status of [
+        EmailStatusCode.MEMBER_VALIDATION_WAITING,
+        EmailStatusCode.EMAIL_CREATION_WAITING,
+        EmailStatusCode.EMAIL_SUSPENDED,
+      ]) {
+        expect(await activateWith({ primary_email_status: status })).to.be.null;
+      }
+      expect(updateSetStub.called).to.be.false;
+      expect(bossSendStub.called).to.be.false;
     });
   });
 });

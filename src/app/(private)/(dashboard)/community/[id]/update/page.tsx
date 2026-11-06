@@ -10,7 +10,8 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
 
-import { canEditMember } from "@/lib/authorization/member";
+import { getMemberMissionsRight } from "@/lib/authorization/member";
+import { toAuthSubject } from "@/lib/authorization/subject";
 
 export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -39,21 +40,8 @@ export default async function Page(segmentData: {
     label: startup.name || "",
   }));
 
-  // if there is no current or future mission (or no mission at all)
-  const hasActiveMission = !!userInfos.missions.find((m) =>
-    m.end ? new Date(m.end) >= new Date() : !m.end,
-  );
-  const isCurrentUser = session.user.id === dbData.uuid;
-
-  const canEdit =
-    isCurrentUser ||
-    (await canEditMember({
-      memberUuid: userInfos.uuid,
-      sessionUser: session.user,
-    }));
-
-  // members cannot edit active users directly. Call admin or team member.
-  if (hasActiveMission && !canEdit) {
+  const subject = toAuthSubject(session);
+  if (!subject || !(await getMemberMissionsRight(subject, userInfos))) {
     redirect(`/community/${id}`);
   }
 

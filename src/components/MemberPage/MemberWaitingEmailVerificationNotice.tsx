@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 import { MemberPageProps } from "./MemberPage";
 import Button from "@codegouvfr/react-dsfr/Button";
 
-import { verify } from "@/app/api/members/actions/verify";
+import { safeVerify, VerifyResult } from "@/app/api/members/actions/verify";
 import { useState } from "react";
 
 export const MemberWaitingEmailVerificationNotice = ({
@@ -15,22 +15,36 @@ export const MemberWaitingEmailVerificationNotice = ({
   userInfos: MemberPageProps["userInfos"];
   canValidate: boolean;
 }) => {
-  const [success, setSuccess] = useState<boolean | null>();
+  const [result, setResult] = useState<VerifyResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const onClick = async () => {
-    if (success) return;
-    const result = await verify({ uuid: userInfos.uuid });
-    setSuccess(!!result);
+    if (result) return;
+    setError(null);
+    const res = await safeVerify({ uuid: userInfos.uuid });
+    if (res.success) {
+      setResult(res.data);
+    } else {
+      setError(res.message);
+    }
   };
-  return success ? (
+  return result ? (
     <Alert
       severity="success"
       className={fr.cx("fr-mt-2w", "fr-mb-2w")}
       title={`Compte vérifié`}
       description={
-        <>
-          La personne peut désormais se connecter avec son email primaire ou
-          secondaire directement.
-        </>
+        "loginEmail" in result ? (
+          <>
+            La personne peut se connecter avec ProConnect en utilisant{" "}
+            {result.loginEmail}.
+          </>
+        ) : (
+          <>
+            Sa boîte Dimail est en cours de création : le lien d'accès au
+            webmail sera envoyé à {userInfos.secondary_email}. C'est avec cette
+            boîte que la personne se connectera avec ProConnect.
+          </>
+        )
       }
     ></Alert>
   ) : (
@@ -56,11 +70,19 @@ export const MemberWaitingEmailVerificationNotice = ({
             <div className={fr.cx("fr-mt-2w")}>
               <Button
                 onClick={onClick}
-                title="La personne pourra se connecter à l'espace membre avec son email primaire ou secondaire directement"
+                title="Active la fiche sans attendre que la personne la complète"
               >
                 Forcer la vérification
               </Button>
             </div>
+          )}
+          {error && (
+            <Alert
+              className={fr.cx("fr-mt-2w")}
+              severity="error"
+              small
+              description={error}
+            />
           )}
         </>
       }

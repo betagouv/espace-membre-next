@@ -97,17 +97,35 @@ const markMissingRowsDeleted = async ({
   );
 };
 
+// a list Dimail could not give (timeout...) counts as a failed read : the other
+// list is still synced, and nothing of that type is marked deleted
+const readDimailList = async <T extends { success: boolean }>(
+  label: string,
+  read: () => Promise<T>,
+): Promise<T> => {
+  try {
+    return await read();
+  } catch (e) {
+    console.error(`${label}: ${e instanceof Error ? e.message : e}`);
+    Sentry.captureException(e);
+    return { success: false } as T;
+  }
+};
+
 /**
- * update dinum_emails table from dimail
+ * update dinum_emails table from dimail. Returns false when a Dimail list
+ * could not be read.
  */
-export async function syncDinumEmailsJob(domain: string) {
+export async function syncDinumEmailsJob(domain: string): Promise<boolean> {
   console.log(`sync dinum_emails table for ${domain}`);
-  const mailboxesResult = await getAllMailboxes({
-    domain_name: domain,
-  });
-  const aliasesResult = await getAllAliases({
-    domain_name: domain,
-  });
+  const mailboxesResult = await readDimailList(
+    `sync dinum_emails table for ${domain}: mailboxes not read`,
+    () => getAllMailboxes({ domain_name: domain }),
+  );
+  const aliasesResult = await readDimailList(
+    `sync dinum_emails table for ${domain}: aliases not read`,
+    () => getAllAliases({ domain_name: domain }),
+  );
 
   const mailboxes =
     mailboxesResult.mailboxes?.map((m) => ({
@@ -185,6 +203,7 @@ export async function syncDinumEmailsJob(domain: string) {
       knownEmails: aliases.map((a) => a.email),
     });
   }
+  return mailboxesResult.success && aliasesResult.success;
 }
 
 // the status follows the mailbox, even when the primary email is an administration address
@@ -243,10 +262,16 @@ export { setEmailsActives, setEmailsSuspendeds };
 
 export const startSync = async () => {
   console.log("start job sync dinum_emails tables");
-  await syncDinumEmailsJob(DIMAIL_MAILBOX_DOMAIN);
-  await syncDinumEmailsJob("ext.beta.gouv.fr"); // legacy, todo remove
+  const complete = [
+    await syncDinumEmailsJob(DIMAIL_MAILBOX_DOMAIN),
+    await syncDinumEmailsJob("ext.beta.gouv.fr"), // legacy, todo remove
+  ];
   await setEmailsSuspendeds();
   await setEmailsActives();
+  // the cron must still report a run where a Dimail list was missing
+  if (complete.includes(false)) {
+    throw new Error("sync dinum_emails: some Dimail lists could not be read");
+  }
 };
 
 export async function syncDinumEmails(job: PgBoss.Job<void>) {

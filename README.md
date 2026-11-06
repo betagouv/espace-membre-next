@@ -274,28 +274,33 @@ Les permissions sont vérifiées côté serveur (routes sous
   produits ou ses équipes), ou s'il partage un produit avec lui et a un statut
   légal `contractuel` ou `fonctionnaire`. Logique implémentée dans
   [`src/lib/authorization/member.ts`](./src/lib/authorization/member.ts) (fonction `canEditMember`).
-- **Member** : peut modifier son propre compte. L'édition d'une fiche produit est
-  conditionnée à l'appartenance à une équipe d'un des incubateurs liés au produit,
-  ou au statut d'agent public actif sur ce produit. Il ne peut pas modifier la
-  fiche d'un autre membre en dehors du cas ci-dessus.
+- **Member** : peut modifier son propre compte. Il édite la fiche d'un produit sur
+  lequel il a une mission en cours, quel que soit son statut, ou dont un incubateur
+  lié compte une équipe où il siège. Changer les incubateurs d'un produit, comme en
+  gérer les membres, exige en plus d'être agent public en mission dessus ou dans une
+  telle équipe. Il ne peut pas modifier la fiche d'un autre membre en dehors du cas
+  ci-dessus. Il peut prolonger ses propres missions et celles d'une fiche expirée,
+  pour faire revenir quelqu'un, mais pas celles d'un membre actif
+  (`getMemberMissionsRight`).
 - **Anonymous** : aucun accès aux pages privées (redirection vers `/login`).
 
 ### Matrice des droits
 
 Le rôle ne suffit pas à décrire les droits : un membre ordinaire en tire du
 **rattachement au produit**, par son équipe d'incubateur ou par sa mission. Les
-deux dernières lignes ne sont donc pas des rôles mais des situations, qui
-s'ajoutent à « Member ».
+lignes « Équipe », « Agent public » et « Membre en mission » ne sont donc pas des
+rôles mais des situations, qui s'ajoutent à « Member ».
 
 | Situation | Inviter un membre | Modifier mon compte | Modifier un membre | Éditer une fiche produit | Clef perso. lecture | Clef perso. écriture | Clef d'application |
 | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Admin | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ global inclus | ✅ |
 | Équipe d'un incubateur lié | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ incubateur et ses produits | ✅ son incubateur, si vivant |
 | Agent public en mission sur le produit | ✅ | ✅ | ✅ un membre du même produit | ✅ ce produit | ✅ | ✅ ce produit seulement | ❌ |
+| Membre en mission sur le produit, autre statut | ✅ | ✅ | ❌ | ✅ ce produit, hors incubateurs | ✅ | ❌ | ❌ |
 | Member sans rattachement | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | Anonymous | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 
-Trois précisions qui évitent les mauvaises surprises.
+Quatre précisions qui évitent les mauvaises surprises.
 
 **La lecture est libre.** N'importe quel membre peut créer une clef de périmètre
 global en lecture, c'est une décision assumée : l'espace membre n'a pas de donnée
@@ -308,6 +313,14 @@ commencée et non terminée sur ce produit, une mission sans date de fin comptan
 comme ouverte donc vivante, et un `legal_status` valant `fonctionnaire` ou
 `contractuel`. Un membre sans statut déclaré, cas de tout compte jamais vérifié,
 ne remplit jamais cette ligne.
+
+**La fiche produit est plus ouverte que le reste.** Une mission en cours sur le
+produit suffit pour l'éditer, quel que soit le statut, prestataires et comptes
+sans statut compris. La fiche est le travail de toute l'équipe. Le statut d'agent
+public reste exigé pour ajouter ou retirer des membres du produit, pour changer
+ses incubateurs et pour écrire sur ce produit par clef d'API. Les incubateurs liés
+ouvrent ces droits à leurs équipes : les laisser à un simple éditeur de fiche lui
+permettrait de se les attribuer.
 
 **L'écriture sur un incubateur passe uniquement par l'équipe**, jamais par une
 mission, et un périmètre de clef de nature produit ne l'ouvre pas non plus : la

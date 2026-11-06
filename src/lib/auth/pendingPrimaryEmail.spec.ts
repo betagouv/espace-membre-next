@@ -184,7 +184,31 @@ describe("primary email verified by ProConnect", () => {
         newEmail,
       );
       expect(res.success).to.be.false;
-      expect(res.message).to.include("arrivée");
+      expect(res.message).to.include(`/community/${member.username}/validate`);
+    });
+
+    it("should send a member not onboarded yet to their incubator team", async () => {
+      await db
+        .updateTable("users")
+        .set({ primary_email: null })
+        .where("uuid", "=", memberUuid)
+        .execute();
+      await db
+        .insertInto("user_events")
+        .values({
+          field_id: EXCEPTION_EVENT,
+          user_id: memberUuid,
+          date: new Date(Date.now() + 24 * 3600 * 1000),
+        })
+        .execute();
+      asSession(member.username, "email");
+      const res = await safeRequestPrimaryEmailChange(
+        member.username,
+        newEmail,
+      );
+      expect(res.success).to.be.false;
+      expect(res.message).to.include("équipe de ton incubateur");
+      expect(res.message).not.to.include("/validate");
     });
   });
 

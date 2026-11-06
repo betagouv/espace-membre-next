@@ -7,6 +7,7 @@ import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { Events, Users, Missions } from "@/@types/db";
 import { addEvent } from "@/lib/events";
+import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
@@ -254,6 +255,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
     await db
       .updateTable("users")
       .set({
+        primary_email: `${newUser.username}@${DIMAIL_MAILBOX_DOMAIN}`,
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
       })
       .where("uuid", "=", newUser.uuid)

@@ -34,7 +34,8 @@ import {
   withErrorHandling,
   BusinessError,
 } from "@/lib/error";
-import { canEditMember as _canEditMember } from "@/lib/authorization/member";
+import { getMemberMissionsRight } from "@/lib/authorization/member";
+import { requireAuthSubject } from "@/lib/authorization/subject";
 import { assertSecondaryEmailChangeAllowed } from "@/lib/auth/secondaryEmailGuard";
 
 async function changeSecondaryEmailForUser(
@@ -162,22 +163,19 @@ async function changeContactEmail(
  * Updates or creates missions for a member.
  *
  * For existing missions (with uuid): updates the end date and associated startups.
- * Non-admin users can only extend the end date, not shorten it.
+ * Users without canEditMember can only extend the end date, not shorten it.
  *
  * For new missions (without uuid): creates the mission with all provided data.
  *
  * @param updateMemberMissionsData - Contains memberUuid and an array of missions to update/create
- * @throws AuthorizationError - If user is not authenticated
+ * @throws AuthorizationError - If user is not authenticated, or targets an active member without canEditMember
  * @throws NoDataError - If member or existing mission is not found
- * @throws ValidationError - If non-admin tries to shorten a mission's end date
+ * @throws ValidationError - If a user without canEditMember tries to shorten a mission's end date
  */
 async function updateMemberMissions(
   updateMemberMissionsData: updateMemberMissionsSchemaType,
 ): Promise<void> {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new AuthorizationError();
-  }
+  const subject = await requireAuthSubject();
   const missionData = updateMemberMissionsSchema.parse(
     updateMemberMissionsData,
   );
@@ -188,12 +186,14 @@ async function updateMemberMissions(
     throw new NoDataError(`Impossible de trouver les données sur le membre`);
   }
   const previousInfo = memberBaseInfoToModel(dbUser);
-  const canEditMember = await _canEditMember({
-    memberUuid: previousInfo.uuid,
-    sessionUser: session.user,
-  });
+  const right = await getMemberMissionsRight(subject, previousInfo);
+  if (!right) {
+    throw new AuthorizationError(
+      "Seuls les admins, les équipes d'incubateur et les agents publics d'un produit commun peuvent modifier les missions d'un membre actif.",
+    );
+  }
+  const canEditMember = right === "full";
 
-  // todo check that it is authorized
   await db.transaction().execute(async (trx) => {
     for (const mission of missions) {
       if (mission.uuid) {

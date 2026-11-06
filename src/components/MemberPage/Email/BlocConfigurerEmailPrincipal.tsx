@@ -103,14 +103,40 @@ export default function BlocConfigurerEmailPrincipal({
     await refresh();
   };
 
+  const label = isAdmin
+    ? `Proposer un nouvel email principal pour cette personne`
+    : `Configurer mon email principal`;
+  const primaryEmail = settings?.primaryEmail || userInfos.primary_email;
+
+  if (!primaryEmail) {
+    return (
+      <Accordion label={label}>
+        {isAdmin ? (
+          <>
+            <p>
+              Cette personne n'a pas encore d'adresse de connexion. Valide sa
+              fiche pour lui en donner une.
+            </p>
+            <Button
+              linkProps={{
+                href: `/community/${userInfos.username}/validate`,
+              }}
+            >
+              Valider la fiche de {userInfos.fullname}
+            </Button>
+          </>
+        ) : (
+          <p>
+            Tu n'as pas encore d'adresse de connexion. Contacte l'équipe de ton
+            incubateur pour finaliser ton arrivée.
+          </p>
+        )}
+      </Accordion>
+    );
+  }
+
   return (
-    <Accordion
-      label={
-        isAdmin
-          ? `Proposer un nouvel email principal pour cette personne`
-          : `Configurer mon email principal`
-      }
-    >
+    <Accordion label={label}>
       {!!alertMessage && (
         <Alert
           className="fr-mb-4w"
@@ -122,8 +148,7 @@ export default function BlocConfigurerEmailPrincipal({
       )}
       <p>
         Adresse de connexion ProConnect et de communication, obligatoirement
-        d'agent public. Actuellement :{" "}
-        <strong>{settings?.primaryEmail || userInfos.primary_email}</strong>.
+        d'agent public. Actuellement : <strong>{primaryEmail}</strong>.
       </p>
 
       {settings?.pending && (
