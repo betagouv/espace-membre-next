@@ -1,6 +1,8 @@
 fileignoreconfig:
 - filename: src/app/api/services/ops/actions.ts
   checksum: a65cfe9a8f9f2f96b4eefc22acd7a4579b8f811b5c1ab56cb895b75ddfe970be
+- filename: __tests__/middleware-protected-api-gone.spec.ts
+  checksum: 6b5f50f0c313a2ef504942ceae65306a7d60054270913438a35bd688f100181c
 - filename: connexion.md
   checksum: 2449fdad6c83708eca74929de5553a169bb1851323e0ad2fdd692b37f7857170
 - filename: src/lib/onboarding/startMemberOnboarding.ts
@@ -68,7 +70,7 @@ fileignoreconfig:
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
 - filename: src/lib/actions/image.ts
-  checksum: 15b09ca8b83c9c88b80f07101736190a28bc80e24d6be74e2a3ad4048f4bc0f1
+  checksum: 2d18cf27ba549404c122e067c5e3a815779e2f922355c1c7f04270fe1545aec0
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
 - filename: src/lib/auth/legacyEmailLogin/README.md
@@ -108,7 +110,7 @@ fileignoreconfig:
 - filename: src/lib/s3.ts
   checksum: 0155b15fb7ae5278b169821cab50463f86726e73ce8fcaada2c8c7f02e999c70
 - filename: src/middleware.ts
-  checksum: 3467fbdbbcae62e35af58cf82fdd8723ac9b5abcc5a16065c80cee7ccbb5d519
+  checksum: f51bc2aeec0e4e1394fcaacc1a97b8dbf7ce2d0ccc0d77aa0a8af0a1f98ee85c
 - filename: src/models/member.ts
   checksum: 494b87eccfd0b71b01c11ed153d9d6097463cff08be0bf6332e047d637dc151f
 - filename: src/models/misc.ts

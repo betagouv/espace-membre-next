@@ -1,16 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { getFileName } from "@/app/api/image/utils";
+import { canEditMemberFullInfo } from "@/lib/authorization/member";
+import { AuthSubject, getAuthSubject } from "@/lib/authorization/subject";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import {
   deleteImage as deleteImageFromS3,
   getPutSignedUrl,
   isS3Available,
 } from "@/lib/s3";
-import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   BusinessError,
@@ -32,15 +33,29 @@ const deleteImageSchema = z.object({
   revalidateMemberImage: z.boolean().optional(),
 });
 
+async function canEditImage(
+  subject: AuthSubject,
+  params: Pick<
+    z.infer<typeof deleteImageSchema>,
+    "fileObjIdentifier" | "fileRelativeObjType"
+  >,
+): Promise<boolean> {
+  if (params.fileRelativeObjType !== "member") return true;
+  if (subject.username === params.fileObjIdentifier || subject.isAdmin) {
+    return true;
+  }
+  const member = await getUserBasicInfo({ username: params.fileObjIdentifier });
+  if (!member) return false;
+  return canEditMemberFullInfo({
+    memberUuid: member.uuid,
+    sessionUser: subject,
+  });
+}
+
 async function getSignedUrlAction(input: z.infer<typeof getSignedUrlSchema>) {
   const params = getSignedUrlSchema.parse(input);
-  const session = await getServerSession(authOptions);
-  if (
-    !session ||
-    (session.user.id !== params.fileObjIdentifier &&
-      params.fileRelativeObjType === "member" &&
-      !session.user.isAdmin)
-  ) {
+  const subject = await getAuthSubject();
+  if (!subject || !(await canEditImage(subject, params))) {
     throw new AuthorizationError();
   }
   if (!isS3Available()) {
@@ -68,13 +83,8 @@ async function getSignedUrlAction(input: z.infer<typeof getSignedUrlSchema>) {
 
 async function deleteImageAction(input: z.infer<typeof deleteImageSchema>) {
   const params = deleteImageSchema.parse(input);
-  const session = await getServerSession(authOptions);
-  if (
-    !session ||
-    (session.user.id !== params.fileObjIdentifier &&
-      params.fileRelativeObjType === "member" &&
-      !session.user.isAdmin)
-  ) {
+  const subject = await getAuthSubject();
+  if (!subject || !(await canEditImage(subject, params))) {
     throw new AuthorizationError();
   }
 
