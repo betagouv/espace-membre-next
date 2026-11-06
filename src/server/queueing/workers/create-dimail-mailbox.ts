@@ -75,6 +75,17 @@ export async function sendWebmailAccessCode({
   });
 }
 
+// the status alone does not say why Dimail refused (a 409 can be an alias or a
+// reserved address) : the response body does. Error bodies hold no secret.
+const describeDimailError = (e: any) => {
+  const body = e.response?.data;
+  const details =
+    body === undefined
+      ? ""
+      : ` ${(typeof body === "string" ? body : JSON.stringify(body)).slice(0, 500)}`;
+  return `${e.status || ""} ${e.message}${details}`;
+};
+
 // a mailbox can exist in Dimail without its dinum_emails row (sync-dinum-emails
 // failing). Its name derives from the unique username, so it belongs to the
 // member : reactivating it confirms it exists and lets the creation resume.
@@ -88,7 +99,7 @@ async function reactivateExistingMailbox(userName: string): Promise<boolean> {
     return success;
   } catch (e: any) {
     console.error(
-      `Error reactivating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
+      `Error reactivating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${describeDimailError(e)}`,
     );
     return false;
   }
@@ -171,7 +182,7 @@ export async function createDimailMailboxForUser(
           return `${userName}@${DIMAIL_MAILBOX_DOMAIN}`;
         }
         console.error(
-          `Error creating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
+          `Error creating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${describeDimailError(e)}`,
         );
         Sentry.captureException(e);
         throw e;
@@ -198,7 +209,7 @@ export async function createDimailMailboxForUser(
     await sendWebmailAccessCode({ mailboxEmail, toEmail: secondaryEmail });
   } catch (e: any) {
     console.error(
-      `Error sending DIMAIL access link for ${mailboxEmail}: ${e.status || ""} ${e.message}`,
+      `Error sending DIMAIL access link for ${mailboxEmail}: ${describeDimailError(e)}`,
     );
     Sentry.captureException(e);
     throw e;

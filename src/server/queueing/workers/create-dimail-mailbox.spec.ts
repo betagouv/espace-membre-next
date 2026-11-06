@@ -456,12 +456,15 @@ describe("create-dimail-mail", () => {
       expect(mockUpdateTable.called).to.be.false;
     });
 
-    it("on a 409 the reactivation fails, throws the 409", async () => {
-      const error = conflictError();
+    it("on a 409 the reactivation fails, throws the 409 and logs both response bodies", async () => {
+      const error = Object.assign(conflictError(), {
+        response: { status: 409, data: { detail: "Alias already exists" } },
+      });
       mockCreateMailbox.rejects(error);
       mockPatchMailbox.rejects(
         Object.assign(new Error("Request failed with status code 404"), {
           status: 404,
+          response: { status: 404, data: { detail: "Mailbox not found" } },
         }),
       );
 
@@ -473,6 +476,33 @@ describe("create-dimail-mail", () => {
       }
       expect(mockInsertInto.called).to.be.false;
       expect(mockUpdateTable.called).to.be.false;
+      const logs = consoleErrorStub.getCalls().map((call) => call.args[0]);
+      expect(logs).to.have.length(2);
+      expect(logs[0]).to.include(
+        '404 Request failed with status code 404 {"detail":"Mailbox not found"}',
+      );
+      expect(logs[1]).to.include(
+        '409 Request failed with status code 409 {"detail":"Alias already exists"}',
+      );
+    });
+
+    it("truncates a long response body in the logs", async () => {
+      mockCreateMailbox.rejects(
+        Object.assign(new Error("dimail down"), {
+          status: 500,
+          response: { status: 500, data: "x".repeat(2000) },
+        }),
+      );
+
+      try {
+        await createDimailMailboxForUser(userTestUuid);
+        expect.fail("Should have thrown");
+      } catch (e: any) {
+        expect(e.message).to.equal("dimail down");
+      }
+      const log = consoleErrorStub.firstCall.args[0];
+      expect(log).to.include(`500 dimail down ${"x".repeat(500)}`);
+      expect(log).not.to.include("x".repeat(501));
     });
 
     it("does not try to reactivate a mailbox on another error", async () => {
