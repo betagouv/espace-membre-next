@@ -10,7 +10,10 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
 
-import { getMemberMissionsRight } from "@/lib/authorization/member";
+import {
+  canEditMemberFullInfo,
+  getMemberMissionsRight,
+} from "@/lib/authorization/member";
 import { toAuthSubject } from "@/lib/authorization/subject";
 
 export const metadata: Metadata = {
@@ -41,7 +44,21 @@ export default async function Page(segmentData: {
   }));
 
   const subject = toAuthSubject(session);
-  if (!subject || !(await getMemberMissionsRight(subject, userInfos))) {
+  if (!subject) {
+    redirect(`/community/${id}`);
+  }
+  // Cette page n'edite que les missions : qui peut editer toute la fiche passe
+  // par admin-update.
+  if (
+    subject.uuid !== dbData.uuid &&
+    (await canEditMemberFullInfo({
+      memberUuid: dbData.uuid,
+      sessionUser: subject,
+    }))
+  ) {
+    redirect(`/community/${id}/admin-update`);
+  }
+  if (!(await getMemberMissionsRight(subject, userInfos))) {
     redirect(`/community/${id}`);
   }
 

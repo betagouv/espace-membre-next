@@ -2,8 +2,13 @@ import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
 
+import { AuthorizationError } from "../src/lib/error";
+
 describe("canEditMember", () => {
   let canEditMember: typeof import("../src/lib/authorization/member").canEditMember;
+  let canEditMemberFullInfo: typeof import("../src/lib/authorization/member").canEditMemberFullInfo;
+  let assertCanEditMemberFullInfo: typeof import("../src/lib/authorization/member").assertCanEditMemberFullInfo;
+  let requireAuthSubjectStub: sinon.SinonStub;
   let getUserStartupsStub: sinon.SinonStub;
   let getUserTeamIncubatorIdsStub: sinon.SinonStub;
   let getUserBasicInfoStub: sinon.SinonStub;
@@ -36,6 +41,7 @@ describe("canEditMember", () => {
     getUserStartupsStub = sinon.stub();
     getUserTeamIncubatorIdsStub = sinon.stub();
     getUserBasicInfoStub = sinon.stub();
+    requireAuthSubjectStub = sinon.stub();
 
     const somemodule = proxyquire("../src/lib/authorization/member", {
       "@/lib/kysely/queries/users": {
@@ -45,9 +51,15 @@ describe("canEditMember", () => {
       "@/lib/kysely/queries/authorization": {
         getUserTeamIncubatorIds: getUserTeamIncubatorIdsStub,
       },
+      "./subject": {
+        requireAuthSubject: requireAuthSubjectStub,
+        "@noCallThru": true,
+      },
     });
 
     canEditMember = somemodule.canEditMember;
+    canEditMemberFullInfo = somemodule.canEditMemberFullInfo;
+    assertCanEditMemberFullInfo = somemodule.assertCanEditMemberFullInfo;
   });
 
   afterEach(() => {
@@ -654,5 +666,150 @@ describe("canEditMember", () => {
     });
 
     expect(result).to.be.false;
+  });
+
+  describe("canEditMemberFullInfo", () => {
+    const pastDate = new Date("2020-01-01");
+
+    it("should return true when session user is admin", async () => {
+      const result = await canEditMemberFullInfo({
+        memberUuid: "user-uuid",
+        sessionUser: { ...mockSessionUser, isAdmin: true },
+      });
+
+      expect(result).to.be.true;
+      expect(getUserBasicInfoStub.notCalled).to.be.true;
+    });
+
+    it("should return true when session user's team incubator matches user's team incubator", async () => {
+      getUserBasicInfoStub.resolves({
+        uuid: "user-uuid",
+        teams: [{ uuid: "team-uuid", incubator_id: incubatorA.uuid }],
+      });
+      getUserStartupsStub.resolves([]);
+      getUserTeamIncubatorIdsStub.resolves([incubatorA.uuid]);
+
+      const result = await canEditMemberFullInfo({
+        memberUuid: "user-uuid",
+        sessionUser: mockSessionUser,
+      });
+
+      expect(result).to.be.true;
+    });
+
+    it("should return true when session user's team incubator matches user's current startup incubator", async () => {
+      getUserBasicInfoStub.resolves({ uuid: "user-uuid", teams: [] });
+      getUserStartupsStub.resolves([
+        {
+          uuid: "startup-uuid",
+          start: pastDate,
+          end: null,
+          incubator_id: incubatorA.uuid,
+          incubator_ids: [incubatorA.uuid, incubatorC.uuid],
+        },
+      ]);
+      getUserTeamIncubatorIdsStub.resolves([incubatorC.uuid]);
+
+      const result = await canEditMemberFullInfo({
+        memberUuid: "user-uuid",
+        sessionUser: mockSessionUser,
+      });
+
+      expect(result).to.be.true;
+    });
+
+    it("should return false when there is no incubator intersection", async () => {
+      getUserBasicInfoStub.resolves({
+        uuid: "user-uuid",
+        teams: [{ uuid: "team-uuid", incubator_id: incubatorA.uuid }],
+      });
+      getUserStartupsStub.resolves([]);
+      getUserTeamIncubatorIdsStub.resolves([incubatorB.uuid]);
+
+      const result = await canEditMemberFullInfo({
+        memberUuid: "user-uuid",
+        sessionUser: mockSessionUser,
+      });
+
+      expect(result).to.be.false;
+    });
+
+    it("should return false for a contractuel sharing a startup without being in the incubator team", async () => {
+      const sharedStartup = {
+        uuid: "shared-startup-uuid",
+        start: pastDate,
+        end: null,
+        incubator_id: incubatorA.uuid,
+        incubator_ids: [incubatorA.uuid],
+      };
+      getUserBasicInfoStub.callsFake(async ({ uuid }: { uuid: string }) =>
+        uuid === mockSessionUser.uuid
+          ? { uuid, legal_status: "contractuel", teams: [] }
+          : { uuid, teams: [] },
+      );
+      getUserStartupsStub.resolves([sharedStartup]);
+      getUserTeamIncubatorIdsStub.resolves([incubatorB.uuid]);
+
+      const params = {
+        memberUuid: "user-uuid",
+        sessionUser: mockSessionUser,
+      };
+
+      // seules les missions sont modifiables, pas toute la fiche
+      expect(await canEditMemberFullInfo(params)).to.be.false;
+      expect(await canEditMember(params)).to.be.true;
+    });
+
+    it("should return false when member not found", async () => {
+      getUserBasicInfoStub.resolves(null);
+
+      const result = await canEditMemberFullInfo({
+        memberUuid: "non-existent-uuid",
+        sessionUser: mockSessionUser,
+      });
+
+      expect(result).to.be.false;
+    });
+  });
+
+  describe("assertCanEditMemberFullInfo", () => {
+    it("should let a member edit its own infos without any lookup", async () => {
+      requireAuthSubjectStub.resolves(mockSessionUser);
+
+      const subject = await assertCanEditMemberFullInfo(mockSessionUser.uuid);
+
+      expect(subject).to.equal(mockSessionUser);
+      expect(getUserBasicInfoStub.notCalled).to.be.true;
+    });
+
+    it("should let an incubator team member edit another member", async () => {
+      requireAuthSubjectStub.resolves(mockSessionUser);
+      getUserBasicInfoStub.resolves({
+        uuid: "user-uuid",
+        teams: [{ uuid: "team-uuid", incubator_id: incubatorA.uuid }],
+      });
+      getUserStartupsStub.resolves([]);
+      getUserTeamIncubatorIdsStub.resolves([incubatorA.uuid]);
+
+      const subject = await assertCanEditMemberFullInfo("user-uuid");
+
+      expect(subject).to.equal(mockSessionUser);
+    });
+
+    it("should throw when session user cannot edit the whole infos", async () => {
+      requireAuthSubjectStub.resolves(mockSessionUser);
+      getUserBasicInfoStub.resolves({ uuid: "user-uuid", teams: [] });
+      getUserStartupsStub.resolves([]);
+      getUserTeamIncubatorIdsStub.resolves([incubatorB.uuid]);
+
+      let error: unknown;
+      try {
+        await assertCanEditMemberFullInfo("user-uuid");
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error).to.be.instanceOf(AuthorizationError);
+    });
   });
 });
