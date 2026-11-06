@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: src/app/api/services/ops/actions.ts
+  checksum: a65cfe9a8f9f2f96b4eefc22acd7a4579b8f811b5c1ab56cb895b75ddfe970be
 - filename: __tests__/middleware-protected-api-gone.spec.ts
   checksum: 6b5f50f0c313a2ef504942ceae65306a7d60054270913438a35bd688f100181c
 - filename: connexion.md
