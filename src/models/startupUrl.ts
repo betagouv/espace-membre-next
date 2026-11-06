@@ -28,8 +28,8 @@ export type StartupUrl = {
 };
 
 export const STARTUP_URL_TYPE_LABELS: Record<StartupUrlType, string> = {
-  website: "Site web",
-  repository: "Dépôt de code",
+  website: "URL du produit",
+  repository: "Code source",
   stats: "Statistiques d'usage",
   budget: "Budget",
   roadmap: "Roadmap / tickets",

@@ -673,8 +673,8 @@ export function StartupForm(props: StartupFormProps) {
 
           <h2>Liens</h2>
           <p className="fr-hint-text">
-            Site web, dépôts de code, statistiques, budget, outils... Le premier
-            lien de chaque type est celui affiché en priorité.
+            URL du produit, code source, statistiques, budget, outils... Le
+            premier lien de chaque type est celui affiché en priorité.
           </p>
           <StartupUrlsEditor
             control={control}
