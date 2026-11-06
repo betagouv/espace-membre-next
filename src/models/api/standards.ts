@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { isUnsafeUrl, UNSAFE_URL_MESSAGE } from "@/models/startupUrl";
+
 // Les 10 champs de standards, sur les memes types que la base. Aucun .url() sur
 // les URL : src/models/startup.ts les type en z.string() nu, le formulaire
 // accepte donc la chaine vide et des chaines libres, qui sont deja en base. Un
@@ -23,9 +25,40 @@ export const startupStandardsSchema = z.object({
 });
 export type startupStandardsSchemaType = z.infer<typeof startupStandardsSchema>;
 
+// En entree seulement : un schema de sortie ne rejette pas une valeur deja en
+// base. Ces URL vivent dans startup_urls, ou le formulaire refuse les memes.
+const STANDARDS_URL_FIELDS = [
+  "analyse_risques_url",
+  "dashlord_url",
+  "tech_audit_url",
+  "ecodesign_url",
+  "stats_url",
+] as const;
+const rejectUnsafeUrls = (
+  values: Partial<Record<(typeof STANDARDS_URL_FIELDS)[number], string | null>>,
+  ctx: z.RefinementCtx,
+) => {
+  for (const field of STANDARDS_URL_FIELDS) {
+    const url = values[field];
+    if (url && isUnsafeUrl(url)) {
+      ctx.addIssue({
+        code: "custom",
+        path: [field],
+        message: UNSAFE_URL_MESSAGE,
+      });
+    }
+  }
+};
+
+// Corps du PUT : remplacement complet.
+export const startupStandardsPutSchema =
+  startupStandardsSchema.superRefine(rejectUnsafeUrls);
+
 // RFC 7396 : un champ absent conserve sa valeur, un champ a null l'efface.
 // .partial() et non .deepPartial() : l'objet est plat.
-export const startupStandardsPatchSchema = startupStandardsSchema.partial();
+export const startupStandardsPatchSchema = startupStandardsSchema
+  .partial()
+  .superRefine(rejectUnsafeUrls);
 export type startupStandardsPatchSchemaType = z.infer<
   typeof startupStandardsPatchSchema
 >;

@@ -127,6 +127,14 @@ fileignoreconfig:
   checksum: 0c638ca8be2247143eba8d682089bcad6da1075976d932689aa222da2405e36c
 - filename: src/utils/routes/routes.ts
   checksum: 6a38b15c7efd08ecb470db5946a6cd826b3553b11f54069cf1bc6df335763ca2
+- filename: src/components/StartupPage/StartupDescription.tsx
+  checksum: 8ffd6afdd1ec7870fde7ec9b6161035d4c659186a94b9b1e133b7f90bd861648
+- filename: src/components/StartupForm/StartupUrlsEditor.tsx
+  checksum: 493e312f98ba38a4eb440a65fa61855a58405237e234585b4ca4ee591bcc342a
+- filename: src/lib/kysely/queries/startupUrls.ts
+  checksum: c3362a89bb573d7276fde998de279af61174fbb5af9c1beebf51ddf201efcad4
+- filename: __tests__/startup-urls.spec.ts
+  checksum: 04d5ab0b1d8f1d0eceddb68f5687ceb45a271e5e5cafc5c866c0d2650ae0117e
 scopeconfig:
 - scope: node
 version: "1.0"

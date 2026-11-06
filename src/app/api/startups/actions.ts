@@ -11,6 +11,10 @@ import { DB } from "@/@types/db";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartupIncubatorIds } from "@/lib/kysely/queries/incubators";
+import {
+  getStartupUrls,
+  replaceStartupUrls,
+} from "@/lib/kysely/queries/startupUrls";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
   startupInfoUpdateSchema,
@@ -87,6 +91,7 @@ function derivePrimaryIncubatorId(
 export async function createStartup({
   formData: {
     startup: unsafeStartup,
+    startupUrls: unsafeStartupUrls,
     startupSponsors,
     startupEvents,
     startupPhases,
@@ -96,6 +101,7 @@ export async function createStartup({
 }: {
   formData: {
     startup: startupInfoUpdateSchemaType["startup"];
+    startupUrls: startupInfoUpdateSchemaType["startupUrls"];
     startupEvents: startupInfoUpdateSchemaType["startupEvents"];
     startupPhases: startupInfoUpdateSchemaType["startupPhases"];
     startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
@@ -111,6 +117,8 @@ export async function createStartup({
   // The form schema is the only place holding the invariants (at least one
   // incubator, contact normalization); it has to be enforced server-side too.
   const startup = startupInfoUpdateSchema.shape.startup.parse(unsafeStartup);
+  const startupUrls =
+    startupInfoUpdateSchema.shape.startupUrls.parse(unsafeStartupUrls);
 
   try {
     return await db.transaction().execute(async (trx) => {
@@ -143,6 +151,7 @@ export async function createStartup({
       const startupUuid = res.uuid;
 
       await setStartupIncubators(trx, startupUuid, incubator_ids);
+      await replaceStartupUrls(trx, startupUuid, startupUrls);
 
       // Create new sponsors
       for (const newSponsor of newSponsors) {
@@ -217,6 +226,7 @@ export async function createStartup({
           action_metadata: {
             value: {
               startup,
+              startupUrls,
               startupEvents,
               startupPhases,
               startupSponsorIds: startupSponsors,
@@ -246,6 +256,7 @@ export async function createStartup({
 export async function updateStartup({
   formData: {
     startup: unsafeStartup,
+    startupUrls: unsafeStartupUrls,
     startupSponsors,
     startupPhases,
     startupEvents,
@@ -255,6 +266,7 @@ export async function updateStartup({
 }: {
   formData: {
     startup: startupInfoUpdateSchemaType["startup"];
+    startupUrls: startupInfoUpdateSchemaType["startupUrls"];
     startupEvents: startupInfoUpdateSchemaType["startupEvents"];
     startupPhases: startupInfoUpdateSchemaType["startupPhases"];
     startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
@@ -268,6 +280,8 @@ export async function updateStartup({
   // The form schema is the only place holding the invariants (at least one
   // incubator, contact normalization); it has to be enforced server-side too.
   const startup = startupInfoUpdateSchema.shape.startup.parse(unsafeStartup);
+  const startupUrls =
+    startupInfoUpdateSchema.shape.startupUrls.parse(unsafeStartupUrls);
 
   const previousStartupData = await db
     .selectFrom("startups")
@@ -307,6 +321,7 @@ export async function updateStartup({
         .execute(),
     );
   const previousIncubatorIds = await getStartupIncubatorIds(startupUuid);
+  const previousStartupUrls = await getStartupUrls(startupUuid);
   // Les incubateurs lies ouvrent canEditStartup a leurs equipes : un editeur de
   // fiche sans ce droit se l'ouvrirait en liant un incubateur ou il siege.
   if (
@@ -345,6 +360,7 @@ export async function updateStartup({
       .executeTakeFirstOrThrow();
 
     await setStartupIncubators(trx, startupUuid, incubator_ids);
+    await replaceStartupUrls(trx, startupUuid, startupUrls);
 
     // create new sponsors
     for (const newSponsor of newSponsors) {
@@ -457,6 +473,7 @@ export async function updateStartup({
       action_metadata: {
         value: {
           startup,
+          startupUrls,
           startupEvents,
           startupPhases,
           startupSponsorIds: [...sponsorUuidToAdd, ...existingSponsorsUuid],
@@ -473,6 +490,7 @@ export async function updateStartup({
             thematiques: previousStartupData.thematiques as string[],
             usertypes: previousStartupData.usertypes as string[],
           },
+          startupUrls: previousStartupUrls,
           startupEvents: previousStartupEvents.map((event) =>
             startupEventToModel(event),
           ),

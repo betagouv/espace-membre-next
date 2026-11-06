@@ -1,6 +1,11 @@
 import { z } from "zod";
 
 import { MAX_TAGS } from "@/models/arrayLimits";
+import {
+  isUnsafeUrl,
+  STARTUP_URL_TYPES,
+  UNSAFE_URL_MESSAGE,
+} from "@/models/startupUrl";
 
 import { incubatorRefSchema } from "./incubator";
 
@@ -16,9 +21,17 @@ export type startupPhaseApiResponseSchemaType = z.infer<
   typeof startupPhaseApiResponseSchema
 >;
 
+// Liens du produit dans l'ordre d'affichage. Plusieurs liens possibles pour
+// website, repository, tool, demo, support et other, un seul pour les autres.
+export const startupUrlApiResponseSchema = z.object({
+  type: z.enum(STARTUP_URL_TYPES),
+  label: z.string().nullable(),
+  url: z.string(),
+});
+
 // Schema de reponse pour /api/v1/startups.
-// Projection ciblee et permissive : identite du produit et rattachement
-// incubateur, sans les nombreuses URL internes. Il decrit le contrat de sortie.
+// Projection ciblee et permissive : identite du produit, rattachement
+// incubateur et liens. Il decrit le contrat de sortie.
 // phases est ordonne chronologiquement (par date de debut) et current_phase
 // reprend le nom de la derniere phase.
 export const startupApiResponseSchema = z.object({
@@ -33,8 +46,10 @@ export const startupApiResponseSchema = z.object({
   incubators: z.array(incubatorRefSchema),
   contact: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
+  // Premier lien de type website, puis repository, dans urls.
   link: z.string().nullable().optional(),
   repository: z.string().nullable().optional(),
+  urls: z.array(startupUrlApiResponseSchema),
   accessibility_status: z.string().nullable().optional(),
   dsfr_status: z.string().nullable().optional(),
   techno: z.array(z.string()).optional(),
@@ -84,8 +99,14 @@ export const startupPatchSchema = z
     pitch: z.string().nullable(),
     contact: z.string().nullable(),
     description: z.string().nullable(),
-    link: z.string().nullable(),
-    repository: z.string().nullable(),
+    link: z
+      .string()
+      .refine((url) => !isUnsafeUrl(url), UNSAFE_URL_MESSAGE)
+      .nullable(),
+    repository: z
+      .string()
+      .refine((url) => !isUnsafeUrl(url), UNSAFE_URL_MESSAGE)
+      .nullable(),
     techno: z.array(z.string()).max(MAX_TAGS),
     thematiques: z.array(z.string()).max(MAX_TAGS),
     usertypes: z.array(z.string()).max(MAX_TAGS),

@@ -21,6 +21,7 @@ import {
   withTeams,
 } from "./utils";
 import { db, sql } from "@/lib/kysely";
+import { primaryStartupUrlOf } from "@/lib/kysely/queries/startupUrls";
 
 const md = markdownit({ html: true });
 
@@ -65,16 +66,9 @@ const getChanges = async (markdownData) => {
     "startups.description",
     "startups.accessibility_status",
     "startups.analyse_risques",
-    //"startups.analyse_risques_url",
     "startups.mon_service_securise",
-    "startups.budget_url",
     "startups.contact",
-    "startups.repository",
-    "startups.link",
     "startups.stats",
-    "startups.stats_url",
-    "startups.impact_url",
-    "startups.dashlord_url",
     "startups.name",
     "startups.pitch",
     "startups.thematiques",
@@ -107,6 +101,15 @@ const getChanges = async (markdownData) => {
     )
     .select((eb) => [
       ...startupColumns,
+      // Les memes six cles de frontmatter qu'avant startup_urls : le premier
+      // lien de chaque type. Les autres types ne sont pas dans le schema
+      // beta.gouv.fr.
+      primaryStartupUrlOf(eb, "website").as("link"),
+      primaryStartupUrlOf(eb, "repository").as("repository"),
+      primaryStartupUrlOf(eb, "budget").as("budget_url"),
+      primaryStartupUrlOf(eb, "stats").as("stats_url"),
+      primaryStartupUrlOf(eb, "impact").as("impact_url"),
+      primaryStartupUrlOf(eb, "dashlord").as("dashlord_url"),
       eb.ref("startups.name").as("title"),
       eb.ref("startups.pitch").as("mission"),
       eb.ref("incubators.ghid").as("incubator"),

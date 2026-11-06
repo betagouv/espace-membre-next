@@ -54,6 +54,7 @@ describe("Test startup server action", () => {
               name: "",
               pitch: "",
             },
+            startupUrls: [],
             startupEvents: [],
             startupPhases: [],
             startupSponsors: [],
@@ -149,6 +150,11 @@ describe("Test startup server action", () => {
             name: "title de la se",
             pitch: "lamissiondelastartup",
           },
+          startupUrls: [
+            { type: "repository", url: "https://git.example/front" },
+            { type: "website", url: "https://produit.example" },
+            { type: "repository", url: "https://git.example/back" },
+          ],
           startupEvents: [],
           startupPhases: [
             {
@@ -172,6 +178,19 @@ describe("Test startup server action", () => {
       updatedStartup.description?.should.equals(
         "la description de la startup de test",
       );
+      updatedStartup.link?.should.equals("https://produit.example");
+      updatedStartup.repository?.should.equals("https://git.example/front");
+      const urls = await db
+        .selectFrom("startup_urls")
+        .select(["type", "url"])
+        .where("startup_uuid", "=", startup.uuid)
+        .orderBy("position")
+        .execute();
+      urls.should.deep.equal([
+        { type: "repository", url: "https://git.example/front" },
+        { type: "website", url: "https://produit.example" },
+        { type: "repository", url: "https://git.example/back" },
+      ]);
     });
 
     it("should refuse a member without mission on the product", async () => {
@@ -202,6 +221,7 @@ describe("Test startup server action", () => {
               name: "title de la se",
               pitch: "lamissiondelastartup",
             },
+            startupUrls: [],
             startupEvents: [],
             startupPhases: [],
             startupSponsors: [],
@@ -228,6 +248,7 @@ describe("Test startup server action", () => {
               name: "title de la se",
               pitch: "lamissiondelastartup",
             },
+            startupUrls: [],
             startupEvents: [],
             startupPhases: [],
             startupSponsors: [],
@@ -344,6 +365,7 @@ describe("Test startup server action", () => {
                 SponsorDomaineMinisteriel.SPONSOR_DOMAINE_CULTURE,
             },
           ],
+          startupUrls: [],
           startupEvents: [],
           startupSponsors: [],
           newPhases: [],

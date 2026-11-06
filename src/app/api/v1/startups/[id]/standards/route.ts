@@ -2,11 +2,7 @@ import { revalidatePath } from "next/cache";
 
 import { toResourceRef } from "@/lib/api/identifier";
 import { canAccessStartup } from "@/lib/api/perimeter";
-import {
-  invalidRequest,
-  methodNotAllowed,
-  problem,
-} from "@/lib/api/problem";
+import { invalidRequest, methodNotAllowed, problem } from "@/lib/api/problem";
 import { withApiV1 } from "@/lib/api/withApiV1";
 import { addEvent } from "@/lib/events";
 import { getStartup } from "@/lib/kysely/queries";
@@ -15,8 +11,8 @@ import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
 import { jsonItem, noContent } from "@/models/api/envelope";
 import {
   startupStandardsPatchSchema,
+  startupStandardsPutSchema,
   startupStandardsResponseSchema,
-  startupStandardsSchema,
 } from "@/models/api/standards";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +40,7 @@ const write = (mode: "replace" | "merge") =>
       // null efface.
       const schema =
         mode === "replace"
-          ? startupStandardsSchema
+          ? startupStandardsPutSchema
           : startupStandardsPatchSchema;
       const parsed = schema.safeParse(await req.json());
       if (!parsed.success) {

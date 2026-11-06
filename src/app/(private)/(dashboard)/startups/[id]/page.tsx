@@ -8,6 +8,7 @@ import StartupPage from "@/components/StartupPage/StartupPage";
 import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
+import { getStartupUrls } from "@/lib/kysely/queries/startupUrls";
 import { getActiveUsers, getUsersByStartup } from "@/lib/kysely/queries/users";
 import {
   memberBaseInfoToModel,
@@ -114,6 +115,7 @@ export default async function Page(props: Props) {
 
   const changes = await getEventListByStartupUuid(startup.uuid);
   const files = await getStartupFiles({ uuid: startup.uuid });
+  const startupUrls = await getStartupUrls(startup.uuid);
   const events = await db
     .selectFrom("startup_events")
     .where("startup_id", "=", startup.uuid)
@@ -144,6 +146,7 @@ export default async function Page(props: Props) {
         allMembers={allMembers}
         changes={changes.map((change) => startupChangeToModel(change))}
         startupInfos={startup}
+        startupUrls={startupUrls}
         incubators={incubators}
         sponsors={sponsors}
         members={startupMembers}

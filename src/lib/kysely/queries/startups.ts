@@ -1,4 +1,5 @@
 import { ExpressionBuilder, sql, SqlBool } from "kysely";
+import _ from "lodash";
 
 import { DB } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
@@ -7,6 +8,12 @@ import { ApiPerimeter } from "@/models/api/perimeter";
 import { getAllIncubators, getAllStartupsIncubators } from "./incubators";
 import { withCommunicationEmail, withMemberMissions } from "./users";
 import { ResourceRef } from "@/lib/api/identifier";
+import { primaryStartupUrl, StartupUrlType } from "@/models/startupUrl";
+import {
+  getStartupUrls,
+  setPrimaryStartupUrl,
+  withStartupUrls,
+} from "./startupUrls";
 
 export const getLatests = () =>
   db
@@ -39,20 +46,22 @@ export const getLatests = () =>
 // Membres d'une startup pour l'API protegee : toute personne ayant une mission
 // sur cette startup. Missions exposees avec les startups en GHID.
 function startupMembersBase(startupUuid: string) {
-  return db.selectFrom("users").where((eb) =>
-    eb.exists(
-      eb
-        .selectFrom("missions")
-        .innerJoin(
-          "missions_startups",
-          "missions_startups.mission_id",
-          "missions.uuid",
-        )
-        .select("missions.uuid")
-        .whereRef("missions.user_id", "=", "users.uuid")
-        .where("missions_startups.startup_id", "=", startupUuid),
-    ),
-  );
+  return db
+    .selectFrom("users")
+    .where((eb) =>
+      eb.exists(
+        eb
+          .selectFrom("missions")
+          .innerJoin(
+            "missions_startups",
+            "missions_startups.mission_id",
+            "missions.uuid",
+          )
+          .select("missions.uuid")
+          .whereRef("missions.user_id", "=", "users.uuid")
+          .where("missions_startups.startup_id", "=", startupUuid),
+      ),
+    );
 }
 
 export async function countStartupMembers(startupUuid: string) {
@@ -67,26 +76,28 @@ export function getStartupMembers(
   startupUuid: string,
   window?: { limit: number; offset: number },
 ) {
-  return startupMembersBase(startupUuid)
-    .select([
-      "users.uuid",
-      "users.username",
-      "users.fullname",
-      "users.github",
-      "users.primary_email",
-      "users.secondary_email",
-      "users.primary_email_status",
-    ])
-    .select((eb) => [
-      withMemberMissions(eb, { startupId: startupUuid }),
-      withCommunicationEmail(eb),
-    ])
-    // Tri stable : sans le second critere, deux homonymes peuvent s'echanger
-    // entre deux pages et un enregistrement disparaitre.
-    .orderBy("users.fullname", "asc")
-    .orderBy("users.uuid", "asc")
-    .$if(!!window, (qb) => qb.limit(window!.limit).offset(window!.offset))
-    .execute();
+  return (
+    startupMembersBase(startupUuid)
+      .select([
+        "users.uuid",
+        "users.username",
+        "users.fullname",
+        "users.github",
+        "users.primary_email",
+        "users.secondary_email",
+        "users.primary_email_status",
+      ])
+      .select((eb) => [
+        withMemberMissions(eb, { startupId: startupUuid }),
+        withCommunicationEmail(eb),
+      ])
+      // Tri stable : sans le second critere, deux homonymes peuvent s'echanger
+      // entre deux pages et un enregistrement disparaitre.
+      .orderBy("users.fullname", "asc")
+      .orderBy("users.uuid", "asc")
+      .$if(!!window, (qb) => qb.limit(window!.limit).offset(window!.offset))
+      .execute()
+  );
 }
 
 // Phases d'une startup, ordonnees chronologiquement (par date de debut).
@@ -150,7 +161,11 @@ export function apiStartupsBase(
           .selectFrom("startups_incubators")
           .select("startups_incubators.startup_id")
           .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
-          .where("startups_incubators.incubator_id", "=", filters.incubatorUuid!),
+          .where(
+            "startups_incubators.incubator_id",
+            "=",
+            filters.incubatorUuid!,
+          ),
       ),
     );
   }
@@ -177,7 +192,11 @@ export function listApiStartups(
 ) {
   return apiStartupsBase(perimeter, filters)
     .selectAll("startups")
-    .select((eb) => [withStartupPhases(eb), withStartupIncubators(eb)])
+    .select((eb) => [
+      withStartupPhases(eb),
+      withStartupIncubators(eb),
+      withStartupUrls(eb),
+    ])
     .orderBy("startups.name", "asc")
     .orderBy("startups.uuid", "asc")
     .limit(window.limit)
@@ -218,7 +237,11 @@ export async function getStartupWithPhases(ref: ResourceRef) {
   return db
     .selectFrom("startups")
     .selectAll("startups")
-    .select((eb) => [withStartupPhases(eb), withStartupIncubators(eb)])
+    .select((eb) => [
+      withStartupPhases(eb),
+      withStartupIncubators(eb),
+      withStartupUrls(eb),
+    ])
     .$if("uuid" in ref, (qb) =>
       qb.where("startups.uuid", "=", (ref as { uuid: string }).uuid),
     )
@@ -228,7 +251,18 @@ export async function getStartupWithPhases(ref: ResourceRef) {
     .executeTakeFirst();
 }
 
-/** Les dix colonnes de standards, plus uuid et ghid en lecture seule. */
+const STANDARDS_URL_TYPES = {
+  analyse_risques_url: "analyse_risques",
+  dashlord_url: "dashlord",
+  tech_audit_url: "tech_audit",
+  ecodesign_url: "ecodesign",
+  stats_url: "stats",
+} as const satisfies Record<string, StartupUrlType>;
+
+/**
+ * Les dix champs de standards, plus uuid et ghid en lecture seule. Les cinq URL
+ * vivent dans startup_urls : chacune est le premier lien de son type.
+ */
 export function updateStartupStandards(
   startupUuid: string,
   values: Partial<{
@@ -244,25 +278,35 @@ export function updateStartupStandards(
     stats_url: string | null;
   }>,
 ) {
-  return db
-    .updateTable("startups")
-    .set({ ...values, updated_at: new Date() })
-    .where("startups.uuid", "=", startupUuid)
-    .returning([
-      "startups.uuid",
-      "startups.ghid",
-      "startups.accessibility_status",
-      "startups.dsfr_status",
-      "startups.mon_service_securise",
-      "startups.analyse_risques",
-      "startups.analyse_risques_url",
-      "startups.dashlord_url",
-      "startups.tech_audit_url",
-      "startups.ecodesign_url",
-      "startups.stats",
-      "startups.stats_url",
-    ])
-    .executeTakeFirstOrThrow();
+  return db.transaction().execute(async (trx) => {
+    const columns = _.omit(values, Object.keys(STANDARDS_URL_TYPES));
+    for (const [field, type] of Object.entries(STANDARDS_URL_TYPES)) {
+      if (field in values) {
+        await setPrimaryStartupUrl(trx, startupUuid, type, values[field]);
+      }
+    }
+    const row = await trx
+      .updateTable("startups")
+      .set({ ...columns, updated_at: new Date() })
+      .where("startups.uuid", "=", startupUuid)
+      .returning([
+        "startups.uuid",
+        "startups.ghid",
+        "startups.accessibility_status",
+        "startups.dsfr_status",
+        "startups.mon_service_securise",
+        "startups.analyse_risques",
+        "startups.stats",
+      ])
+      .executeTakeFirstOrThrow();
+    const urls = await getStartupUrls(startupUuid, trx);
+    return {
+      ...row,
+      ..._.mapValues(STANDARDS_URL_TYPES, (type) =>
+        primaryStartupUrl(urls, type),
+      ),
+    };
+  });
 }
 
 // techno, thematiques et usertypes sont des colonnes jsonb : un tableau JS
@@ -278,17 +322,38 @@ const serializeJsonbColumns = (values: Record<string, unknown>) => {
   return out;
 };
 
-/** PATCH descriptif : ni ghid, ni incubator_id, ni phases, ni standards. */
+/**
+ * PATCH descriptif : ni ghid, ni incubator_id, ni phases, ni standards. link et
+ * repository ecrivent le premier lien de leur type dans startup_urls.
+ */
 export function updateStartupDescriptive(
   startupUuid: string,
   values: Record<string, unknown>,
 ) {
-  return db
-    .updateTable("startups")
-    .set({ ...serializeJsonbColumns(values), updated_at: new Date() })
-    .where("startups.uuid", "=", startupUuid)
-    .returningAll()
-    .executeTakeFirstOrThrow();
+  const { link, repository, ...columns } = values;
+  return db.transaction().execute(async (trx) => {
+    if ("link" in values) {
+      await setPrimaryStartupUrl(
+        trx,
+        startupUuid,
+        "website",
+        link as string | null,
+      );
+    }
+    if ("repository" in values) {
+      await setPrimaryStartupUrl(
+        trx,
+        startupUuid,
+        "repository",
+        repository as string | null,
+      );
+    }
+    await trx
+      .updateTable("startups")
+      .set({ ...serializeJsonbColumns(columns), updated_at: new Date() })
+      .where("startups.uuid", "=", startupUuid)
+      .execute();
+  });
 }
 
 const selectLastStartupPhase = (selectFrom, startupId) =>

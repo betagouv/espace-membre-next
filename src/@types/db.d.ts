@@ -409,6 +409,17 @@ export interface StartupEvents {
   uuid: Generated<string>;
 }
 
+export interface StartupUrls {
+  created_at: Generated<Timestamp>;
+  label: string | null;
+  position: Generated<number>;
+  startup_uuid: string;
+  type: string;
+  updated_at: Generated<Timestamp>;
+  url: string;
+  uuid: Generated<string>;
+}
+
 export interface Startups {
   accessibility_status: string | null;
   analyse_risques: boolean | null;
@@ -602,6 +613,7 @@ export interface DB {
   sessions: Sessions;
   startup_aggregated_stats: StartupAggregatedStats;
   startup_events: StartupEvents;
+  startup_urls: StartupUrls;
   startups: Startups;
   startups_files: StartupsFiles;
   startups_incubators: StartupsIncubators;

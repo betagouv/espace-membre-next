@@ -11,6 +11,7 @@ import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getStartupIncubatorIds } from "@/lib/kysely/queries/incubators";
+import { getStartupUrls } from "@/lib/kysely/queries/startupUrls";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import s3 from "@/lib/s3";
 import { startupChangeToModel, startupToModel } from "@/models/mapper";
@@ -127,6 +128,7 @@ export default async function Page(props) {
         .selectAll()
         .execute(),
     );
+  const startupUrls = await getStartupUrls(startup.uuid);
   const s3ShotKey = `startups/${startup.ghid}/shot.jpg`;
   let hasShot = false;
   try {
@@ -159,6 +161,7 @@ export default async function Page(props) {
     startupSponsors,
     startupPhases,
     startupEvents,
+    startupUrls,
     heroURL: hasHero
       ? `/api/image?fileObjIdentifier=${startup.ghid}&fileRelativeObjType=startup&fileIdentifier=hero`
       : undefined,

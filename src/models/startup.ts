@@ -178,37 +178,7 @@ export const startupSchema = z.object({
     .email()
     .min(1)
     .describe("Email de contact du produit"),
-  link: z
-    .string()
-    .url({
-      message:
-        "L'URL fournie doit respecter le format suivant : https://exemple.com",
-    })
-    .or(z.literal(""))
-    .optional()
-    .nullable()
-    .describe("URL du site web"),
-  repository: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL du repository pour le code source"),
   accessibility_status: z.string().optional().nullable(),
-  dashlord_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL du rapport DashLord"),
-  stats_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de la page de statistiques d'usage"),
-  budget_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de la page de budget"),
   mon_service_securise: z
     .boolean()
     .optional()
@@ -221,11 +191,6 @@ export const startupSchema = z.object({
     .optional()
     .nullable()
     .describe("Nous avons réalisé une analyse de risque"),
-  analyse_risques_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de l'analyse de risque"),
   techno: z.array(z.string()).max(MAX_TAGS).optional().nullable(),
   mailing_list: z.string().optional().nullable(),
   usertypes: z
@@ -262,26 +227,6 @@ export const startupSchema = z.object({
     .union([z.enum(DSFR_STATUSES), z.string()])
     .optional()
     .describe("Implémentation du design systeme de l'état"),
-  tech_audit_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de l'audit technique"),
-  roadmap_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de la roadmap ou tickets"),
-  ecodesign_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de la déclaration d'écoconception"),
-  impact_url: z
-    .string()
-    .optional()
-    .nullable()
-    .describe("URL de la matrice d'impact"),
 });
 
 export type startupSchemaType = z.infer<typeof startupSchema>;
