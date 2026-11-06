@@ -1,18 +1,26 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-
+import { canEditStartupInfo, requireAuthSubject } from "@/lib/authorization";
+import { AuthorizationError, NoDataError } from "@/lib/error";
 import { db } from "@/lib/kysely";
-import { authOptions } from "@/lib/authoptions";
 
 export async function deleteFile({ uuid }: { uuid: string }) {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+  const subject = await requireAuthSubject();
+  const file = await db
+    .selectFrom("startups_files")
+    .select("startup_id")
+    .where("uuid", "=", uuid)
+    .where("deleted_at", "is", null)
+    .executeTakeFirst();
+  if (!file) {
+    throw new NoDataError("Document introuvable");
+  }
+  if (!(await canEditStartupInfo(subject, file.startup_id))) {
+    throw new AuthorizationError();
   }
   await db
     .updateTable("startups_files")
-    .set({ deleted_by: session.user.uuid, deleted_at: new Date() })
+    .set({ deleted_by: subject.uuid, deleted_at: new Date() })
     .where("uuid", "=", uuid)
     .executeTakeFirstOrThrow();
   return true;

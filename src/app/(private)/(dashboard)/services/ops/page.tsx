@@ -6,7 +6,6 @@ import { OpsRequestForm } from "@/components/Service/OpsRequestForm";
 import { StartupType } from "@/components/SESelect";
 import { getAllStartups } from "@/lib/kysely/queries";
 import {
-  getMatrixIdByUserId,
   getUserBasicInfo,
   getUserStartupsActive,
 } from "@/lib/kysely/queries/users";
@@ -29,7 +28,6 @@ export default async function OpsRequestPage() {
   }
 
   const user = await getUserBasicInfo({ uuid: session.user.uuid });
-  const matrixId = await getMatrixIdByUserId(session.user.uuid);
   const email = user?.primary_email || user?.secondary_email || "";
 
   // Les produits du membre servent à pré-remplir le projet concerné, y compris
@@ -53,9 +51,6 @@ export default async function OpsRequestPage() {
       <OpsRequestForm
         startupOptions={startupOptions}
         defaultValues={{
-          tchapId: matrixId || user?.username || "",
-          email,
-          prenomNom: user?.fullname || "",
           // Le projet part pré-rempli avec les produits du membre : sans lui,
           // la colonne « Projet » du Grist arrivait vide chez l'équipe ops,
           // qui devait remonter à l'auteur pour situer la demande.
