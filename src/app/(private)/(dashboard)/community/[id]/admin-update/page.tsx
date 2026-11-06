@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
+import { canEditMemberFullInfo } from "@/lib/authorization/member";
+import { toAuthSubject } from "@/lib/authorization/subject";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
@@ -30,10 +32,20 @@ export default async function Page(segmentData: {
   if (!session) {
     redirect("/login");
   }
-  if (!session.user.isAdmin) {
+  const dbData = await getUserInfos({ username: id });
+  if (!dbData) {
+    redirect("/community");
+  }
+  const subject = toAuthSubject(session);
+  if (
+    !subject ||
+    !(await canEditMemberFullInfo({
+      memberUuid: dbData.uuid,
+      sessionUser: subject,
+    }))
+  ) {
     redirect(`/community/${id}`);
   }
-  const dbData = await getUserInfos({ username: id });
   const userInfos = userInfosToModel(dbData);
   const startups = await getAllStartups();
   const startupOptions = startups.map((startup) => ({
