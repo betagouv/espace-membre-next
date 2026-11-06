@@ -217,15 +217,19 @@ export async function patchMailbox({
 
 /**
  * get mailboxes for a given domain
- * GET /domains/{domain_name}/mailboxes
+ * GET /v2/domains/{domain_name}/mailboxes
  */
 export async function getAllMailboxes({
   domain_name,
 }: {
   domain_name: string;
 }): Promise<{ success: boolean; mailboxes?: DimailMailboxesResult }> {
+  // with_extras defaults to true and adds the OX and schedule settings of each
+  // mailbox, which DimailMailboxesResult does not use : listing a whole domain
+  // with them ran past the timeout
   const res = await client.get<DimailMailboxesResult>(
     `/v2/domains/${encodeURIComponent(domain_name)}/mailboxes`,
+    { params: { with_extras: false } },
   );
   if (res.status !== 200) {
     return { success: false };
