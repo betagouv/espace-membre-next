@@ -1,10 +1,9 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 
+import { assertCanEditStartupInfo } from "@/lib/authorization";
 import { db } from "@/lib/kysely";
 import { DocSchemaType } from "@/models/startupFiles";
-import { authOptions } from "@/lib/authoptions";
 
 const commonFileFields = [
   "startups_files.filename",
@@ -37,13 +36,9 @@ export async function uploadStartupFile(
     data,
   }: DocSchemaType & PostParams, // formData: {
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
-  }
+  const subject = await assertCanEditStartupInfo(uuid);
   const base64 = Buffer.from(content);
 
-  // todo: ensure user can upload files here
   const inserted = await db
     .insertInto("startups_files")
     .values({
@@ -55,7 +50,7 @@ export async function uploadStartupFile(
       size,
       title,
       startup_id: uuid,
-      created_by: session.user.uuid,
+      created_by: subject.uuid,
     })
     .returning(commonFileFields)
     .executeTakeFirstOrThrow();

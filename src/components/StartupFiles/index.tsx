@@ -58,9 +58,11 @@ function generateDataUrl(file: File): Promise<string> {
 export const StartupFiles = ({
   startup,
   files,
+  canEdit,
 }: {
   startup: { uuid: string; name: string };
   files: Awaited<ReturnType<typeof getStartupFiles>>;
+  canEdit: boolean;
 }) => {
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [fileIndex, setFileIndex] = useState(0);
@@ -120,22 +122,26 @@ export const StartupFiles = ({
 
       <FileList files={files} />
 
-      <h2>Ajouter un document</h2>
+      {canEdit && (
+        <>
+          <h2>Ajouter un document</h2>
 
-      <div
-        className={fr.cx("fr-p-2w")}
-        style={{ border: "1px solid var(--border-plain-grey)" }}
-      >
-        <DocsDropZone onDrop={onDrop} reset={uploadsCompleted} />
+          <div
+            className={fr.cx("fr-p-2w")}
+            style={{ border: "1px solid var(--border-plain-grey)" }}
+          >
+            <DocsDropZone onDrop={onDrop} reset={uploadsCompleted} />
 
-        {pendingFile && (
-          <>
-            <br />
-            <h2>{pendingFile.name}</h2>
-            <FileForm onSubmit={onFormSubmit} file={pendingFile} />
-          </>
-        )}
-      </div>
+            {pendingFile && (
+              <>
+                <br />
+                <h2>{pendingFile.name}</h2>
+                <FileForm onSubmit={onFormSubmit} file={pendingFile} />
+              </>
+            )}
+          </div>
+        </>
+      )}
     </>
   );
 };

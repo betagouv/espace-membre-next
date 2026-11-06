@@ -123,7 +123,13 @@ export default function StartupPage({
       label: "Documents",
       tabId: "documents",
       isDefault: hash === "documents",
-      content: <StartupFiles startup={startupInfos} files={files} />,
+      content: (
+        <StartupFiles
+          startup={startupInfos}
+          files={files}
+          canEdit={canEditInfo}
+        />
+      ),
     },
   ];
 
