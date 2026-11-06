@@ -324,6 +324,21 @@ describe("startup_urls", () => {
       expect(parsed.success).to.equal(true);
     });
 
+    it("refuses a scheme hidden behind control characters", () => {
+      for (const url of [
+        "java\tscript:alert(1)",
+        " javascript:alert(1)",
+        "jav\nascript:alert(1)",
+        "JaVaScRiPt:alert(1)",
+        "file:///etc/passwd",
+      ]) {
+        expect(
+          startupUrlsSchema.safeParse([{ type: "repository", url }]).success,
+          JSON.stringify(url),
+        ).to.equal(false);
+      }
+    });
+
     it("refuses a javascript: link", () => {
       const parsed = startupUrlsSchema.safeParse([
         { type: "website", url: "javascript:alert(1)" },

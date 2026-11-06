@@ -87,8 +87,16 @@ export const VARCHAR_255_STARTUP_URL_TYPES: readonly StartupUrlType[] = [
 /** Seuls les liens http(s) sont rendus cliquables. */
 export const isHttpUrl = (url: string) => /^https?:\/\//i.test(url);
 
-export const isUnsafeUrl = (url: string) =>
-  /^\s*(javascript|data|vbscript):/i.test(url);
+// Liste blanche et non liste noire : un navigateur ignore les caractères de
+// contrôle et les blancs d'une URL, si bien que « java\tscript: » s'exécute.
+// Une chaîne sans schéma (ex : git@git.example:produit.git) reste du texte
+// libre accepté.
+export const isUnsafeUrl = (url: string) => {
+  const compact = url.replace(/[\u0000-\u0020\u007f-\u009f]/g, "");
+  return (
+    /^[a-z][a-z0-9+.-]*:/i.test(compact) && !/^(https?|mailto):/i.test(compact)
+  );
+};
 
 export const UNSAFE_URL_MESSAGE = "Ce type de lien n'est pas autorisé";
 

@@ -134,7 +134,7 @@ fileignoreconfig:
 - filename: src/lib/kysely/queries/startupUrls.ts
   checksum: c3362a89bb573d7276fde998de279af61174fbb5af9c1beebf51ddf201efcad4
 - filename: __tests__/startup-urls.spec.ts
-  checksum: 04d5ab0b1d8f1d0eceddb68f5687ceb45a271e5e5cafc5c866c0d2650ae0117e
+  checksum: fbdbcd41419155c10ac3a62832da821efaff84786e649e8523a0a339e980ced8
 scopeconfig:
 - scope: node
 version: "1.0"
