@@ -1,5 +1,5 @@
 import juice from "juice";
-import { marked } from "marked";
+import { Marked, type RendererObject, type Tokens } from "marked";
 
 const css = `.markdown-body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -178,7 +178,7 @@ function generateId() {
 
 interface TocItem {
   anchor: string;
-  level: string;
+  level: number;
   text: string;
   raw?: string;
 }
@@ -186,30 +186,29 @@ interface TocItem {
 export function getTitle(content) {
   const toc: TocItem[] = [];
 
-  const renderer = {
-    heading(text, level, raw) {
+  const renderer: RendererObject = {
+    heading({ tokens, depth }) {
+      const text = this.parser.parseInline(tokens);
+      const raw = this.parser.parseInline(tokens, this.parser.textRenderer);
       const anchor = raw.toLowerCase().replace(/[^\w]+/g, "-");
       toc.push({
         anchor,
-        level,
+        level: depth,
         text,
         raw,
       });
-      return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
+      return `<h${depth} id='${anchor}'>${text}</h${depth}>\n`;
     },
   };
 
-  marked.use({
-    renderer,
-  });
-  marked.parse(content);
+  new Marked({ renderer }).parse(content, { async: false });
   return toc[0].raw;
 }
 
 export function renderHtmlFromMdWithAttachements(content) {
   const images: string[] = [];
 
-  const rendererImage = function (href, title, text) {
+  const rendererImage = function ({ href, title, text }: Tokens.Image) {
     images.push(href);
     if (href === null) {
       return text;
@@ -248,22 +247,24 @@ export function renderHtmlFromMdWithAttachements(content) {
   };
 }
 
-export function renderHtmlFromMd(content, rendererConfig = {}) {
+export function renderHtmlFromMd(content, rendererConfig: RendererObject = {}) {
   const toc: TocItem[] = [];
-  const renderer = {
-    heading(text, level, raw) {
+  const renderer: RendererObject = {
+    heading({ tokens, depth }) {
+      const text = this.parser.parseInline(tokens);
+      const raw = this.parser.parseInline(tokens, this.parser.textRenderer);
       const anchor = raw.toLowerCase().replace(/[^\w\\u4e00-\\u9fa5]]+/g, "-");
       toc.push({
         anchor,
-        level,
+        level: depth,
         text,
       });
-      return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
+      return `<h${depth} id='${anchor}'>${text}</h${depth}>\n`;
     },
     ...rendererConfig,
   };
 
-  marked.use({
+  const marked = new Marked({
     renderer,
     // gfm: true,
     // tables: true,
@@ -295,7 +296,7 @@ export function renderHtmlFromMd(content, rendererConfig = {}) {
     return k;
   }
 
-  let html = marked.parse(content);
+  let html = marked.parse(content, { async: false });
   const ctx = [];
   build(toc, 0, 0, ctx);
   // console.log(toc, ctx);
