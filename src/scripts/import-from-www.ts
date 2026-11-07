@@ -13,6 +13,7 @@ import {
 import { importFromZip, MarkdownData } from "./utils";
 import config from "@/server/config";
 import { db } from "@/lib/kysely";
+import { replaceStartupUrls } from "@/lib/kysely/queries/startupUrls";
 
 const { Readable } = require("stream");
 
@@ -132,17 +133,11 @@ const insertData = async (markdownData: MarkdownData) => {
             name: startup.attributes.title || startup.attributes.ghid,
             contact: startup.attributes.contact,
             incubator_id,
-            link: startup.attributes.link,
-            repository: startup.attributes.repository,
             accessibility_status: startup.attributes.accessibility_status,
             analyse_risques: startup.attributes.analyse_risques,
-            analyse_risques_url: startup.attributes.analyse_risques_url,
-            budget_url: startup.attributes.budget_url,
-            dashlord_url: startup.attributes.dashlord_url,
             mon_service_securise: startup.attributes.mon_service_securise,
             pitch: startup.attributes.mission,
             stats: startup.attributes.stats,
-            stats_url: startup.attributes.stats_url,
             thematiques: JSON.stringify(startup.attributes.thematiques),
             usertypes: JSON.stringify(startup.attributes.usertypes),
             techno: JSON.stringify(startup.attributes.techno),
@@ -151,6 +146,21 @@ const insertData = async (markdownData: MarkdownData) => {
           })
           .returning(["uuid", "ghid"])
           .executeTakeFirstOrThrow();
+
+        await replaceStartupUrls(
+          trx,
+          inserted.uuid,
+          (
+            [
+              ["website", startup.attributes.link],
+              ["repository", startup.attributes.repository],
+              ["stats", startup.attributes.stats_url],
+              ["budget", startup.attributes.budget_url],
+              ["dashlord", startup.attributes.dashlord_url],
+              ["analyse_risques", startup.attributes.analyse_risques_url],
+            ] as const
+          ).flatMap(([type, url]) => (url ? [{ type, url }] : [])),
+        );
 
         if (linkedIncubatorIds.length) {
           await trx

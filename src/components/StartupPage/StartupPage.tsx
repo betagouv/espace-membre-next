@@ -18,6 +18,7 @@ import { getStartupFiles } from "@/app/api/startups/files/list";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
+import { StartupUrl } from "@/models/startupUrl";
 import { getCurrentPhase } from "@/lib/startup";
 
 //@ts-ignore
@@ -25,6 +26,7 @@ import "./timeline.css";
 
 export interface StartupPageProps {
   startupInfos: startupSchemaType;
+  startupUrls: StartupUrl[];
   allMembers: {
     fullname: string;
     username: string;
@@ -60,6 +62,7 @@ export interface StartupPageProps {
 
 export default function StartupPage({
   startupInfos,
+  startupUrls,
   members,
   allMembers,
   phases,
@@ -111,7 +114,12 @@ export default function StartupPage({
       label: "Description",
       tabId: "description",
       isDefault: hash === "description",
-      content: <StartupDescription startupInfos={startupInfos} />,
+      content: (
+        <StartupDescription
+          startupInfos={startupInfos}
+          startupUrls={startupUrls}
+        />
+      ),
     },
     {
       label: "Historique",
@@ -141,6 +149,7 @@ export default function StartupPage({
       />
       <StartupHeader
         startupInfos={startupInfos}
+        startupUrls={startupUrls}
         changes={changes}
         incubators={incubators}
         sponsors={sponsors}

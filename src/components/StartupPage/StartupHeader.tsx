@@ -4,6 +4,7 @@ import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { BadgePhase } from "./BadgePhase";
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
+import { isHttpUrl, primaryStartupUrl } from "@/models/startupUrl";
 import { createSerializer } from "nuqs";
 import { startupsQueryParser } from "../StartupListPage/utils";
 
@@ -13,13 +14,15 @@ const serialize = createSerializer({
 
 export function StartupHeader({
   startupInfos,
+  startupUrls,
   incubators,
   sponsors,
   currentPhase,
 }: Pick<
   StartupPageProps,
-  "startupInfos" | "changes" | "incubators" | "sponsors"
+  "startupInfos" | "startupUrls" | "changes" | "incubators" | "sponsors"
 > & { currentPhase: StartupPhase | null }) {
+  const website = primaryStartupUrl(startupUrls, "website");
   return (
     <>
       <div className={fr.cx("fr-col-12")}>
@@ -37,13 +40,9 @@ export function StartupHeader({
         {currentPhase && (
           <BadgePhase phase={currentPhase} className={fr.cx("fr-mr-2w")} />
         )}
-        {startupInfos.link && (
-          <a
-            target="_blank"
-            href={startupInfos.link}
-            className={fr.cx("fr-mr-2w")}
-          >
-            {startupInfos.link}
+        {website && isHttpUrl(website) && (
+          <a target="_blank" href={website} className={fr.cx("fr-mr-2w")}>
+            {website}
           </a>
         )}
       </div>

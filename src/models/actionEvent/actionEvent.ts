@@ -285,12 +285,16 @@ export const EventStartupInfoUpdatedPayload = z.object({
         startupEvents: startupInfoUpdateSchema.shape.startupEvents,
         startupPhases: startupInfoUpdateSchema.shape.startupPhases,
         startupSponsorIds: z.array(z.string()),
+        // Absent des evenements anterieurs a startup_urls.
+        startupUrls: startupInfoUpdateSchema.shape.startupUrls.optional(),
       }),
       old_value: z.object({
         startup: startupInfoUpdateSchema.shape.startup,
         startupEvents: startupInfoUpdateSchema.shape.startupEvents,
         startupPhases: startupInfoUpdateSchema.shape.startupPhases,
         startupSponsorIds: z.array(z.string()),
+        // Absent des evenements anterieurs a startup_urls.
+        startupUrls: startupInfoUpdateSchema.shape.startupUrls.optional(),
       }),
     })
     .optional(),
@@ -306,6 +310,8 @@ export const EventStartupInfoCreatedPayload = z.object({
         startupEvents: startupInfoUpdateSchema.shape.startupEvents,
         startupPhases: startupInfoUpdateSchema.shape.startupPhases,
         startupSponsorIds: z.array(z.string()),
+        // Absent des evenements anterieurs a startup_urls.
+        startupUrls: startupInfoUpdateSchema.shape.startupUrls.optional(),
       }),
     })
     .optional(),

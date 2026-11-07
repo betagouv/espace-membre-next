@@ -4,6 +4,7 @@ import { Startups } from "@/@types/db";
 import { currentPhaseName } from "@/lib/startupPhase";
 import { incubatorRefSchemaType } from "@/models/api/incubator";
 import { startupPhaseApiResponseSchemaType } from "@/models/api/startup";
+import { primaryStartupUrl, StartupUrl } from "@/models/startupUrl";
 
 /**
  * Projection UNIQUE des colonnes de `startups` vers le contrat de l'API.
@@ -18,6 +19,9 @@ import { startupPhaseApiResponseSchemaType } from "@/models/api/startup";
  *
  * Seules les listes jsonb sont normalisees, parce que la colonne peut porter
  * autre chose qu'un tableau et que le schema, lui, n'accepte qu'un tableau.
+ *
+ * link et repository sont le premier lien de leur type dans startup_urls, et
+ * non plus les colonnes du meme nom, qui ne sont qu'un miroir en ecriture.
  */
 const asStringArray = (value: unknown): string[] =>
   Array.isArray(value) ? (value as string[]) : [];
@@ -25,6 +29,7 @@ const asStringArray = (value: unknown): string[] =>
 type StartupRow = Selectable<Startups> & {
   incubators: incubatorRefSchemaType[];
   phases: startupPhaseApiResponseSchemaType[];
+  urls: StartupUrl[];
 };
 
 export function toApiStartup(row: StartupRow) {
@@ -37,8 +42,9 @@ export function toApiStartup(row: StartupRow) {
     incubators: row.incubators,
     contact: row.contact,
     description: row.description,
-    link: row.link,
-    repository: row.repository,
+    link: primaryStartupUrl(row.urls, "website"),
+    repository: primaryStartupUrl(row.urls, "repository"),
+    urls: row.urls,
     accessibility_status: row.accessibility_status,
     dsfr_status: row.dsfr_status,
     techno: asStringArray(row.techno),

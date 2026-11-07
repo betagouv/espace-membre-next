@@ -16,6 +16,7 @@ import { EventsEditor } from "./EventsEditor";
 import MdEditorCustomHeaderPlugin from "./MdEditorCustomHeaderPlugin";
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
+import { StartupUrlsEditor } from "./StartupUrlsEditor";
 import { TechnoEditor } from "./TechnoEditor";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
@@ -38,6 +39,7 @@ import {
   phaseSchemaType,
   startupSchemaType,
 } from "@/models/startup";
+import { startupUrlSchemaType } from "@/models/startupUrl";
 
 import "react-markdown-editor-lite/lib/index.css";
 
@@ -85,6 +87,7 @@ export interface StartupFormProps {
   startupSponsors?: sponsorSchemaType[];
   startupPhases?: phaseSchemaType[];
   startupEvents?: eventSchemaType[];
+  startupUrls?: startupUrlSchemaType[];
   incubatorOptions: Option[];
   canEditIncubators?: boolean;
   sponsorOptions: Option[];
@@ -131,6 +134,7 @@ export function StartupForm(props: StartupFormProps) {
     getValues,
     watch,
     control,
+    trigger,
   } = useForm<
     startupInfoUpdateSchemaInputType,
     any,
@@ -155,6 +159,7 @@ export function StartupForm(props: StartupFormProps) {
           date: new Date(),
         },
       ],
+      startupUrls: props.startupUrls || [],
       newSponsors: [],
       newPhases: [],
     },
@@ -270,7 +275,6 @@ export function StartupForm(props: StartupFormProps) {
             placeholder="ex: contact@[startup].beta.gouv.fr"
             hintText={`Préférer un email générique plutôt que le mail d'une personne de l'équipe.`}
           />
-          <BasicInput id="link" />
           <Checkbox
             options={[
               {
@@ -668,13 +672,16 @@ export function StartupForm(props: StartupFormProps) {
           {/*[FILE UPLOAD ]<hr />*/}
 
           <h2>Liens</h2>
-          <BasicInput id="stats_url" />
-          <BasicInput id="impact_url" />
-          <BasicInput id="budget_url" />
-          <BasicInput id="roadmap_url" />
-          <BasicInput id="repository" />
-          <BasicInput id="dashlord_url" />
-          <BasicInput id="ecodesign_url" />
+          <p className="fr-hint-text">
+            URL du produit, code source, statistiques, budget, outils... Le
+            premier lien de chaque type est celui affiché en priorité.
+          </p>
+          <StartupUrlsEditor
+            control={control}
+            register={register}
+            trigger={trigger}
+            errors={errors.startupUrls}
+          />
 
           <Button
             className={fr.cx("fr-mt-3w")}

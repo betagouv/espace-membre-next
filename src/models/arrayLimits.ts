@@ -10,3 +10,4 @@ export const MAX_TIMELINE_ITEMS = 200;
 export const MAX_MEMBER_MISSIONS = 100;
 export const MAX_MEETING_PARTICIPANTS = 200;
 export const MAX_MEETING_DATES = 100;
+export const MAX_STARTUP_URLS = 100;
