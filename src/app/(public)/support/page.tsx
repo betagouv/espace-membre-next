@@ -66,7 +66,7 @@ export default async function Page() {
         <li>Si ProConnect est indisponible, réessaie un peu plus tard.</li>
       </ul>
 
-      <h2>Contacter le support</h2>
+      <h2 id="contact">Contacter le support</h2>
       <ul>
         <li>
           Consulte{" "}
