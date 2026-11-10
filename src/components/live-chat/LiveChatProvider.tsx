@@ -37,8 +37,18 @@ const getWidgetElement = (widget: "loader" | "feedback", selector: string) =>
 // Évite un second bouton flottant quand React rejoue l'effet (strict mode)
 let isWidgetInitialized = false;
 
+// Lien direct vers le formulaire, utilisé par doc.incubateur.net
+const contactHash = "#contact";
+
 // Widget bloqué (bloqueur de pub, réseau…) ou API Messages en panne
-const goToSupportPage = () => window.location.assign("/support");
+const goToSupportPage = () => {
+  // Déjà sur /support : pas de rechargement, on montre l'email de contact
+  if (window.location.pathname === "/support") {
+    document.getElementById(contactHash.slice(1))?.scrollIntoView();
+    return;
+  }
+  window.location.assign("/support");
+};
 
 export const LiveChatProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -122,6 +132,29 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
       );
     };
   }, []);
+
+  // Ouvre le formulaire dès le chargement d'une URL qui finit par #contact
+  useEffect(() => {
+    if (window.location.hash !== contactHash) {
+      return;
+    }
+    // Le bouton existe déjà si loader.js était chargé avant l'init
+    if (getWidgetElement("loader", "button")) {
+      showLiveChat();
+      return;
+    }
+    // Sinon loader.js crée le bouton puis émet `loaded` ; s'il est bloqué,
+    // rien ne se passe et la page reste lisible
+    const openWhenLoaded = () => showLiveChat();
+    document.addEventListener("lasuite-widget-loader-loaded", openWhenLoaded, {
+      once: true,
+    });
+    return () =>
+      document.removeEventListener(
+        "lasuite-widget-loader-loaded",
+        openWhenLoaded,
+      );
+  }, [showLiveChat]);
 
   return (
     <>
