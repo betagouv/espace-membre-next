@@ -275,7 +275,11 @@ export function MemberMergeForm({ members }: { members: MemberOption[] }) {
               },
             ]}
           />
-          <Button onClick={merge} disabled={!confirmed || pending}>
+          <Button
+            className={fr.cx("fr-mt-2w")}
+            onClick={merge}
+            disabled={!confirmed || pending}
+          >
             Fusionner et supprimer {preview.absorbed.username}
           </Button>
         </div>
