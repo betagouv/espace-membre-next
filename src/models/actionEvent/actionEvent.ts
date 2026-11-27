@@ -29,6 +29,7 @@ export enum EventCode {
   MEMBER_EMAIL_UPGRADED = "MEMBER_EMAIL_UPGRADED",
   MEMBER_BASE_INFO_UPDATED = "MEMBER_BASE_INFO_UPDATED",
   MEMBER_UNBLOCK_EMAIL = "MEMBER_UNBLOCK_EMAIL",
+  MEMBER_MERGED = "MEMBER_MERGED",
   STARTUP_PHASE_UPDATED = "STARTUP_PHASE_UPDATED",
   STARTUP_INFO_UPDATED = "STARTUP_INFO_UPDATED",
   STARTUP_INFO_CREATED = "STARTUP_INFO_CREATED",
@@ -84,6 +85,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
   [EventCode.MEMBER_EMAIL_UPGRADED]: "Email mis à jour",
   [EventCode.MEMBER_BASE_INFO_UPDATED]: "Info de base mis à jour",
   [EventCode.MEMBER_UNBLOCK_EMAIL]: "Email débloqué de brevo",
+  [EventCode.MEMBER_MERGED]: "Fiche en doublon fusionnée dans cette fiche",
   [EventCode.STARTUP_PHASE_UPDATED]: "Phase de startup mis à jour",
   [EventCode.STARTUP_INFO_UPDATED]: "Info de startup mis à jour",
   [EventCode.STARTUP_INFO_CREATED]: "Fiche de startup crée",
@@ -324,6 +326,21 @@ export const EventMemberUnblockEmailPayload = z.object({
   }),
 });
 
+export const EventMemberMergedPayload = z.object({
+  action_code: z.literal(EventCode.MEMBER_MERGED),
+  // Sous `value` pour que l'historique de la fiche (MemberEventList)
+  // affiche la fiche absorbée et ce qui a été déplacé.
+  action_metadata: z.object({
+    value: z.object({
+      absorbed_username: z.string(),
+      absorbed_uuid: z.string(),
+      absorbed_fullname: z.string(),
+      absorbed_primary_email: z.string().nullable(),
+      counts: z.record(z.string(), z.number()),
+    }),
+  }),
+});
+
 export const EventOrganizationCreatedPayload = z.object({
   action_code: z.literal(EventCode.ORGANIZATION_CREATED),
   action_metadata: z.object({
@@ -541,6 +558,7 @@ export type EventPayloads =
   | z.infer<typeof EventTeamUpdatedPayload>
   | z.infer<typeof EventMemberEmailDeletedPayload>
   | z.infer<typeof EventMemberUnblockEmailPayload>
+  | z.infer<typeof EventMemberMergedPayload>
   | z.infer<typeof EventOrganizationCreatedPayload>
   | z.infer<typeof EventOrganizationUpdatedPayload>
   | z.infer<typeof EventMemberEmailExpiredPayload>

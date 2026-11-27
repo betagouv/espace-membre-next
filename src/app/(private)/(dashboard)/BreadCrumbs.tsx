@@ -202,6 +202,14 @@ export function BreadCrumbs() {
                       routes.adminApiKeys(),
                     ),
                   },
+                  {
+                    href: routes.adminMemberMerge(),
+                    text: routeTitles.adminMemberMerge(),
+                    isActive: hasPathnameThisMatch(
+                      pathname,
+                      routes.adminMemberMerge(),
+                    ),
+                  },
                 ],
               },
             ]
