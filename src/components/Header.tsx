@@ -189,12 +189,29 @@ const MainHeader = () => {
           ...(session.user.isAdmin
             ? [
                 {
-                  linkProps: {
-                    href: routes.adminApiKeys(),
-                    target: "_self" as const,
-                  },
-                  text: routeTitles.adminApiKeys(),
-                  isActive: isCurrentPath(pathname, routes.adminApiKeys()),
+                  text: routeTitles.admin(),
+                  isActive: isCurrentPath(pathname, routes.admin()),
+                  menuLinks: [
+                    {
+                      linkProps: {
+                        href: routes.adminApiKeys(),
+                        target: "_self" as const,
+                      },
+                      text: routeTitles.adminApiKeys(),
+                      isActive: isCurrentPath(pathname, routes.adminApiKeys()),
+                    },
+                    {
+                      linkProps: {
+                        href: routes.adminMemberMerge(),
+                        target: "_self" as const,
+                      },
+                      text: routeTitles.adminMemberMerge(),
+                      isActive: isCurrentPath(
+                        pathname,
+                        routes.adminMemberMerge(),
+                      ),
+                    },
+                  ],
                 },
               ]
             : []),

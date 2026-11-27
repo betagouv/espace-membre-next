@@ -19,6 +19,8 @@ type MemberSelectProps<T extends boolean> = {
   state?: "success" | "default" | "error" | undefined;
   stateRelatedMessage?: string;
   multiple?: boolean;
+  /** À fournir quand plusieurs sélecteurs coexistent sur la page. */
+  id?: string;
 };
 
 export default function MemberSelect<T extends boolean>({
@@ -34,6 +36,7 @@ export default function MemberSelect<T extends boolean>({
   state,
   stateRelatedMessage,
   multiple,
+  id = "member-select",
 }: MemberSelectProps<T>) {
   const onTagsChange = (data) => {
     if (!data) return;
@@ -87,12 +90,12 @@ export default function MemberSelect<T extends boolean>({
     });
   return (
     <div className="fr-select-group">
-      <label className="fr-label" htmlFor="member-select">
+      <label className="fr-label" htmlFor={id}>
         {label}
         {!!hint && <span className="fr-hint-text">{hint}</span>}
       </label>
       <AutoComplete
-        id="member-select"
+        id={id}
         multiple={!!multiple}
         options={memberOptions}
         onSelect={onTagsChange}

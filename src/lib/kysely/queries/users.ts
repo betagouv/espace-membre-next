@@ -104,6 +104,15 @@ export async function getMatrixIdByUserId(
   return row?.matrix_id;
 }
 
+/** Liste légère de toutes les fiches, pour les sélecteurs d'administration. */
+export async function getAllMembersLight(db: Kysely<DB> = database) {
+  return db
+    .selectFrom("users")
+    .select(["uuid", "username", "fullname"])
+    .orderBy("fullname")
+    .execute();
+}
+
 export const getAllUsersInfoQuery = (db: Kysely<DB> = database) =>
   db
     .selectFrom("users")

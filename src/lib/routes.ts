@@ -53,6 +53,7 @@ export const routes = {
   incubatorApiKeys: ({ incubatorId }: { incubatorId: string }) =>
     `/incubators/${incubatorId}/api-keys`,
   adminApiKeys: () => `/admin/api-keys`,
+  adminMemberMerge: () => `/admin/fusion-membres`,
   accountApiKeyDetails: ({ apiKeyId }: { apiKeyId: string }) =>
     `/account/api-keys/${apiKeyId}`,
   admin: () => `/admin`,
@@ -66,6 +67,7 @@ export const routeTitles: {
   account: () => "Compte",
   incubatorApiKeys: () => "Clefs d'API de l'incubateur",
   adminApiKeys: () => "Clefs d'API",
+  adminMemberMerge: () => "Fusion de fiches membres",
   accountApiKeyDetails: () => "Clef d'API",
   admin: () => "Administration",
   accountEditBaseInfo: () => "Mise à jour de mes informations",
