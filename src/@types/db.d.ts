@@ -531,6 +531,8 @@ export interface UserEvents {
   created_at: Generated<Timestamp>;
   date: Timestamp;
   field_id: string;
+  not_concerned_comment: string | null;
+  not_concerned_reason: string | null;
   updated_at: Generated<Timestamp>;
   user_id: string;
   uuid: Generated<string>;

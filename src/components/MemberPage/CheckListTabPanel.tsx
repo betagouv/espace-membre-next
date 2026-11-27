@@ -3,6 +3,7 @@ import { useState, useMemo, ReactNode } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 
 import Checklist from "../Checklist";
+import { NotConcernedByField } from "../ChecklistNotConcerned";
 import ProgressBar from "../ProgressBar";
 import { memberWrapperSchemaType } from "@/models/member";
 import { checklistSchemaType } from "@/models/checklist";
@@ -31,6 +32,20 @@ export const ChecklistTabPanel = ({
       .filter((event) => event.date !== null)
       .map((event) => event.field_id),
   );
+  const [notConcernedByField, setNotConcernedByField] =
+    useState<NotConcernedByField>(() =>
+      Object.fromEntries(
+        userEvents
+          .filter((event) => event.not_concerned_reason)
+          .map((event) => [
+            event.field_id,
+            {
+              reason: event.not_concerned_reason!,
+              comment: event.not_concerned_comment,
+            },
+          ]),
+      ),
+    );
   const progress = useMemo(
     () =>
       computeProgress(userEventIds, checklistObject, offset, userInfos.domaine),
@@ -49,6 +64,8 @@ export const ChecklistTabPanel = ({
         userUuid={userInfos.uuid}
         userEventIds={userEventIds}
         handleUserEventIdsChange={setUserEventIds}
+        notConcernedByField={notConcernedByField}
+        handleNotConcernedByFieldChange={setNotConcernedByField}
         sections={checklistObject}
         domaine={userInfos.domaine}
       />

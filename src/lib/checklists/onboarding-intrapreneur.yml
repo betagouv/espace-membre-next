@@ -76,6 +76,21 @@
   items:
     - id: onboarding-forum-beta
       title: Participer à la journée d'embarquement obligatoire lors du forum mensuel
+      # Le membre peut se déclarer non concerné, avec un motif. Les id des
+      # motifs sont stockés en base : ne pas les renommer. A garder identique
+      # dans onboarding.yml et onboarding-intrapreneur.yml.
+      notConcerned:
+        label: Non concerné par la journée
+        reasons:
+          - id: ancien-membre
+            label: Ancien membre
+          - id: hors-marche-produit
+            label: Ne passe pas par le marché produit
+          - id: incubateur-non-concerne
+            label: Incubateur non concerné
+          - id: autre
+            label: Autre
+            commentRequired: true
     - id: onboarding-video-achat-prestations
       title: "Regarder la vidéo [Acheter des prestations pour développer son produit numérique](https://tube.numerique.gouv.fr/w/ctbNzqfD2qUKco7MEhsvo6)"
     - id: onboarding-elearning-selection-prestataires

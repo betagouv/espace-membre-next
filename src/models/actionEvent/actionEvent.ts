@@ -416,6 +416,8 @@ export const EventMemberUserEventUpdatedPayload = z.object({
     field_id: z.string(),
     value: z.boolean(),
     date: z.date().nullable().optional(),
+    not_concerned_reason: z.string().nullable().optional(),
+    not_concerned_comment: z.string().nullable().optional(),
   }),
 });
 

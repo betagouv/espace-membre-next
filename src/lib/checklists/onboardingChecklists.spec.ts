@@ -88,4 +88,41 @@ describe("onboarding checklists", () => {
       );
     }
   });
+
+  it("should offer the same not concerned reasons on items shared by both onboarding checklists", async () => {
+    // updateUserEvent valide les motifs sur l'union des yml : des motifs
+    // différents d'un yml à l'autre en refuseraient certains.
+    const [common, intrapreneur] = await Promise.all([
+      getChecklistObject("onboarding"),
+      getChecklistObject("onboarding-intrapreneur"),
+    ]);
+    const commonItems = new Map(itemsOf(common).map((i) => [i.id, i]));
+    for (const item of itemsOf(intrapreneur)) {
+      const commonItem = commonItems.get(item.id);
+      if (!commonItem) continue;
+      expect(item.notConcerned, `${item.id} notConcerned`).to.deep.equal(
+        commonItem.notConcerned,
+      );
+    }
+  });
+
+  it("should let members declare themselves not concerned by the onboarding day", async () => {
+    for (const type of ["onboarding", "onboarding-intrapreneur"] as const) {
+      const forum = itemsOf(await getChecklistObject(type)).find(
+        (i) => i.id === "onboarding-forum-beta",
+      );
+      expect(forum?.restricted, type).to.not.be.true;
+      expect(
+        forum?.notConcerned?.reasons.map((r) => r.id),
+        type,
+      ).to.deep.equal([
+        "ancien-membre",
+        "hors-marche-produit",
+        "incubateur-non-concerne",
+        "autre",
+      ]);
+      const other = forum?.notConcerned?.reasons.find((r) => r.id === "autre");
+      expect(other?.commentRequired, type).to.be.true;
+    }
+  });
 });
